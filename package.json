@@ -1,18 +1,53 @@
 {
-  "name": "mixpay-js-plugin",
+  "name": "mixpayjs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/mixpay.common.js",
+  "module": "dist/mixpay.esm.js",
+  "browser": "dist/mixpay.js",
+  "style": "dist/mixpay.css",
+  "files": [
+    "src",
+    "dist"
+  ],
+  "respository": {
+    "type": "git",
+    "url": "git+https://github.com/MixPayHQ/mixpayjs"
+  },
+  "keywords": [
+    "mixpay",
+    "mixpay.js",
+    "html",
+    "css",
+    "javascript",
+    "front-end",
+    "web"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MixPayHQ/mixpayjs/issues"
+  },
+  "homepage": "https://MixPayHQ.github.io/mixpayjs",
   "scripts": {
+    "lint": "npm run lint:js",
+    "lint:js": "eslint . --fix",
+    "commit": "git cz",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
-    "@commitlint/cli": "^16.2.3",
-    "@commitlint/config-conventional": "^16.2.1"
+    "commitizen": "^4.2.4",
+    "cz-customizable": "^6.3.0",
+    "eslint": "^8.13.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "rollup": "^2.70.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-customizable"
+    }
   }
 }
