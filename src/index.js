@@ -1,3 +1,3 @@
-import MixPay from "./js/mixpay";
+import MixPay from './js/mixpay';
 
 export default MixPay;

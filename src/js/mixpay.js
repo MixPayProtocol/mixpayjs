@@ -1,16 +1,16 @@
-import { DEFAULT, PAYMENT_DEFAULT } from "./default";
-import TEMPLATE from "./template";
-import { EVENT_READY, NAMESPACE } from "./constants";
+import { DEFAULT, PAYMENT_DEFAULT } from './default';
+import TEMPLATE from './template';
+import { EVENT_READY, NAMESPACE } from './constants';
 import {
   assign,
   isPlainObject,
   dispatchEvent,
+  addListener,
   isArray,
   copyTemplate,
-  isObject,
-} from "./utilities";
+} from './utilities';
 
-import APIS from "./apis";
+import APIS from './apis';
 
 class MixPay {
   constructor(options = {}) {
@@ -30,16 +30,16 @@ class MixPay {
 
   init() {
     const { options } = this;
-    const element = document.createElement("div");
-    element.setAttribute("class", NAMESPACE);
-    element.style.display = "none";
+    const element = document.createElement('div');
+    element.setAttribute('class', NAMESPACE);
+    element.style.display = 'none';
     if (options.hasMask) {
-      const mask = document.createElement("div");
-      mask.setAttribute("class", NAMESPACE + "-mask");
+      const mask = document.createElement('div');
+      mask.setAttribute('class', `${NAMESPACE}-mask`);
       element.appendChild(element);
     }
-    const container = document.createElement("div");
-    container.setAttribute("class", NAMESPACE + "-container");
+    const container = document.createElement('div');
+    container.setAttribute('class', `${NAMESPACE}-container`);
     container.innerHTML = TEMPLATE;
 
     this.element = element;
@@ -49,19 +49,19 @@ class MixPay {
 
   load() {
     const { element } = this;
-    let promises = [];
+    const promises = [];
     if (!this.quoteAssets.length) {
       promises.push(
         MixPay.getQuoteAssets().then((data) => {
           this.quoteAssets = isArray(data.data) ? data.data : [];
-        })
+        }),
       );
     }
     if (!this.paymentAssets.length) {
       promises.push(
         MixPay.getPaymentAssets().then((data) => {
           this.paymentAssets = isArray(data.data) ? data.data : [];
-        })
+        }),
       );
     }
 
@@ -88,10 +88,10 @@ class MixPay {
   pay(element = null, options = {}) {
     this.payConfig = copyTemplate(
       copyTemplate(PAYMENT_DEFAULT, this.options),
-      isPlainObject(options) && options
+      isPlainObject(options) && options,
     );
     if (!this.ready) {
-      addEventListener(this.element, () => {}, { once: true });
+      addListener(element, () => { }, { once: true });
     }
   }
 

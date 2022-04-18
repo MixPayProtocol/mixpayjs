@@ -1,3 +1,3 @@
-export default DEFAULT = {};
+export const DEFAULT = {};
 
-export default PAYMENT_DEFAULT = {};
+export const PAYMENT_DEFAULT = {};

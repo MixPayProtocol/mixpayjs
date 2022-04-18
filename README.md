@@ -1,1 +1,0 @@
-mixpay-js-plugin

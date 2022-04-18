@@ -1,4 +1,4 @@
-import { WINDOW, IS_BROWSER } from "./constants";
+import { WINDOW, IS_BROWSER } from './constants';
 
 const REGEXP_SPACES = /\s\s*/;
 const onceSupported = (() => {
@@ -6,8 +6,8 @@ const onceSupported = (() => {
 
   if (IS_BROWSER) {
     let once = false;
-    const listener = () => {};
-    const options = Object.defineProperty({}, "once", {
+    const listener = () => { };
+    const options = Object.defineProperty({}, 'once', {
       get() {
         supported = true;
         return once;
@@ -17,8 +17,8 @@ const onceSupported = (() => {
       },
     });
 
-    WINDOW.addEventListener("test", listener, options);
-    WINDOW.removeEventListener("test", listener, options);
+    WINDOW.addEventListener('test', listener, options);
+    WINDOW.removeEventListener('test', listener, options);
   }
 
   return supported;
@@ -29,11 +29,11 @@ export function isArray(value) {
 }
 
 export function isFunction(value) {
-  return typeof value === "function";
+  return typeof value === 'function';
 }
 
 export function isObject(value) {
-  return typeof value === "object" && value !== null;
+  return typeof value === 'object' && value !== null;
 }
 
 const { hasOwnProperty } = Object.prototype;
@@ -48,18 +48,17 @@ export function isPlainObject(value) {
     const { prototype } = constructor;
 
     return (
-      constructor &&
-      prototype &&
-      hasOwnProperty.call(prototype, "isPrototypeOf")
+      constructor
+      && prototype
+      && hasOwnProperty.call(prototype, 'isPrototypeOf')
     );
   } catch (error) {
     return false;
   }
 }
 
-export const assign =
-  Object.assign ||
-  function assign(target, ...args) {
+export const assign = Object.assign
+  || function assign(target, ...args) {
     if (isObject(target) && args.length > 0) {
       args.forEach((arg) => {
         if (isObject(arg)) {
@@ -125,7 +124,7 @@ export function addListener(element, type, listener, options = {}) {
           element.removeEventListener(
             event,
             listeners[event][listener],
-            options
+            options,
           );
         }
 
@@ -148,7 +147,7 @@ export function dispatchEvent(element, type, data) {
       cancelable: true,
     });
   } else {
-    event = document.createEvent("CustomEvent");
+    event = document.createEvent('CustomEvent');
     event.initCustomEvent(type, true, true, data);
   }
 
@@ -163,12 +162,12 @@ export function copyTemplate(template, source) {
   if (!isObject(source)) {
     return assign(obj, template);
   }
-  for (let key in template) {
+  Object.keys(template).forEach((key) => {
     if (source[key] !== undefined && hasOwnProperty.call(source, key)) {
       obj[key] = source[key];
     } else {
       obj[key] = template[key];
     }
-  }
+  });
   return obj;
 }

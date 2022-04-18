@@ -3,8 +3,8 @@ import {
   EVENT_PAYMENT_CREATE,
   EVENT_PAYMENT_SUCCESS,
   EVENT_PAYMENT_ERROR,
-} from "./constants";
-import { isFunction, addListener, removeListener } from "./utilities";
+} from './constants';
+import { isFunction, addListener, removeListener } from './utilities';
 
 export default {
   bind() {

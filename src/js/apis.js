@@ -1,13 +1,13 @@
-import { API_BASE_URL } from "./constants";
+import { API_BASE_URL } from './constants';
 
 const ajax = {
-  get: function (url) {
+  get(url) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open("GET", url.startsWith("/") ? API_BASE_URL + url : url, true);
+      xhr.open('GET', url.startsWith('/') ? API_BASE_URL + url : url, true);
 
       xhr.ontimeout = function () {
-        reject(new Error("Request timeout, please try it again later."));
+        reject(new Error('Request timeout, please try it again later.'));
       };
 
       xhr.onerror = function (e) {
@@ -15,8 +15,8 @@ const ajax = {
       };
 
       xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-          if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+        if (xhr.readyState === 4) {
+          if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
             try {
               const response = JSON.parse(xhr.responseText);
               resolve(response);
@@ -37,14 +37,14 @@ const ajax = {
       xhr.send();
     });
   },
-  post: function (url, data) {
+  post(url, data) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open("POST", url.startsWith("/") ? API_BASE_URL + url : url, true);
-      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.open('POST', url.startsWith('/') ? API_BASE_URL + url : url, true);
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
       xhr.ontimeout = function () {
-        reject(new Error("Request timeout, please try it again later."));
+        reject(new Error('Request timeout, please try it again later.'));
       };
 
       xhr.onerror = function (e) {
@@ -52,8 +52,8 @@ const ajax = {
       };
 
       xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4) {
-          if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+        if (xhr.readyState === 4) {
+          if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
             try {
               const response = JSON.parse(xhr.responseText);
               resolve(response);
@@ -78,18 +78,18 @@ const ajax = {
 
 export default {
   getQuoteAssets() {
-    return ajax.get("/setting/quote_assets");
+    return ajax.get('/setting/quote_assets');
   },
   getPaymentAssets() {
-    return ajax.get("/setting/payment_assets");
+    return ajax.get('/setting/payment_assets');
   },
   getSettlementAssets() {
-    return ajax.get("/setting/settlement_assets");
+    return ajax.get('/setting/settlement_assets');
   },
   getPaymentResult(traceId) {
-    return ajax.get("/payments_result?traceId=" + traceId);
+    return ajax.get(`/payments_result?traceId=${traceId}`);
   },
   createPayment(data) {
-    return ajax.post("/payments", data);
+    return ajax.post('/payments', data);
   },
 };
