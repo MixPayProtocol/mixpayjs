@@ -35,9 +35,9 @@ new MixPay(element, options);
 
 - **element**
   - Type: `HTMLElement`
-  - Default document.body
+  - Default: `document.body`
 - **options**
-  - Type `Object`
+  - Type: `Object`
   - The options for payment. Check out the available [options](#options)
 
 #### Example
@@ -51,7 +51,9 @@ import MixPay from 'mixpayjs;
 
 const element = document.getElementById('wrapper');
 const mixpay = new MixPay(element, {
-  mode: 'is-view',
+  width: '',
+  height: '',
+  isModal: false,
   withMask: false,
   payeeId: '',
   settlementAssetId: '',
@@ -78,13 +80,10 @@ mixpay.pay({
 
 ## Options
 
-### mode
+### isModal
 
-- Type: `String`
-- Default: `'is-view'`
-- Options:
-  - `'is-view'`:
-  - `'modal'`:
+- Type: `Boolean`
+- Default: `false`
 
 ### withMask
 
@@ -119,7 +118,7 @@ mixpay.pay({
 ### expireSeconds
 
 - Type: `Number`,
-- Default: ``
+- Default: `60`
 
 ### remark
 
@@ -133,8 +132,67 @@ mixpay.pay({
 
 ### onClose
 
+- Type: `Function`,
+- Default: `null`
+
 ### onPaymentCreate
+
+- Type: `Function`,
+- Default: `null`
 
 ### onPaymentSuccess
 
+- Type: `Function`,
+- Default: `null`
+
 ### onPaymentFail
+
+- Type: `Function`,
+- Default: `null`
+
+## Instance Methods
+
+### pay(options)
+
+- **options**
+  - payeeId
+  - settlementAssetId
+  - settlementMemo
+  - settlementMethod
+  - clientId
+  - expireSeconds
+  - quoteAssetId
+  - quoteAmount
+  - paymentAssetId
+  - note
+  - traceId
+
+## Global Methods
+
+### newUUID()
+
+create a random UUID for `clientId` and `traceId`
+
+### getQuoteAssets()
+
+Get quote assets support cryptocurrency and fiat currency.
+
+### getPaymentAssets()
+
+Get payment assets only support cryptocurrency.
+
+### getSettlementAssets()
+
+Get settlement assets support cryptocurrency and fiat currency.
+
+### createPayment(options)
+
+Create a payment
+
+### getPaymentDetail(traceId)
+
+The details of the payment
+
+### getEstPaymentAmount(options)
+
+Get the estimated price and the estimated amount of the transaction.
