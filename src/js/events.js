@@ -9,21 +9,20 @@ import { isFunction, addListener, removeListener } from './utilities';
 export default {
   bind() {
     const { element, options } = this;
-
     if (isFunction(options.onReady)) {
       addListener(element, EVENT_READY, options.onReady);
     }
 
-    if (isFunction(options.onCreate)) {
-      addListener(element, EVENT_PAYMENT_CREATE, options.onCreate);
+    if (isFunction(options.onPaymentCreate)) {
+      addListener(element, EVENT_PAYMENT_CREATE, options.onPaymentCreate);
     }
 
-    if (isFunction(options.onSuccess)) {
-      addListener(element, EVENT_PAYMENT_SUCCESS, options.onSuccess);
+    if (isFunction(options.onPaymentSuccess)) {
+      addListener(element, EVENT_PAYMENT_SUCCESS, options.onPaymentSuccess);
     }
 
-    if (isFunction(options.onError)) {
-      addListener(element, EVENT_PAYMENT_ERROR, options.onError);
+    if (isFunction(options.onPaymentFail)) {
+      addListener(element, EVENT_PAYMENT_ERROR, options.onPaymentFail);
     }
   },
 
@@ -34,16 +33,16 @@ export default {
       removeListener(element, EVENT_READY, options.onReady);
     }
 
-    if (isFunction(options.onCreate)) {
-      removeListener(element, EVENT_PAYMENT_CREATE, options.onCreate);
+    if (isFunction(options.onPaymentCreate)) {
+      removeListener(element, EVENT_PAYMENT_CREATE, options.onPaymentCreate);
     }
 
-    if (isFunction(options.onSuccess)) {
-      removeListener(element, EVENT_PAYMENT_SUCCESS, options.onSuccess);
+    if (isFunction(options.onPaymentSuccess)) {
+      removeListener(element, EVENT_PAYMENT_SUCCESS, options.onPaymentSuccess);
     }
 
-    if (isFunction(options.onError)) {
-      removeListener(element, EVENT_PAYMENT_ERROR, options.onError);
+    if (isFunction(options.onPaymentFail)) {
+      removeListener(element, EVENT_PAYMENT_ERROR, options.onPaymentFail);
     }
   },
 };

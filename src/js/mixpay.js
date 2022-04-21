@@ -1,48 +1,49 @@
 import { DEFAULT, PAYMENT_DEFAULT } from './default';
-import TEMPLATE from './template';
-import { EVENT_READY, NAMESPACE } from './constants';
+import { EVENT_PAYMENT_CREATE, EVENT_READY } from './constants';
+import events from './events';
+import render from './render';
+
 import {
   assign,
   isPlainObject,
   dispatchEvent,
-  addListener,
   isArray,
   copyTemplate,
+  genUuid,
+  addListener,
 } from './utilities';
 
 import APIS from './apis';
 
 class MixPay {
-  constructor(options = {}) {
+  constructor(element = null, options = {}) {
     this.options = assign({}, DEFAULT, isPlainObject(options) && options);
     this.ready = false;
 
     this.quoteAssets = [];
     this.paymentAssets = [];
 
-    this.element = null;
+    const container = document.createElement('div');
+    if (!element || !(element instanceof HTMLElement)) {
+      element = document.body;
+    }
+    element.appendChild(container);
+    this.element = container;
 
-    this.payConfig = null;
-    this.payInfo = null;
+    this.payConfig = copyTemplate(PAYMENT_DEFAULT, this.options);
+
+    this.payInfo = {};
+
+    this.paymentInfo = {};
+
+    this.isSubmitting = false;
+    this.countdownInterval = null;
+    this.pollResultInterval = null;
 
     this.init();
   }
 
   init() {
-    const { options } = this;
-    const element = document.createElement('div');
-    element.setAttribute('class', NAMESPACE);
-    element.style.display = 'none';
-    if (options.hasMask) {
-      const mask = document.createElement('div');
-      mask.setAttribute('class', `${NAMESPACE}-mask`);
-      element.appendChild(element);
-    }
-    const container = document.createElement('div');
-    container.setAttribute('class', `${NAMESPACE}-container`);
-    container.innerHTML = TEMPLATE;
-
-    this.element = element;
     this.bind();
     this.load();
   }
@@ -68,11 +69,19 @@ class MixPay {
     Promise.all(promises)
       .then(() => {
         this.ready = true;
+        this.build();
         dispatchEvent(element, EVENT_READY);
       })
       .catch(() => {
-        setTimeout(this.load, 1000);
+        setTimeout(() => {
+          this.load();
+        }, 1000);
       });
+  }
+
+  build() {
+    this.render();
+    this.renderStep(0);
   }
 
   destroy() {
@@ -85,14 +94,75 @@ class MixPay {
     }
   }
 
-  pay(element = null, options = {}) {
+  pay(options = {}) {
     this.payConfig = copyTemplate(
       copyTemplate(PAYMENT_DEFAULT, this.options),
       isPlainObject(options) && options,
     );
-    if (!this.ready) {
-      addListener(element, () => { }, { once: true });
+    if (this.ready) {
+      this.show();
+    } else {
+      addListener(this.element, EVENT_READY, () => { this.show(); }, { once: true });
     }
+  }
+
+  show() {
+    const { element } = this;
+    if (!element.classList.contains('show')) {
+      element.classList.add('show');
+    }
+    this.renderStep(0);
+  }
+
+  hide() {
+    clearInterval(this.countdownInterval);
+    clearInterval(this.pollResultInterval);
+    const { element } = this;
+    if (element.classList.contains('show')) {
+      element.classList.remove('show');
+    }
+  }
+
+  createPayment() {
+    const { payInfo, payConfig, element } = this;
+    const obj = copyTemplate(payConfig, {
+      quoteAssetId: payInfo.quoteAsset.assetId,
+      quoteAmount: payInfo.quoteAmount,
+      paymentAssetId: payInfo.paymentAsset.assetId,
+      note: payInfo.note,
+      isChain: payInfo.isChain,
+    });
+    if (!obj.traceId) {
+      obj.traceId = genUuid();
+    }
+    if (!obj.clientId) {
+      obj.clientId = genUuid();
+    }
+    return APIS.createPayment(obj).then((data) => {
+      const d = data.data;
+      this.paymentInfo = {
+        clientId: d.clientId,
+        destination: d.destination,
+        tag: d.tag,
+        expire: d.expire,
+        isChain: d.isChain,
+        quoteAssetId: d.quoteAssetId,
+        quoteAmount: d.quoteAmount,
+        paymentAssetId: d.paymentAssetId,
+        paymentAmount: d.paymentAmount,
+        memo: d.memo,
+        recipient: d.recipient,
+        traceId: d.traceId,
+      };
+      dispatchEvent(element, EVENT_PAYMENT_CREATE, this.paymentInfo);
+    }).catch((err) => Promise.reject(err));
+  }
+
+  getPaymentInfo() {
+    return APIS.getPaymentResult(this.paymentInfo.traceId).then((data) => {
+      const d = data.data;
+      return Promise.resolve(d.status);
+    }).catch((err) => Promise.reject(err));
   }
 
   static setDefaults(options) {
@@ -100,6 +170,12 @@ class MixPay {
   }
 }
 
-assign(MixPay, APIS);
+assign(MixPay.prototype, events, render);
+
+assign(MixPay, APIS, {
+  newUUID() {
+    return genUuid();
+  },
+});
 
 export default MixPay;

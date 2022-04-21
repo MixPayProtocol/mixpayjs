@@ -1,3 +1,4 @@
+import createMd5 from 'crypto-js/md5';
 import { WINDOW, IS_BROWSER } from './constants';
 
 const REGEXP_SPACES = /\s\s*/;
@@ -170,4 +171,37 @@ export function copyTemplate(template, source) {
     }
   });
   return obj;
+}
+
+export function copy(str) {
+  const e = document.createElement('textarea');
+  e.value = str;
+  e.setAttribute('readonly', '');
+  e.style.cssText = 'position:absolute;left:-9999px';
+  document.body.appendChild(e);
+  if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
+    const n = document.createRange();
+    n.selectNodeContents(e);
+    const r = window.getSelection();
+    r.removeAllRanges();
+    r.addRange(n);
+    e.setSelectionRange(0, 999999);
+  } else {
+    e.select();
+  }
+
+  try {
+    document.execCommand('copy');
+    e.remove();
+  } catch (t) {
+    e.remove();
+    return false;
+  }
+  return true;
+}
+
+export function genUuid() {
+  const ran = Math.random().toString(36).substr(2);
+  const md5 = createMd5(ran).toString();
+  return `${md5.substr(0, 8)}-${md5.substr(8, 4)}-${md5.substr(12, 4)}-${md5.substr(16, 4)}-${md5.substr(20, 12)}`;
 }

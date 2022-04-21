@@ -1,7 +1,7 @@
 export const DEFAULT = {
-  apiBaseUrl: 'https://api.mixpay.me/v1',
-  mode: 'modal', // modal | is-view
-  withMark: true,
+  apiUrl: 'https://api.mixpay.me/v1',
+  isModal: false,
+  hasMask: true,
 
   onReady: null,
   onPaymentCreate: null,
@@ -11,7 +11,7 @@ export const DEFAULT = {
 
 export const PAYMENT_DEFAULT = {
   clientId: '',
-  expireSeconds: '',
+  expireSeconds: 240,
   isChain: false,
   note: '',
   payeeId: '',
@@ -21,6 +21,6 @@ export const PAYMENT_DEFAULT = {
   remark: '',
   settlementAssetId: '',
   settlementMemo: '',
-  settlementMethod: 'mixin', // 'mixin', 'mixpay
+  settlementMethod: 'mixin', // 'mixin', 'mixpay'
   traceId: '',
 };

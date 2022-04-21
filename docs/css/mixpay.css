@@ -1,0 +1,354 @@
+.--mixpay-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+.--mixpay-modal.show {
+  display: flex;
+}
+.--mixpay-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: auto;
+  background: rgba(37, 38, 45, 0.7);
+}
+.--mixpay-container {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  max-width: 400px;
+  width: calc(100% - 64px);
+  padding: 24px;
+  border: 1px solid rgba(43, 45, 55, 0.1);
+  border-radius: 16px;
+  pointer-events: auto;
+  background: #fff;
+}
+.--mixpay-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.--mixpay-header__logo {
+  height: 32px;
+}
+.--mixpay-header__close {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #eaeaea;
+  cursor: pointer;
+}
+.--mixpay-header__close:before, .--mixpay-header__close:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  border-radius: 16px;
+}
+.--mixpay-header__close:before {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+.--mixpay-header__close:after {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.--mixpay-step {
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+.--mixpay-step-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.--mixpay-step-footer {
+  margin-top: 32px;
+}
+.--mixpay-step-error {
+  font-weight: bold;
+  line-height: 32px;
+  text-align: center;
+  color: #ff7da0;
+  background: rgba(255, 125, 160, 0.1);
+}
+.--mixpay-step button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  min-height: 48px;
+  border-radius: 8px;
+  outline: none;
+  background: #164aff;
+  color: #fff;
+  font-family: inherit;
+  font-size: inherit;
+}
+.--mixpay-selector {
+  margin-bottom: 24px;
+}
+.--mixpay-selector__title {
+  margin-bottom: 16px;
+}
+.--mixpay-selector__content {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 16px;
+  background: rgba(10, 40, 119, 0.05);
+}
+.--mixpay-selector__control {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 48px;
+}
+.--mixpay-selector__selected {
+  display: flex;
+  align-items: center;
+  flex: 1 0 0;
+}
+.--mixpay-selector__selected img {
+  margin-right: 16px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.--mixpay-selector__selected em {
+  display: inline-block;
+  margin: 0 16px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-style: normal;
+  font-size: 50%;
+  font-weight: 600;
+  background: green;
+  color: #fff;
+}
+.--mixpay-selector__icon {
+  margin-top: -4px;
+  border: 4px solid transparent;
+  border-bottom-color: #1e1e2f;
+  border-right-color: #1e1e2f;
+  transform: rotate(45deg);
+  width: 0;
+  height: 0;
+}
+.--mixpay-selector__list {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  z-index: 100;
+  max-height: 320px;
+  overflow: hidden auto;
+  background: #fff;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+.--mixpay-selector__list li {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 8px 16px;
+}
+.--mixpay-selector__list img {
+  margin-right: 16px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.--mixpay-selector__list em {
+  display: inline-block;
+  margin: 0 16px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-style: normal;
+  font-size: 50%;
+  font-weight: 600;
+  background: green;
+  color: #fff;
+}
+.--mixpay-selector__list.show {
+  display: block;
+}
+.--mixpay-input {
+  margin-bottom: 24px;
+}
+.--mixpay-input__title {
+  margin-bottom: 16px;
+}
+.--mixpay-input__content {
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 16px;
+  background: rgba(10, 40, 119, 0.05);
+}
+.--mixpay-input__control {
+  flex: 1 0 0;
+  min-height: 48px;
+}
+.--mixpay-input__control input {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  height: 48px;
+  font-size: inherit;
+  outline: none;
+  background: transparent;
+}
+.--mixpay-input__control input::-webkit-inner-spin-button, .--mixpay-input__control input::-webkit-outer-spin-button {
+  appearance: none;
+}
+.--mixpay-input__right {
+  margin-left: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.--mixpay-radio {
+  margin-bottom: 24px;
+}
+.--mixpay-radio__title {
+  margin-bottom: 16px;
+}
+.--mixpay-radio label {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  border: 1px solid rgba(151, 151, 151, 0.11);
+  margin-bottom: 8px;
+  padding: 0 16px;
+  height: 48px;
+}
+.--mixpay-radio label input {
+  margin: 0 16px 0 0;
+}
+
+.--mixpay-payment .--mixpay-step-title img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+.--mixpay-payment .--mixpay-step-title strong {
+  margin: 0 4px;
+  font-weight: 600;
+}
+
+.--mixpay-info .--mixpay-step-title img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+.--mixpay-info .--mixpay-step-title strong {
+  margin-left: 8px;
+  font-weight: 600;
+}
+.--mixpay-info .qrious {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.--mixpay-info .qrious-item {
+  display: flex;
+  justify-content: space-between;
+}
+.--mixpay-info .qrious-item canvas {
+  flex-shrink: 0;
+  margin: 0 auto;
+  width: 60%;
+  height: 60%;
+}
+.--mixpay-info .qrious-item span {
+  margin-right: 32px;
+  word-break: break-all;
+}
+.--mixpay-info .qrious-item span + canvas {
+  width: 40%;
+  height: 40%;
+}
+.--mixpay-info .qrious-item em {
+  position: relative;
+  color: #164aff;
+}
+.--mixpay-info .qrious-item em.copy-success:after {
+  opacity: 1;
+}
+.--mixpay-info .qrious-item em:after {
+  content: "Copied!";
+  display: inline-block;
+  position: absolute;
+  z-index: 2;
+  background: #fff;
+  font-size: 16px;
+  padding: 4px 6px;
+  white-space: nowrap;
+  border-radius: 4px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  color: #ceccd9;
+  opacity: 0;
+  transition: opacity ease-in-out 0.1s;
+}
+.--mixpay-info .qrious-item svg {
+  width: 24px;
+  height: 24px;
+}
+.--mixpay-info .countdown {
+  text-align: center;
+}
+.--mixpay-info .countdown strong {
+  margin: 0 0.5em;
+  font-size: 150%;
+  color: red;
+}
+
+.--mixpay-result__success {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.--mixpay-result__success .icon-success {
+  margin: 32px;
+  width: 160px;
+  height: 160px;
+  fill: #67c23a;
+}
+.--mixpay-result__failed {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.--mixpay-result__failed .icon-error {
+  margin: 32px;
+  width: 160px;
+  height: 160px;
+  fill: #f56c6c;
+}
+
+/*# sourceMappingURL=mixpay.css.map */

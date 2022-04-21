@@ -1,10 +1,12 @@
-import { API_BASE_URL } from './constants';
+import { DEFAULT } from './default';
+
+const API_URL = DEFAULT.apiUrl;
 
 const ajax = {
   get(url) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', url.startsWith('/') ? API_BASE_URL + url : url, true);
+      xhr.open('GET', url.startsWith('/') ? API_URL + url : url, true);
 
       xhr.ontimeout = function () {
         reject(new Error('Request timeout, please try it again later.'));
@@ -40,7 +42,7 @@ const ajax = {
   post(url, data) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', url.startsWith('/') ? API_BASE_URL + url : url, true);
+      xhr.open('POST', url.startsWith('/') ? API_URL + url : url, true);
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
       xhr.ontimeout = function () {
