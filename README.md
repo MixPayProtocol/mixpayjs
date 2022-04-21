@@ -49,7 +49,8 @@ new MixPay(element, options);
 ```js
 import MixPay from 'mixpayjs;
 
-const element = document.getElementById('wrapper');
+const element = document.getElementById('app');
+
 const mixpay = new MixPay(element, {
   width: '',
   height: '',
