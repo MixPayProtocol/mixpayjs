@@ -1,6 +1,6 @@
 export const DEFAULT = {
   apiUrl: 'https://api.mixpay.me/v1',
-  isModal: false,
+  isModal: true,
   hasMask: true,
 
   onReady: null,

@@ -1,5 +1,5 @@
 import { DEFAULT, PAYMENT_DEFAULT } from './default';
-import { EVENT_PAYMENT_CREATE, EVENT_READY } from './constants';
+import { EVENT_MODAL_CLOSE, EVENT_PAYMENT_CREATE, EVENT_READY } from './constants';
 import events from './events';
 import render from './render';
 
@@ -81,7 +81,6 @@ class MixPay {
 
   build() {
     this.render();
-    this.renderStep(0);
   }
 
   destroy() {
@@ -92,6 +91,7 @@ class MixPay {
     if (parentNode) {
       parentNode.removeChild(element);
     }
+    this.unbind();
   }
 
   pay(options = {}) {
@@ -107,16 +107,20 @@ class MixPay {
   }
 
   show() {
-    const { element } = this;
+    const { element, payConfig } = this;
+    this.renderStep(0);
+    if (payConfig.quoteAssetId && payConfig.quoteAmount > 0) {
+      this.renderStep(1);
+    }
     if (!element.classList.contains('show')) {
       element.classList.add('show');
     }
-    this.renderStep(0);
   }
 
   hide() {
     clearInterval(this.countdownInterval);
     clearInterval(this.pollResultInterval);
+    dispatchEvent(this.element, EVENT_MODAL_CLOSE);
     const { element } = this;
     if (element.classList.contains('show')) {
       element.classList.remove('show');

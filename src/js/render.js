@@ -58,6 +58,12 @@ export default {
       )
       .join('');
     that.$quoteSelectorToggle.onclick = function () {
+      const { payConfig, payInfo } = that;
+      const { quoteAssetId } = payConfig;
+      const { quoteAsset } = payInfo;
+      if (quoteAssetId && quoteAsset && quoteAsset.assetId === quoteAssetId) {
+        return;
+      }
       if (that.$quoteSelectorList.classList.contains('show')) {
         that.$quoteSelectorList.classList.remove('show');
       } else {
@@ -150,11 +156,7 @@ export default {
     }
     const steps = this.element.querySelectorAll(`.${NAMESPACE}-step`);
     [].forEach.call(steps, (el, index) => {
-      if (String(index) === String(step)) {
-        el.style.display = 'block';
-      } else {
-        el.style.display = 'none';
-      }
+      el.style.display = String(index) === step ? 'block' : 'none';
     });
   },
 
@@ -167,9 +169,7 @@ export default {
     this.setPaymentMethod(paymentMethod || 'mixin');
     this.setPaymentAsset(paymentAssetId);
     this.$quoteInputErr.innerHTML = '';
-    if (quoteAssetId && quoteAmount > 0) {
-      this.renderStep(1);
-    }
+    this.element.querySelector(`.${NAMESPACE}-quote  .${NAMESPACE}-selector__icon`).style.opacity = quoteAssetId ? 0 : 1;
   },
 
   renderPayment() {
@@ -285,7 +285,7 @@ export default {
       $failed.style.display = 'flex';
       $button.style.display = 'block';
       $button.onclick = function () {
-        that.renderStep(0);
+        that.show();
       };
     }
   },

@@ -11,6 +11,7 @@ export const IS_MIXIN = !!((WINDOW.webkit
   || (WINDOW.MixinContext && WINDOW.MixinContext.getContext));
 
 export const EVENT_READY = 'ready';
+export const EVENT_MODAL_CLOSE = 'close';
 export const EVENT_PAYMENT_CREATE = 'create';
 export const EVENT_PAYMENT_SUCCESS = 'success';
 export const EVENT_PAYMENT_ERROR = 'error';

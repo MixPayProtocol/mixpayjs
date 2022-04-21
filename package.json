@@ -23,31 +23,40 @@
     "front-end",
     "web"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "gypsophila@mathunion.xyz",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/MixPayHQ/mixpayjs/issues"
   },
   "homepage": "https://MixPayHQ.github.io/mixpayjs",
   "scripts": {
-    "build": "npm run build:js",
+    "build": "npm run build:js && npm run build:css",
     "build:js": "rollup -c",
+    "build:css": "sass src/css/mixpay.scss dist/mixpay.css --no-source-map",
+    "compress": "npm run compress:css && npm run compress:js",
+    "compress:css": "postcss dist/mixpay.css -u cssnano -o dist/mixpay.min.css --no-map",
+    "compress:js": "uglifyjs dist/mixpay.js -o dist/mixpay.min.js -c -m --comments /^!/",
+    "clean": "del-cli dist",
     "lint": "npm run lint:js",
     "lint:js": "eslint . --fix",
     "commit": "git cz",
     "watch": "npm-run-all --parallel watch:*",
     "watch:js": "rollup -c -m -w",
-    "watch:css": "sass --watch src/css/mixpay.scss docs/css/mixpay.css",
+    "watch:css": "sass --watch src/css/mixpay.scss docs/css/mixpay.css --no-source-map",
+    "release": "npm run clean && npm run lint && npm run build && npm run compress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "@rollup/plugin-babel": "^5.3.1",
+    "autoprefixer": "^10.4.4",
     "change-case": "^4.1.2",
     "commitizen": "^4.2.4",
     "create-banner": "^2.0.0",
+    "cssnano": "^5.1.7",
     "cz-customizable": "^6.3.0",
+    "del-cli": "^4.0.1",
     "eslint": "^8.13.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
@@ -58,7 +67,8 @@
     "rollup": "^2.70.2",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "sass": "^1.50.1"
+    "sass": "^1.50.1",
+    "uglify-js": "^3.15.4"
   },
   "dependencies": {
     "crypto-js": "^4.1.1",
@@ -68,5 +78,10 @@
     "commitizen": {
       "path": "node_modules/cz-customizable"
     }
-  }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
 }

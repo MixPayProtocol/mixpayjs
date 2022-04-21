@@ -2,10 +2,10 @@
  * mixpayjs v1.0.0
  * https://MixPayHQ.github.io/mixpayjs
  *
- * Copyright 2022 undefined
- * Released under the ISC license
+ * Copyright 2022 gypsophila@mathunion.xyz
+ * Released under the MIT license
  *
- * Date: 2022-04-21T05:39:29.665Z
+ * Date: 2022-04-21T09:32:52.716Z
  */
 
 (function (global, factory) {
@@ -110,7 +110,7 @@
 
   var DEFAULT = {
     apiUrl: 'https://api.mixpay.me/v1',
-    isModal: false,
+    isModal: true,
     hasMask: true,
     onReady: null,
     onPaymentCreate: null,
@@ -140,6 +140,7 @@
   var WINDOW = IS_BROWSER ? window : {};
   var IS_MIXIN = !!(WINDOW.webkit && WINDOW.webkit.messageHandlers && WINDOW.webkit.messageHandlers.MixinContext || WINDOW.MixinContext && WINDOW.MixinContext.getContext);
   var EVENT_READY = 'ready';
+  var EVENT_MODAL_CLOSE = 'close';
   var EVENT_PAYMENT_CREATE = 'create';
   var EVENT_PAYMENT_SUCCESS = 'success';
   var EVENT_PAYMENT_ERROR = 'error';
@@ -1377,6 +1378,10 @@
         addListener(element, EVENT_READY, options.onReady);
       }
 
+      if (isFunction(options.onClose)) {
+        addListener(element, EVENT_MODAL_CLOSE, options.onClose);
+      }
+
       if (isFunction(options.onPaymentCreate)) {
         addListener(element, EVENT_PAYMENT_CREATE, options.onPaymentCreate);
       }
@@ -1395,6 +1400,10 @@
 
       if (isFunction(options.onReady)) {
         removeListener(element, EVENT_READY, options.onReady);
+      }
+
+      if (isFunction(options.onClose)) {
+        removeListener(element, EVENT_MODAL_CLOSE, options.onClose);
       }
 
       if (isFunction(options.onPaymentCreate)) {
@@ -3635,6 +3644,15 @@
       }).join('');
 
       that.$quoteSelectorToggle.onclick = function () {
+        var payConfig = that.payConfig,
+            payInfo = that.payInfo;
+        var quoteAssetId = payConfig.quoteAssetId;
+        var quoteAsset = payInfo.quoteAsset;
+
+        if (quoteAssetId && quoteAsset && quoteAsset.assetId === quoteAssetId) {
+          return;
+        }
+
         if (that.$quoteSelectorList.classList.contains('show')) {
           that.$quoteSelectorList.classList.remove('show');
         } else {
@@ -3710,7 +3728,7 @@
         that.createPayment().then(function () {
           _this.isSubmitting = false;
           that.renderStep(2);
-        })["catch"](function (err) {
+        }).catch(function (err) {
           _this.isSubmitting = false;
           that.$paymentErr.innerHTML = "<span>".concat(err.message, "</span>");
         });
@@ -3748,11 +3766,7 @@
 
       var steps = this.element.querySelectorAll(".".concat(NAMESPACE, "-step"));
       [].forEach.call(steps, function (el, index) {
-        if (String(index) === String(step)) {
-          el.style.display = 'block';
-        } else {
-          el.style.display = 'none';
-        }
+        el.style.display = String(index) === step ? 'block' : 'none';
       });
     },
     renderQuote: function renderQuote() {
@@ -3766,10 +3780,7 @@
       this.setPaymentMethod(paymentMethod || 'mixin');
       this.setPaymentAsset(paymentAssetId);
       this.$quoteInputErr.innerHTML = '';
-
-      if (quoteAssetId && quoteAmount > 0) {
-        this.renderStep(1);
-      }
+      this.element.querySelector(".".concat(NAMESPACE, "-quote  .").concat(NAMESPACE, "-selector__icon")).style.opacity = quoteAssetId ? 0 : 1;
     },
     renderPayment: function renderPayment() {
       var _this$payInfo = this.payInfo,
@@ -3894,7 +3905,7 @@
         $button.style.display = 'block';
 
         $button.onclick = function () {
-          that.renderStep(0);
+          that.show();
         };
       }
     },
@@ -3928,7 +3939,7 @@
                 status: 'failed'
               });
             }
-          })["catch"](function (err) {
+          }).catch(function (err) {
             dispatchEvent(element, EVENT_PAYMENT_ERROR, err);
 
             _this3.renderStep(3, {
@@ -3955,7 +3966,7 @@
               status: 'success'
             });
           }
-        })["catch"](function () {});
+        }).catch(function () {});
       }, 2000);
     },
     setQuoteAsset: function setQuoteAsset(value) {
@@ -4170,7 +4181,7 @@
           _this.build();
 
           dispatchEvent(element, EVENT_READY);
-        })["catch"](function () {
+        }).catch(function () {
           setTimeout(function () {
             _this.load();
           }, 1000);
@@ -4180,7 +4191,6 @@
       key: "build",
       value: function build() {
         this.render();
-        this.renderStep(0);
       }
     }, {
       key: "destroy",
@@ -4193,6 +4203,8 @@
         if (parentNode) {
           parentNode.removeChild(element);
         }
+
+        this.unbind();
       }
     }, {
       key: "pay",
@@ -4215,19 +4227,24 @@
     }, {
       key: "show",
       value: function show() {
-        var element = this.element;
+        var element = this.element,
+            payConfig = this.payConfig;
+        this.renderStep(0);
+
+        if (payConfig.quoteAssetId && payConfig.quoteAmount > 0) {
+          this.renderStep(1);
+        }
 
         if (!element.classList.contains('show')) {
           element.classList.add('show');
         }
-
-        this.renderStep(0);
       }
     }, {
       key: "hide",
       value: function hide() {
         clearInterval(this.countdownInterval);
         clearInterval(this.pollResultInterval);
+        dispatchEvent(this.element, EVENT_MODAL_CLOSE);
         var element = this.element;
 
         if (element.classList.contains('show')) {
@@ -4275,7 +4292,7 @@
             traceId: d.traceId
           };
           dispatchEvent(element, EVENT_PAYMENT_CREATE, _this3.paymentInfo);
-        })["catch"](function (err) {
+        }).catch(function (err) {
           return Promise.reject(err);
         });
       }
@@ -4285,7 +4302,7 @@
         return APIS.getPaymentResult(this.paymentInfo.traceId).then(function (data) {
           var d = data.data;
           return Promise.resolve(d.status);
-        })["catch"](function (err) {
+        }).catch(function (err) {
           return Promise.reject(err);
         });
       }
@@ -4309,4 +4326,3 @@
   return MixPay;
 
 }));
-//# sourceMappingURL=mixpay.js.map

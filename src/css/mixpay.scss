@@ -165,6 +165,7 @@ $tag-bg: green;
       display: flex;
       align-items: center;
       flex: 1 0 0;
+      overflow: hidden;
 
       img {
         margin-right: size(1);
@@ -400,9 +401,9 @@ $tag-bg: green;
     text-align: center;
 
     strong {
-      margin: 0 0.5em;
-      font-size: 150%;
-      color: red;
+      margin-left: size(0.25);
+      font-size: size(1.5);
+      color: #f56c6c;
     }
   }
 }

@@ -1,5 +1,6 @@
 import {
   EVENT_READY,
+  EVENT_MODAL_CLOSE,
   EVENT_PAYMENT_CREATE,
   EVENT_PAYMENT_SUCCESS,
   EVENT_PAYMENT_ERROR,
@@ -11,6 +12,10 @@ export default {
     const { element, options } = this;
     if (isFunction(options.onReady)) {
       addListener(element, EVENT_READY, options.onReady);
+    }
+
+    if (isFunction(options.onClose)) {
+      addListener(element, EVENT_MODAL_CLOSE, options.onClose);
     }
 
     if (isFunction(options.onPaymentCreate)) {
@@ -31,6 +36,10 @@ export default {
 
     if (isFunction(options.onReady)) {
       removeListener(element, EVENT_READY, options.onReady);
+    }
+
+    if (isFunction(options.onClose)) {
+      removeListener(element, EVENT_MODAL_CLOSE, options.onClose);
     }
 
     if (isFunction(options.onPaymentCreate)) {

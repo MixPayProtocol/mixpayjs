@@ -37,6 +37,7 @@ module.exports = {
       format: 'umd',
     },
   ],
+  // sourceMap: false,
   plugins: [
     resolve({
       browser: true,

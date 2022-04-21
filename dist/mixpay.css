@@ -324,7 +324,7 @@
 .--mixpay-info .countdown strong {
   margin-left: 4px;
   font-size: 24px;
-  color: red;
+  color: #f56c6c;
 }
 
 .--mixpay-result__success {
@@ -351,5 +351,3 @@
   height: 160px;
   fill: #f56c6c;
 }
-
-/*# sourceMappingURL=mixpay.css.map */
