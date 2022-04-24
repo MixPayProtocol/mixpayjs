@@ -43,7 +43,7 @@ new MixPay(element, options);
 #### Example
 
 ```html
-<div id="wrapper"></div>
+<div id="app"></div>
 ```
 
 ```js
@@ -52,19 +52,18 @@ import MixPay from 'mixpayjs;
 const element = document.getElementById('app');
 
 const mixpay = new MixPay(element, {
-  width: '',
-  height: '',
-  isModal: false,
-  withMask: false,
+  isModal: true,
+  hasMask: true,
   payeeId: '',
   settlementAssetId: '',
   settlementMemo: '',
-  settlementMethod: 'mixin',
+  settlementMethod: '',
   clientId: '',
   expireSeconds: '',
   remark: '',
 
   onReady() {},
+  onClose() {},
   onPaymentCreate() {},
   onPaymentSuccess() {},
   onPaymentFail() {},
@@ -81,75 +80,22 @@ mixpay.pay({
 
 ## Options
 
-### isModal
-
-- Type: `Boolean`
-- Default: `false`
-
-### withMask
-
-- Type: `Boolean`
-- Default: `false`
-
-### payeeId
-
-- Type: `String`
-
-### settlementAssetId
-
-- Type: `String`
-
-### settlementMemo
-
-- Type: `String`
-
-### settlementMethod
-
-- Type: `String`
-- Default: `'mixin'`
-- Options:
-  - `'mixin'`
-  - `'mixpay'`
-
-### clientId
-
-- Type: `String`
-- Default: `''`
-
-### expireSeconds
-
-- Type: `Number`,
-- Default: `60`
-
-### remark
-
-- Type: `String`,
-- Default: `''`
-
-### onReady
-
-- Type: `Function`,
-- Default: `null`
-
-### onClose
-
-- Type: `Function`,
-- Default: `null`
-
-### onPaymentCreate
-
-- Type: `Function`,
-- Default: `null`
-
-### onPaymentSuccess
-
-- Type: `Function`,
-- Default: `null`
-
-### onPaymentFail
-
-- Type: `Function`,
-- Default: `null`
+| params | type    | default  |  description |
+| ------ | ------- | -------- | ----------- |
+| isModal| boolean| false | Render as a modal |
+| hasMask | boolean|  false | Has mask or not  |
+| payeeId | string | '' | The Mixin UUID of the payee |
+| settlementAssetId | string | '' | AssetId of settlement cryptocurrency |
+| settlementMemo | string | '' | memo |
+| settlementMethod | string | mixin | 'mixin' or 'mixpay', settle to your Mixin Wallet or MixPay Account |
+| clientId | string | MixPay.newUUID() |  UUID of client of the payment |
+| expireSeconds | number | 60 |  60-172800, expiration date of the payment  |
+| remark | string | '' | Payees leave a message to payers |
+| onReady | function | null | This event fires when quote assets and payment assets are loaded |
+| onClose | function | null | This event fires when the modal is closed |
+| onPaymentCreate | function | null  | This event fires when a payment is created |
+| onPaymentSuccess | function | null | This event fires when a payment is successful |
+| onPaymentFail | function | null | This event fires when a payment is failed  |
 
 ## Instance Methods
 
@@ -176,24 +122,28 @@ create a random UUID for `clientId` and `traceId`
 
 ### getQuoteAssets()
 
-Get quote assets support cryptocurrency and fiat currency.
+Get quote assets support cryptocurrency and fiat currency. See the [Quote Assets](https://developers.mixpay.me/docs/api/assets/quote-assets) section in guide.
 
 ### getPaymentAssets()
 
-Get payment assets only support cryptocurrency.
+Get payment assets only support cryptocurrency. See the [Payment Assets](https://developers.mixpay.me/docs/api/assets/payment-assets) section in guide.
 
 ### getSettlementAssets()
 
-Get settlement assets support cryptocurrency and fiat currency.
+Get settlement assets support cryptocurrency and fiat currency. See the [Settlement Assets](https://developers.mixpay.me/docs/api/assets/settlement-assets) section in guide.
 
 ### createPayment(options)
 
-Create a payment
+Create a payment. See the [Accepting Payments](https://developers.mixpay.me/docs/api/payments/accepting-payments) section and the [On-chain Payments](https://developers.mixpay.me/docs/api/payments/onchain-payments) section in guide.
 
 ### getPaymentDetail(traceId)
 
-The details of the payment
+The details of the payment. See the [Payments Results](https://developers.mixpay.me/docs/api/payments/payments-results) section in guide.
 
 ### getEstPaymentAmount(options)
 
-Get the estimated price and the estimated amount of the transaction.
+Get the estimated price and the estimated amount of the transaction. See the [Payments Estimated](https://developers.mixpay.me/docs/api/payments/payments-estimated) section in guide.
+
+## Resources
+
+* [Documentation API](https://developers.mixpay.me/docs/api-overview)
