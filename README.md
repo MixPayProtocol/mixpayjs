@@ -47,7 +47,8 @@ new MixPay(element, options);
 ```
 
 ```js
-import MixPay from 'mixpayjs;
+import MixPay from 'mixpayjs';
+import 'mixpay/dist/mixpay.css';
 
 const element = document.getElementById('app');
 

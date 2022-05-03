@@ -6,7 +6,7 @@ export const TEMPLATE_DEFAULT = `<div class="${t('content')}">\
   <div class="${t('step')} ${t('quote')}">\
     <div class="${t('step-content')}">\
       <div class="${t('selector')}">\
-        <div class="${t('selector__title')}">Queto Asset</div>\
+        <div class="${t('selector__title')}">Quote Asset</div>\
         <div class="${t('selector__content')}">\
           <div class="${t('selector__control')}">
             <div class="${t('selector__selected')}"></div>\
