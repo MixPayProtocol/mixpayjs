@@ -1,12 +1,13 @@
-import { DEFAULT } from './default';
+import { CONFIG } from './constants';
 
-const API_URL = DEFAULT.apiUrl;
 
 const ajax = {
   get(url) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', url.startsWith('/') ? API_URL + url : url, true);
+      xhr.open('GET', url.startsWith('/') ? CONFIG.API_URL + url : url, true);
+
+      xhr.timeout = 20000;
 
       xhr.ontimeout = function () {
         reject(new Error('Request timeout, please try it again later.'));
@@ -42,8 +43,10 @@ const ajax = {
   post(url, data) {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', url.startsWith('/') ? API_URL + url : url, true);
+      xhr.open('POST', url.startsWith('/') ? CONFIG.API_URL + url : url, true);
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+
+      xhr.timeout = 20000;
 
       xhr.ontimeout = function () {
         reject(new Error('Request timeout, please try it again later.'));
@@ -75,7 +78,7 @@ const ajax = {
 
       xhr.send(JSON.stringify(data));
     });
-  },
+  }
 };
 
 export default {
@@ -88,10 +91,14 @@ export default {
   getSettlementAssets() {
     return ajax.get('/setting/settlement_assets');
   },
-  getPaymentResult(traceId) {
-    return ajax.get(`/payments_result?traceId=${traceId}`);
+  getEstAmount(paymentAssetId, settlementAssetId, quoteAmount, quoteAssetId) {
+    const url = `/payments_estimated?paymentAssetId=${paymentAssetId}&settlementAssetId=${settlementAssetId}&quoteAmount=${quoteAmount}&quoteAssetId=${quoteAssetId}`;
+    return ajax.get(url);
+  },
+  getPaymentResult(clientId, traceId) {
+    return ajax.get(`/payments_result?clientId=${clientId}&traceId=${traceId}`);
   },
   createPayment(data) {
     return ajax.post('/payments', data);
-  },
+  }
 };

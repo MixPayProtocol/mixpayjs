@@ -1,1418 +1,18 @@
 /*!
- * mixpayjs v1.0.1
+ * mixpayjs v1.0.2
  * https://MixPayHQ.github.io/mixpayjs
  *
  * Copyright 2022 gypsophila@mathunion.xyz
  * Released under the MIT license
  *
- * Date: 2022-05-03T10:34:33.683Z
+ * Date: 2022-06-29T02:14:52.009Z
  */
 
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  }, _typeof(obj);
-}
-
-function _classCallCheck(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-
-function _defineProperties(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-
-function _createClass(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {
-    writable: false
-  });
-  return Constructor;
-}
-
-function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
-}
-
-function _arrayWithHoles(arr) {
-  if (Array.isArray(arr)) return arr;
-}
-
-function _iterableToArrayLimit(arr, i) {
-  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-
-  if (_i == null) return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-
-  var _s, _e;
-
-  try {
-    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-
-      if (i && _arr.length === i) break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null) _i["return"]();
-    } finally {
-      if (_d) throw _e;
-    }
-  }
-
-  return _arr;
-}
-
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
-}
-
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-
-  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
-
-  return arr2;
-}
-
-function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-
-var DEFAULT = {
-  apiUrl: 'https://api.mixpay.me/v1',
-  isModal: true,
-  hasMask: true,
-  onReady: null,
-  onPaymentCreate: null,
-  onPaymentSuccess: null,
-  onPaymentFail: null
-};
-var PAYMENT_DEFAULT = {
-  clientId: '',
-  expireSeconds: 240,
-  isChain: false,
-  note: '',
-  payeeId: '',
-  paymentAssetId: '',
-  quoteAmount: '',
-  quoteAssetId: '',
-  remark: '',
-  settlementAssetId: '',
-  settlementMemo: '',
-  settlementMethod: 'mixin',
-  // 'mixin', 'mixpay'
-  traceId: ''
-};
-
-var NAMESPACE = '--mixpay';
-var LOGO_IMAGE_URL = 'https://mixpay.me/plugins/logo.svg';
-var IS_BROWSER = typeof window !== 'undefined' && typeof window.document !== 'undefined';
-var WINDOW = IS_BROWSER ? window : {};
-var IS_MIXIN = !!(WINDOW.webkit && WINDOW.webkit.messageHandlers && WINDOW.webkit.messageHandlers.MixinContext || WINDOW.MixinContext && WINDOW.MixinContext.getContext);
-var EVENT_READY = 'ready';
-var EVENT_MODAL_CLOSE = 'close';
-var EVENT_PAYMENT_CREATE = 'create';
-var EVENT_PAYMENT_SUCCESS = 'success';
-var EVENT_PAYMENT_ERROR = 'error';
-
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-function commonjsRequire () {
-	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
-}
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
 }
-
-function getCjsExportFromNamespace (n) {
-	return n && n['default'] || n;
-}
-
-var _nodeResolve_empty = {};
-
-var _nodeResolve_empty$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  'default': _nodeResolve_empty
-});
-
-var require$$0 = getCjsExportFromNamespace(_nodeResolve_empty$1);
-
-var core = createCommonjsModule(function (module, exports) {
-
-  (function (root, factory) {
-    {
-      // CommonJS
-      module.exports = factory();
-    }
-  })(commonjsGlobal, function () {
-    /*globals window, global, require*/
-
-    /**
-     * CryptoJS core components.
-     */
-    var CryptoJS = CryptoJS || function (Math, undefined$1) {
-      var crypto; // Native crypto from window (Browser)
-
-      if (typeof window !== 'undefined' && window.crypto) {
-        crypto = window.crypto;
-      } // Native crypto in web worker (Browser)
-
-
-      if (typeof self !== 'undefined' && self.crypto) {
-        crypto = self.crypto;
-      } // Native crypto from worker
-
-
-      if (typeof globalThis !== 'undefined' && globalThis.crypto) {
-        crypto = globalThis.crypto;
-      } // Native (experimental IE 11) crypto from window (Browser)
-
-
-      if (!crypto && typeof window !== 'undefined' && window.msCrypto) {
-        crypto = window.msCrypto;
-      } // Native crypto from global (NodeJS)
-
-
-      if (!crypto && typeof commonjsGlobal !== 'undefined' && commonjsGlobal.crypto) {
-        crypto = commonjsGlobal.crypto;
-      } // Native crypto import via require (NodeJS)
-
-
-      if (!crypto && typeof commonjsRequire === 'function') {
-        try {
-          crypto = require$$0;
-        } catch (err) {}
-      }
-      /*
-       * Cryptographically secure pseudorandom number generator
-       *
-       * As Math.random() is cryptographically not safe to use
-       */
-
-
-      var cryptoSecureRandomInt = function () {
-        if (crypto) {
-          // Use getRandomValues method (Browser)
-          if (typeof crypto.getRandomValues === 'function') {
-            try {
-              return crypto.getRandomValues(new Uint32Array(1))[0];
-            } catch (err) {}
-          } // Use randomBytes method (NodeJS)
-
-
-          if (typeof crypto.randomBytes === 'function') {
-            try {
-              return crypto.randomBytes(4).readInt32LE();
-            } catch (err) {}
-          }
-        }
-
-        throw new Error('Native crypto module could not be used to get secure random number.');
-      };
-      /*
-       * Local polyfill of Object.create
-        */
-
-
-      var create = Object.create || function () {
-        function F() {}
-
-        return function (obj) {
-          var subtype;
-          F.prototype = obj;
-          subtype = new F();
-          F.prototype = null;
-          return subtype;
-        };
-      }();
-      /**
-       * CryptoJS namespace.
-       */
-
-
-      var C = {};
-      /**
-       * Library namespace.
-       */
-
-      var C_lib = C.lib = {};
-      /**
-       * Base object for prototypal inheritance.
-       */
-
-      var Base = C_lib.Base = function () {
-        return {
-          /**
-           * Creates a new object that inherits from this object.
-           *
-           * @param {Object} overrides Properties to copy into the new object.
-           *
-           * @return {Object} The new object.
-           *
-           * @static
-           *
-           * @example
-           *
-           *     var MyType = CryptoJS.lib.Base.extend({
-           *         field: 'value',
-           *
-           *         method: function () {
-           *         }
-           *     });
-           */
-          extend: function (overrides) {
-            // Spawn
-            var subtype = create(this); // Augment
-
-            if (overrides) {
-              subtype.mixIn(overrides);
-            } // Create default initializer
-
-
-            if (!subtype.hasOwnProperty('init') || this.init === subtype.init) {
-              subtype.init = function () {
-                subtype.$super.init.apply(this, arguments);
-              };
-            } // Initializer's prototype is the subtype object
-
-
-            subtype.init.prototype = subtype; // Reference supertype
-
-            subtype.$super = this;
-            return subtype;
-          },
-
-          /**
-           * Extends this object and runs the init method.
-           * Arguments to create() will be passed to init().
-           *
-           * @return {Object} The new object.
-           *
-           * @static
-           *
-           * @example
-           *
-           *     var instance = MyType.create();
-           */
-          create: function () {
-            var instance = this.extend();
-            instance.init.apply(instance, arguments);
-            return instance;
-          },
-
-          /**
-           * Initializes a newly created object.
-           * Override this method to add some logic when your objects are created.
-           *
-           * @example
-           *
-           *     var MyType = CryptoJS.lib.Base.extend({
-           *         init: function () {
-           *             // ...
-           *         }
-           *     });
-           */
-          init: function () {},
-
-          /**
-           * Copies properties into this object.
-           *
-           * @param {Object} properties The properties to mix in.
-           *
-           * @example
-           *
-           *     MyType.mixIn({
-           *         field: 'value'
-           *     });
-           */
-          mixIn: function (properties) {
-            for (var propertyName in properties) {
-              if (properties.hasOwnProperty(propertyName)) {
-                this[propertyName] = properties[propertyName];
-              }
-            } // IE won't copy toString using the loop above
-
-
-            if (properties.hasOwnProperty('toString')) {
-              this.toString = properties.toString;
-            }
-          },
-
-          /**
-           * Creates a copy of this object.
-           *
-           * @return {Object} The clone.
-           *
-           * @example
-           *
-           *     var clone = instance.clone();
-           */
-          clone: function () {
-            return this.init.prototype.extend(this);
-          }
-        };
-      }();
-      /**
-       * An array of 32-bit words.
-       *
-       * @property {Array} words The array of 32-bit words.
-       * @property {number} sigBytes The number of significant bytes in this word array.
-       */
-
-
-      var WordArray = C_lib.WordArray = Base.extend({
-        /**
-         * Initializes a newly created word array.
-         *
-         * @param {Array} words (Optional) An array of 32-bit words.
-         * @param {number} sigBytes (Optional) The number of significant bytes in the words.
-         *
-         * @example
-         *
-         *     var wordArray = CryptoJS.lib.WordArray.create();
-         *     var wordArray = CryptoJS.lib.WordArray.create([0x00010203, 0x04050607]);
-         *     var wordArray = CryptoJS.lib.WordArray.create([0x00010203, 0x04050607], 6);
-         */
-        init: function (words, sigBytes) {
-          words = this.words = words || [];
-
-          if (sigBytes != undefined$1) {
-            this.sigBytes = sigBytes;
-          } else {
-            this.sigBytes = words.length * 4;
-          }
-        },
-
-        /**
-         * Converts this word array to a string.
-         *
-         * @param {Encoder} encoder (Optional) The encoding strategy to use. Default: CryptoJS.enc.Hex
-         *
-         * @return {string} The stringified word array.
-         *
-         * @example
-         *
-         *     var string = wordArray + '';
-         *     var string = wordArray.toString();
-         *     var string = wordArray.toString(CryptoJS.enc.Utf8);
-         */
-        toString: function (encoder) {
-          return (encoder || Hex).stringify(this);
-        },
-
-        /**
-         * Concatenates a word array to this word array.
-         *
-         * @param {WordArray} wordArray The word array to append.
-         *
-         * @return {WordArray} This word array.
-         *
-         * @example
-         *
-         *     wordArray1.concat(wordArray2);
-         */
-        concat: function (wordArray) {
-          // Shortcuts
-          var thisWords = this.words;
-          var thatWords = wordArray.words;
-          var thisSigBytes = this.sigBytes;
-          var thatSigBytes = wordArray.sigBytes; // Clamp excess bits
-
-          this.clamp(); // Concat
-
-          if (thisSigBytes % 4) {
-            // Copy one byte at a time
-            for (var i = 0; i < thatSigBytes; i++) {
-              var thatByte = thatWords[i >>> 2] >>> 24 - i % 4 * 8 & 0xff;
-              thisWords[thisSigBytes + i >>> 2] |= thatByte << 24 - (thisSigBytes + i) % 4 * 8;
-            }
-          } else {
-            // Copy one word at a time
-            for (var j = 0; j < thatSigBytes; j += 4) {
-              thisWords[thisSigBytes + j >>> 2] = thatWords[j >>> 2];
-            }
-          }
-
-          this.sigBytes += thatSigBytes; // Chainable
-
-          return this;
-        },
-
-        /**
-         * Removes insignificant bits.
-         *
-         * @example
-         *
-         *     wordArray.clamp();
-         */
-        clamp: function () {
-          // Shortcuts
-          var words = this.words;
-          var sigBytes = this.sigBytes; // Clamp
-
-          words[sigBytes >>> 2] &= 0xffffffff << 32 - sigBytes % 4 * 8;
-          words.length = Math.ceil(sigBytes / 4);
-        },
-
-        /**
-         * Creates a copy of this word array.
-         *
-         * @return {WordArray} The clone.
-         *
-         * @example
-         *
-         *     var clone = wordArray.clone();
-         */
-        clone: function () {
-          var clone = Base.clone.call(this);
-          clone.words = this.words.slice(0);
-          return clone;
-        },
-
-        /**
-         * Creates a word array filled with random bytes.
-         *
-         * @param {number} nBytes The number of random bytes to generate.
-         *
-         * @return {WordArray} The random word array.
-         *
-         * @static
-         *
-         * @example
-         *
-         *     var wordArray = CryptoJS.lib.WordArray.random(16);
-         */
-        random: function (nBytes) {
-          var words = [];
-
-          for (var i = 0; i < nBytes; i += 4) {
-            words.push(cryptoSecureRandomInt());
-          }
-
-          return new WordArray.init(words, nBytes);
-        }
-      });
-      /**
-       * Encoder namespace.
-       */
-
-      var C_enc = C.enc = {};
-      /**
-       * Hex encoding strategy.
-       */
-
-      var Hex = C_enc.Hex = {
-        /**
-         * Converts a word array to a hex string.
-         *
-         * @param {WordArray} wordArray The word array.
-         *
-         * @return {string} The hex string.
-         *
-         * @static
-         *
-         * @example
-         *
-         *     var hexString = CryptoJS.enc.Hex.stringify(wordArray);
-         */
-        stringify: function (wordArray) {
-          // Shortcuts
-          var words = wordArray.words;
-          var sigBytes = wordArray.sigBytes; // Convert
-
-          var hexChars = [];
-
-          for (var i = 0; i < sigBytes; i++) {
-            var bite = words[i >>> 2] >>> 24 - i % 4 * 8 & 0xff;
-            hexChars.push((bite >>> 4).toString(16));
-            hexChars.push((bite & 0x0f).toString(16));
-          }
-
-          return hexChars.join('');
-        },
-
-        /**
-         * Converts a hex string to a word array.
-         *
-         * @param {string} hexStr The hex string.
-         *
-         * @return {WordArray} The word array.
-         *
-         * @static
-         *
-         * @example
-         *
-         *     var wordArray = CryptoJS.enc.Hex.parse(hexString);
-         */
-        parse: function (hexStr) {
-          // Shortcut
-          var hexStrLength = hexStr.length; // Convert
-
-          var words = [];
-
-          for (var i = 0; i < hexStrLength; i += 2) {
-            words[i >>> 3] |= parseInt(hexStr.substr(i, 2), 16) << 24 - i % 8 * 4;
-          }
-
-          return new WordArray.init(words, hexStrLength / 2);
-        }
-      };
-      /**
-       * Latin1 encoding strategy.
-       */
-
-      var Latin1 = C_enc.Latin1 = {
-        /**
-         * Converts a word array to a Latin1 string.
-         *
-         * @param {WordArray} wordArray The word array.
-         *
-         * @return {string} The Latin1 string.
-         *
-         * @static
-         *
-         * @example
-         *
-         *     var latin1String = CryptoJS.enc.Latin1.stringify(wordArray);
-         */
-        stringify: function (wordArray) {
-          // Shortcuts
-          var words = wordArray.words;
-          var sigBytes = wordArray.sigBytes; // Convert
-
-          var latin1Chars = [];
-
-          for (var i = 0; i < sigBytes; i++) {
-            var bite = words[i >>> 2] >>> 24 - i % 4 * 8 & 0xff;
-            latin1Chars.push(String.fromCharCode(bite));
-          }
-
-          return latin1Chars.join('');
-        },
-
-        /**
-         * Converts a Latin1 string to a word array.
-         *
-         * @param {string} latin1Str The Latin1 string.
-         *
-         * @return {WordArray} The word array.
-         *
-         * @static
-         *
-         * @example
-         *
-         *     var wordArray = CryptoJS.enc.Latin1.parse(latin1String);
-         */
-        parse: function (latin1Str) {
-          // Shortcut
-          var latin1StrLength = latin1Str.length; // Convert
-
-          var words = [];
-
-          for (var i = 0; i < latin1StrLength; i++) {
-            words[i >>> 2] |= (latin1Str.charCodeAt(i) & 0xff) << 24 - i % 4 * 8;
-          }
-
-          return new WordArray.init(words, latin1StrLength);
-        }
-      };
-      /**
-       * UTF-8 encoding strategy.
-       */
-
-      var Utf8 = C_enc.Utf8 = {
-        /**
-         * Converts a word array to a UTF-8 string.
-         *
-         * @param {WordArray} wordArray The word array.
-         *
-         * @return {string} The UTF-8 string.
-         *
-         * @static
-         *
-         * @example
-         *
-         *     var utf8String = CryptoJS.enc.Utf8.stringify(wordArray);
-         */
-        stringify: function (wordArray) {
-          try {
-            return decodeURIComponent(escape(Latin1.stringify(wordArray)));
-          } catch (e) {
-            throw new Error('Malformed UTF-8 data');
-          }
-        },
-
-        /**
-         * Converts a UTF-8 string to a word array.
-         *
-         * @param {string} utf8Str The UTF-8 string.
-         *
-         * @return {WordArray} The word array.
-         *
-         * @static
-         *
-         * @example
-         *
-         *     var wordArray = CryptoJS.enc.Utf8.parse(utf8String);
-         */
-        parse: function (utf8Str) {
-          return Latin1.parse(unescape(encodeURIComponent(utf8Str)));
-        }
-      };
-      /**
-       * Abstract buffered block algorithm template.
-       *
-       * The property blockSize must be implemented in a concrete subtype.
-       *
-       * @property {number} _minBufferSize The number of blocks that should be kept unprocessed in the buffer. Default: 0
-       */
-
-      var BufferedBlockAlgorithm = C_lib.BufferedBlockAlgorithm = Base.extend({
-        /**
-         * Resets this block algorithm's data buffer to its initial state.
-         *
-         * @example
-         *
-         *     bufferedBlockAlgorithm.reset();
-         */
-        reset: function () {
-          // Initial values
-          this._data = new WordArray.init();
-          this._nDataBytes = 0;
-        },
-
-        /**
-         * Adds new data to this block algorithm's buffer.
-         *
-         * @param {WordArray|string} data The data to append. Strings are converted to a WordArray using UTF-8.
-         *
-         * @example
-         *
-         *     bufferedBlockAlgorithm._append('data');
-         *     bufferedBlockAlgorithm._append(wordArray);
-         */
-        _append: function (data) {
-          // Convert string to WordArray, else assume WordArray already
-          if (typeof data == 'string') {
-            data = Utf8.parse(data);
-          } // Append
-
-
-          this._data.concat(data);
-
-          this._nDataBytes += data.sigBytes;
-        },
-
-        /**
-         * Processes available data blocks.
-         *
-         * This method invokes _doProcessBlock(offset), which must be implemented by a concrete subtype.
-         *
-         * @param {boolean} doFlush Whether all blocks and partial blocks should be processed.
-         *
-         * @return {WordArray} The processed data.
-         *
-         * @example
-         *
-         *     var processedData = bufferedBlockAlgorithm._process();
-         *     var processedData = bufferedBlockAlgorithm._process(!!'flush');
-         */
-        _process: function (doFlush) {
-          var processedWords; // Shortcuts
-
-          var data = this._data;
-          var dataWords = data.words;
-          var dataSigBytes = data.sigBytes;
-          var blockSize = this.blockSize;
-          var blockSizeBytes = blockSize * 4; // Count blocks ready
-
-          var nBlocksReady = dataSigBytes / blockSizeBytes;
-
-          if (doFlush) {
-            // Round up to include partial blocks
-            nBlocksReady = Math.ceil(nBlocksReady);
-          } else {
-            // Round down to include only full blocks,
-            // less the number of blocks that must remain in the buffer
-            nBlocksReady = Math.max((nBlocksReady | 0) - this._minBufferSize, 0);
-          } // Count words ready
-
-
-          var nWordsReady = nBlocksReady * blockSize; // Count bytes ready
-
-          var nBytesReady = Math.min(nWordsReady * 4, dataSigBytes); // Process blocks
-
-          if (nWordsReady) {
-            for (var offset = 0; offset < nWordsReady; offset += blockSize) {
-              // Perform concrete-algorithm logic
-              this._doProcessBlock(dataWords, offset);
-            } // Remove processed words
-
-
-            processedWords = dataWords.splice(0, nWordsReady);
-            data.sigBytes -= nBytesReady;
-          } // Return processed words
-
-
-          return new WordArray.init(processedWords, nBytesReady);
-        },
-
-        /**
-         * Creates a copy of this object.
-         *
-         * @return {Object} The clone.
-         *
-         * @example
-         *
-         *     var clone = bufferedBlockAlgorithm.clone();
-         */
-        clone: function () {
-          var clone = Base.clone.call(this);
-          clone._data = this._data.clone();
-          return clone;
-        },
-        _minBufferSize: 0
-      });
-      /**
-       * Abstract hasher template.
-       *
-       * @property {number} blockSize The number of 32-bit words this hasher operates on. Default: 16 (512 bits)
-       */
-
-      C_lib.Hasher = BufferedBlockAlgorithm.extend({
-        /**
-         * Configuration options.
-         */
-        cfg: Base.extend(),
-
-        /**
-         * Initializes a newly created hasher.
-         *
-         * @param {Object} cfg (Optional) The configuration options to use for this hash computation.
-         *
-         * @example
-         *
-         *     var hasher = CryptoJS.algo.SHA256.create();
-         */
-        init: function (cfg) {
-          // Apply config defaults
-          this.cfg = this.cfg.extend(cfg); // Set initial values
-
-          this.reset();
-        },
-
-        /**
-         * Resets this hasher to its initial state.
-         *
-         * @example
-         *
-         *     hasher.reset();
-         */
-        reset: function () {
-          // Reset data buffer
-          BufferedBlockAlgorithm.reset.call(this); // Perform concrete-hasher logic
-
-          this._doReset();
-        },
-
-        /**
-         * Updates this hasher with a message.
-         *
-         * @param {WordArray|string} messageUpdate The message to append.
-         *
-         * @return {Hasher} This hasher.
-         *
-         * @example
-         *
-         *     hasher.update('message');
-         *     hasher.update(wordArray);
-         */
-        update: function (messageUpdate) {
-          // Append
-          this._append(messageUpdate); // Update the hash
-
-
-          this._process(); // Chainable
-
-
-          return this;
-        },
-
-        /**
-         * Finalizes the hash computation.
-         * Note that the finalize operation is effectively a destructive, read-once operation.
-         *
-         * @param {WordArray|string} messageUpdate (Optional) A final message update.
-         *
-         * @return {WordArray} The hash.
-         *
-         * @example
-         *
-         *     var hash = hasher.finalize();
-         *     var hash = hasher.finalize('message');
-         *     var hash = hasher.finalize(wordArray);
-         */
-        finalize: function (messageUpdate) {
-          // Final message update
-          if (messageUpdate) {
-            this._append(messageUpdate);
-          } // Perform concrete-hasher logic
-
-
-          var hash = this._doFinalize();
-
-          return hash;
-        },
-        blockSize: 512 / 32,
-
-        /**
-         * Creates a shortcut function to a hasher's object interface.
-         *
-         * @param {Hasher} hasher The hasher to create a helper for.
-         *
-         * @return {Function} The shortcut function.
-         *
-         * @static
-         *
-         * @example
-         *
-         *     var SHA256 = CryptoJS.lib.Hasher._createHelper(CryptoJS.algo.SHA256);
-         */
-        _createHelper: function (hasher) {
-          return function (message, cfg) {
-            return new hasher.init(cfg).finalize(message);
-          };
-        },
-
-        /**
-         * Creates a shortcut function to the HMAC's object interface.
-         *
-         * @param {Hasher} hasher The hasher to use in this HMAC helper.
-         *
-         * @return {Function} The shortcut function.
-         *
-         * @static
-         *
-         * @example
-         *
-         *     var HmacSHA256 = CryptoJS.lib.Hasher._createHmacHelper(CryptoJS.algo.SHA256);
-         */
-        _createHmacHelper: function (hasher) {
-          return function (message, key) {
-            return new C_algo.HMAC.init(hasher, key).finalize(message);
-          };
-        }
-      });
-      /**
-       * Algorithm namespace.
-       */
-
-      var C_algo = C.algo = {};
-      return C;
-    }(Math);
-
-    return CryptoJS;
-  });
-});
-
-var md5 = createCommonjsModule(function (module, exports) {
-
-  (function (root, factory) {
-    {
-      // CommonJS
-      module.exports = factory(core);
-    }
-  })(commonjsGlobal, function (CryptoJS) {
-    (function (Math) {
-      // Shortcuts
-      var C = CryptoJS;
-      var C_lib = C.lib;
-      var WordArray = C_lib.WordArray;
-      var Hasher = C_lib.Hasher;
-      var C_algo = C.algo; // Constants table
-
-      var T = []; // Compute constants
-
-      (function () {
-        for (var i = 0; i < 64; i++) {
-          T[i] = Math.abs(Math.sin(i + 1)) * 0x100000000 | 0;
-        }
-      })();
-      /**
-       * MD5 hash algorithm.
-       */
-
-
-      var MD5 = C_algo.MD5 = Hasher.extend({
-        _doReset: function () {
-          this._hash = new WordArray.init([0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476]);
-        },
-        _doProcessBlock: function (M, offset) {
-          // Swap endian
-          for (var i = 0; i < 16; i++) {
-            // Shortcuts
-            var offset_i = offset + i;
-            var M_offset_i = M[offset_i];
-            M[offset_i] = (M_offset_i << 8 | M_offset_i >>> 24) & 0x00ff00ff | (M_offset_i << 24 | M_offset_i >>> 8) & 0xff00ff00;
-          } // Shortcuts
-
-
-          var H = this._hash.words;
-          var M_offset_0 = M[offset + 0];
-          var M_offset_1 = M[offset + 1];
-          var M_offset_2 = M[offset + 2];
-          var M_offset_3 = M[offset + 3];
-          var M_offset_4 = M[offset + 4];
-          var M_offset_5 = M[offset + 5];
-          var M_offset_6 = M[offset + 6];
-          var M_offset_7 = M[offset + 7];
-          var M_offset_8 = M[offset + 8];
-          var M_offset_9 = M[offset + 9];
-          var M_offset_10 = M[offset + 10];
-          var M_offset_11 = M[offset + 11];
-          var M_offset_12 = M[offset + 12];
-          var M_offset_13 = M[offset + 13];
-          var M_offset_14 = M[offset + 14];
-          var M_offset_15 = M[offset + 15]; // Working varialbes
-
-          var a = H[0];
-          var b = H[1];
-          var c = H[2];
-          var d = H[3]; // Computation
-
-          a = FF(a, b, c, d, M_offset_0, 7, T[0]);
-          d = FF(d, a, b, c, M_offset_1, 12, T[1]);
-          c = FF(c, d, a, b, M_offset_2, 17, T[2]);
-          b = FF(b, c, d, a, M_offset_3, 22, T[3]);
-          a = FF(a, b, c, d, M_offset_4, 7, T[4]);
-          d = FF(d, a, b, c, M_offset_5, 12, T[5]);
-          c = FF(c, d, a, b, M_offset_6, 17, T[6]);
-          b = FF(b, c, d, a, M_offset_7, 22, T[7]);
-          a = FF(a, b, c, d, M_offset_8, 7, T[8]);
-          d = FF(d, a, b, c, M_offset_9, 12, T[9]);
-          c = FF(c, d, a, b, M_offset_10, 17, T[10]);
-          b = FF(b, c, d, a, M_offset_11, 22, T[11]);
-          a = FF(a, b, c, d, M_offset_12, 7, T[12]);
-          d = FF(d, a, b, c, M_offset_13, 12, T[13]);
-          c = FF(c, d, a, b, M_offset_14, 17, T[14]);
-          b = FF(b, c, d, a, M_offset_15, 22, T[15]);
-          a = GG(a, b, c, d, M_offset_1, 5, T[16]);
-          d = GG(d, a, b, c, M_offset_6, 9, T[17]);
-          c = GG(c, d, a, b, M_offset_11, 14, T[18]);
-          b = GG(b, c, d, a, M_offset_0, 20, T[19]);
-          a = GG(a, b, c, d, M_offset_5, 5, T[20]);
-          d = GG(d, a, b, c, M_offset_10, 9, T[21]);
-          c = GG(c, d, a, b, M_offset_15, 14, T[22]);
-          b = GG(b, c, d, a, M_offset_4, 20, T[23]);
-          a = GG(a, b, c, d, M_offset_9, 5, T[24]);
-          d = GG(d, a, b, c, M_offset_14, 9, T[25]);
-          c = GG(c, d, a, b, M_offset_3, 14, T[26]);
-          b = GG(b, c, d, a, M_offset_8, 20, T[27]);
-          a = GG(a, b, c, d, M_offset_13, 5, T[28]);
-          d = GG(d, a, b, c, M_offset_2, 9, T[29]);
-          c = GG(c, d, a, b, M_offset_7, 14, T[30]);
-          b = GG(b, c, d, a, M_offset_12, 20, T[31]);
-          a = HH(a, b, c, d, M_offset_5, 4, T[32]);
-          d = HH(d, a, b, c, M_offset_8, 11, T[33]);
-          c = HH(c, d, a, b, M_offset_11, 16, T[34]);
-          b = HH(b, c, d, a, M_offset_14, 23, T[35]);
-          a = HH(a, b, c, d, M_offset_1, 4, T[36]);
-          d = HH(d, a, b, c, M_offset_4, 11, T[37]);
-          c = HH(c, d, a, b, M_offset_7, 16, T[38]);
-          b = HH(b, c, d, a, M_offset_10, 23, T[39]);
-          a = HH(a, b, c, d, M_offset_13, 4, T[40]);
-          d = HH(d, a, b, c, M_offset_0, 11, T[41]);
-          c = HH(c, d, a, b, M_offset_3, 16, T[42]);
-          b = HH(b, c, d, a, M_offset_6, 23, T[43]);
-          a = HH(a, b, c, d, M_offset_9, 4, T[44]);
-          d = HH(d, a, b, c, M_offset_12, 11, T[45]);
-          c = HH(c, d, a, b, M_offset_15, 16, T[46]);
-          b = HH(b, c, d, a, M_offset_2, 23, T[47]);
-          a = II(a, b, c, d, M_offset_0, 6, T[48]);
-          d = II(d, a, b, c, M_offset_7, 10, T[49]);
-          c = II(c, d, a, b, M_offset_14, 15, T[50]);
-          b = II(b, c, d, a, M_offset_5, 21, T[51]);
-          a = II(a, b, c, d, M_offset_12, 6, T[52]);
-          d = II(d, a, b, c, M_offset_3, 10, T[53]);
-          c = II(c, d, a, b, M_offset_10, 15, T[54]);
-          b = II(b, c, d, a, M_offset_1, 21, T[55]);
-          a = II(a, b, c, d, M_offset_8, 6, T[56]);
-          d = II(d, a, b, c, M_offset_15, 10, T[57]);
-          c = II(c, d, a, b, M_offset_6, 15, T[58]);
-          b = II(b, c, d, a, M_offset_13, 21, T[59]);
-          a = II(a, b, c, d, M_offset_4, 6, T[60]);
-          d = II(d, a, b, c, M_offset_11, 10, T[61]);
-          c = II(c, d, a, b, M_offset_2, 15, T[62]);
-          b = II(b, c, d, a, M_offset_9, 21, T[63]); // Intermediate hash value
-
-          H[0] = H[0] + a | 0;
-          H[1] = H[1] + b | 0;
-          H[2] = H[2] + c | 0;
-          H[3] = H[3] + d | 0;
-        },
-        _doFinalize: function () {
-          // Shortcuts
-          var data = this._data;
-          var dataWords = data.words;
-          var nBitsTotal = this._nDataBytes * 8;
-          var nBitsLeft = data.sigBytes * 8; // Add padding
-
-          dataWords[nBitsLeft >>> 5] |= 0x80 << 24 - nBitsLeft % 32;
-          var nBitsTotalH = Math.floor(nBitsTotal / 0x100000000);
-          var nBitsTotalL = nBitsTotal;
-          dataWords[(nBitsLeft + 64 >>> 9 << 4) + 15] = (nBitsTotalH << 8 | nBitsTotalH >>> 24) & 0x00ff00ff | (nBitsTotalH << 24 | nBitsTotalH >>> 8) & 0xff00ff00;
-          dataWords[(nBitsLeft + 64 >>> 9 << 4) + 14] = (nBitsTotalL << 8 | nBitsTotalL >>> 24) & 0x00ff00ff | (nBitsTotalL << 24 | nBitsTotalL >>> 8) & 0xff00ff00;
-          data.sigBytes = (dataWords.length + 1) * 4; // Hash final blocks
-
-          this._process(); // Shortcuts
-
-
-          var hash = this._hash;
-          var H = hash.words; // Swap endian
-
-          for (var i = 0; i < 4; i++) {
-            // Shortcut
-            var H_i = H[i];
-            H[i] = (H_i << 8 | H_i >>> 24) & 0x00ff00ff | (H_i << 24 | H_i >>> 8) & 0xff00ff00;
-          } // Return final computed hash
-
-
-          return hash;
-        },
-        clone: function () {
-          var clone = Hasher.clone.call(this);
-          clone._hash = this._hash.clone();
-          return clone;
-        }
-      });
-
-      function FF(a, b, c, d, x, s, t) {
-        var n = a + (b & c | ~b & d) + x + t;
-        return (n << s | n >>> 32 - s) + b;
-      }
-
-      function GG(a, b, c, d, x, s, t) {
-        var n = a + (b & d | c & ~d) + x + t;
-        return (n << s | n >>> 32 - s) + b;
-      }
-
-      function HH(a, b, c, d, x, s, t) {
-        var n = a + (b ^ c ^ d) + x + t;
-        return (n << s | n >>> 32 - s) + b;
-      }
-
-      function II(a, b, c, d, x, s, t) {
-        var n = a + (c ^ (b | ~d)) + x + t;
-        return (n << s | n >>> 32 - s) + b;
-      }
-      /**
-       * Shortcut function to the hasher's object interface.
-       *
-       * @param {WordArray|string} message The message to hash.
-       *
-       * @return {WordArray} The hash.
-       *
-       * @static
-       *
-       * @example
-       *
-       *     var hash = CryptoJS.MD5('message');
-       *     var hash = CryptoJS.MD5(wordArray);
-       */
-
-
-      C.MD5 = Hasher._createHelper(MD5);
-      /**
-       * Shortcut function to the HMAC's object interface.
-       *
-       * @param {WordArray|string} message The message to hash.
-       * @param {WordArray|string} key The secret key.
-       *
-       * @return {WordArray} The HMAC.
-       *
-       * @static
-       *
-       * @example
-       *
-       *     var hmac = CryptoJS.HmacMD5(message, key);
-       */
-
-      C.HmacMD5 = Hasher._createHmacHelper(MD5);
-    })(Math);
-
-    return CryptoJS.MD5;
-  });
-});
-
-var REGEXP_SPACES = /\s\s*/;
-
-var onceSupported = function () {
-  var supported = false;
-
-  if (IS_BROWSER) {
-    var once = false;
-
-    var listener = function listener() {};
-
-    var options = Object.defineProperty({}, 'once', {
-      get: function get() {
-        supported = true;
-        return once;
-      },
-      set: function set(value) {
-        once = value;
-      }
-    });
-    WINDOW.addEventListener('test', listener, options);
-    WINDOW.removeEventListener('test', listener, options);
-  }
-
-  return supported;
-}();
-
-function isArray(value) {
-  return Array.isArray(value);
-}
-function isFunction(value) {
-  return typeof value === 'function';
-}
-function isObject(value) {
-  return _typeof(value) === 'object' && value !== null;
-}
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-function isPlainObject(value) {
-  if (!isObject(value)) {
-    return false;
-  }
-
-  try {
-    var _constructor = value.constructor;
-    var prototype = _constructor.prototype;
-    return _constructor && prototype && hasOwnProperty.call(prototype, 'isPrototypeOf');
-  } catch (error) {
-    return false;
-  }
-}
-var assign = Object.assign || function assign(target) {
-  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    args[_key - 1] = arguments[_key];
-  }
-
-  if (isObject(target) && args.length > 0) {
-    args.forEach(function (arg) {
-      if (isObject(arg)) {
-        Object.keys(arg).forEach(function (key) {
-          target[key] = arg[key];
-        });
-      }
-    });
-  }
-
-  return target;
-};
-function removeListener(element, type, listener) {
-  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  var handler = listener;
-  type.trim().split(REGEXP_SPACES).forEach(function (event) {
-    if (!onceSupported) {
-      var listeners = element.listeners;
-
-      if (listeners && listeners[event] && listeners[event][listener]) {
-        handler = listeners[event][listener];
-        delete listeners[event][listener];
-
-        if (Object.keys(listeners[event]).length === 0) {
-          delete listeners[event];
-        }
-
-        if (Object.keys(listeners).length === 0) {
-          delete element.listeners;
-        }
-      }
-    }
-
-    element.removeEventListener(event, handler, options);
-  });
-}
-function addListener(element, type, listener) {
-  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  var _handler = listener;
-  type.trim().split(REGEXP_SPACES).forEach(function (event) {
-    if (options.once && !onceSupported) {
-      var _element$listeners = element.listeners,
-          listeners = _element$listeners === void 0 ? {} : _element$listeners;
-
-      _handler = function handler() {
-        delete listeners[event][listener];
-        element.removeEventListener(event, _handler, options);
-
-        for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-          args[_key2] = arguments[_key2];
-        }
-
-        listener.apply(element, args);
-      };
-
-      if (!listeners[event]) {
-        listeners[event] = {};
-      }
-
-      if (listeners[event][listener]) {
-        element.removeEventListener(event, listeners[event][listener], options);
-      }
-
-      listeners[event][listener] = _handler;
-      element.listeners = listeners;
-    }
-
-    element.addEventListener(event, _handler, options);
-  });
-}
-function dispatchEvent(element, type, data) {
-  var event; // Event and CustomEvent on IE9-11 are global objects, not constructors
-
-  if (isFunction(Event) && isFunction(CustomEvent)) {
-    event = new CustomEvent(type, {
-      detail: data,
-      bubbles: true,
-      cancelable: true
-    });
-  } else {
-    event = document.createEvent('CustomEvent');
-    event.initCustomEvent(type, true, true, data);
-  }
-
-  return element.dispatchEvent(event);
-}
-function copyTemplate(template, source) {
-  var obj = {};
-
-  if (!isObject(template)) {
-    return obj;
-  }
-
-  if (!isObject(source)) {
-    return assign(obj, template);
-  }
-
-  Object.keys(template).forEach(function (key) {
-    if (source[key] !== undefined && hasOwnProperty.call(source, key)) {
-      obj[key] = source[key];
-    } else {
-      obj[key] = template[key];
-    }
-  });
-  return obj;
-}
-function copy(str) {
-  var e = document.createElement('textarea');
-  e.value = str;
-  e.setAttribute('readonly', '');
-  e.style.cssText = 'position:absolute;left:-9999px';
-  document.body.appendChild(e);
-
-  if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
-    var n = document.createRange();
-    n.selectNodeContents(e);
-    var r = window.getSelection();
-    r.removeAllRanges();
-    r.addRange(n);
-    e.setSelectionRange(0, 999999);
-  } else {
-    e.select();
-  }
-
-  try {
-    document.execCommand('copy');
-    e.remove();
-  } catch (t) {
-    e.remove();
-    return false;
-  }
-
-  return true;
-}
-function genUuid() {
-  var ran = Math.random().toString(36).substr(2);
-  var md5$1 = md5(ran).toString();
-  return "".concat(md5$1.substr(0, 8), "-").concat(md5$1.substr(8, 4), "-").concat(md5$1.substr(12, 4), "-").concat(md5$1.substr(16, 4), "-").concat(md5$1.substr(20, 12));
-}
-
-var events = {
-  bind: function bind() {
-    var element = this.element,
-        options = this.options;
-
-    if (isFunction(options.onReady)) {
-      addListener(element, EVENT_READY, options.onReady);
-    }
-
-    if (isFunction(options.onClose)) {
-      addListener(element, EVENT_MODAL_CLOSE, options.onClose);
-    }
-
-    if (isFunction(options.onPaymentCreate)) {
-      addListener(element, EVENT_PAYMENT_CREATE, options.onPaymentCreate);
-    }
-
-    if (isFunction(options.onPaymentSuccess)) {
-      addListener(element, EVENT_PAYMENT_SUCCESS, options.onPaymentSuccess);
-    }
-
-    if (isFunction(options.onPaymentFail)) {
-      addListener(element, EVENT_PAYMENT_ERROR, options.onPaymentFail);
-    }
-  },
-  unbind: function unbind() {
-    var element = this.element,
-        options = this.options;
-
-    if (isFunction(options.onReady)) {
-      removeListener(element, EVENT_READY, options.onReady);
-    }
-
-    if (isFunction(options.onClose)) {
-      removeListener(element, EVENT_MODAL_CLOSE, options.onClose);
-    }
-
-    if (isFunction(options.onPaymentCreate)) {
-      removeListener(element, EVENT_PAYMENT_CREATE, options.onPaymentCreate);
-    }
-
-    if (isFunction(options.onPaymentSuccess)) {
-      removeListener(element, EVENT_PAYMENT_SUCCESS, options.onPaymentSuccess);
-    }
-
-    if (isFunction(options.onPaymentFail)) {
-      removeListener(element, EVENT_PAYMENT_ERROR, options.onPaymentFail);
-    }
-  }
-};
 
 var qrious = createCommonjsModule(function (module, exports) {
   /*
@@ -3581,452 +2181,412 @@ var qrious = createCommonjsModule(function (module, exports) {
   });
 });
 
-var t = function t(name) {
-  return "".concat(NAMESPACE, "-").concat(name);
+var IS_BROWSER = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+var WINDOW = IS_BROWSER ? window : {};
+var EVENT_READY = 'ready';
+var EVENT_MODAL_CLOSE = 'close';
+var EVENT_PAYMENT_CREATE = 'create';
+var EVENT_PAYMENT_SUCCESS = 'success';
+var EVENT_PAYMENT_FAILED = 'failed';
+var NAMESPACE = '--mixpay';
+var CONFIG = {
+  API_URL: 'https://api.mixpay.me/v1'
 };
-
-var TEMPLATE_DEFAULT = "<div class=\"".concat(t('content'), "\">  <div class=\"").concat(t('step'), " ").concat(t('quote'), "\">    <div class=\"").concat(t('step-content'), "\">      <div class=\"").concat(t('selector'), "\">        <div class=\"").concat(t('selector__title'), "\">Quote Asset</div>        <div class=\"").concat(t('selector__content'), "\">          <div class=\"").concat(t('selector__control'), "\">\n            <div class=\"").concat(t('selector__selected'), "\"></div>            <div class=\"").concat(t('selector__icon'), "\"></div>          </div>          <ul class=\"").concat(t('selector__list'), "\"></ul>        </div>      </div>      <div class=\"").concat(t('input'), "\">        <div class=\"").concat(t('input__title'), "\">Quote Amount</div>        <div class=\"").concat(t('input__content'), "\">          <div class=\"").concat(t('input__control'), "\">            <input type=\"number\" name=\"quoteAmount\" placeholder=\"Please enter the amount\" />\n          </div>          <div class=\"").concat(t('input__right'), "\">USDT</div>        </div>      </div>      <div class=\"").concat(t('step-error'), "\"></div>    </div>    <div class=\"").concat(t('step-footer'), "\">      <button>Next</button>    </div>  </div>  <div class=\"").concat(t('step'), " ").concat(t('payment'), "\">    <div class=\"").concat(t('step-title'), "\"></div>    <div class=\"").concat(t('step-content'), "\">      <div class=\"").concat(t('selector'), "\">        <div class=\"").concat(t('selector__title'), "\">Payment Asset</div>        <div class=\"").concat(t('selector__content'), "\">          <div class=\"").concat(t('selector__control'), "\">\n            <div class=\"").concat(t('selector__selected'), "\"></div>            <div class=\"").concat(t('selector__icon'), "\"></div>          </div>          <ul class=\"").concat(t('selector__list'), "\"></ul>        </div>      </div>      <div class=\"").concat(t('radio'), "\">        <div class=\"").concat(t('radio__title'), "\">Payment Wallet</div>        <div class=\"").concat(t('radio__content'), "\">          <label>            <input name=\"paymentMethod\" type=\"radio\" value=\"mixin\" />            <span>Mixin Wallet</span>          </label>          <label>            <input name=\"paymentMethod\" type=\"radio\" value=\"chain\" />            <span>On-chain Transfer</span>          </label>        </div>      </div>      <div class=\"").concat(t('step-error'), "\"></div>    </div>    <div class=\"").concat(t('step-footer'), "\">      <button>Confirm</button>\n    </div>  </div>  <div class=\"").concat(t('step'), " ").concat(t('info'), "\">    <div class=\"").concat(t('step-title'), "\"></div>    <div class=\"").concat(t('step-content'), "\">      <div class=\"qrious\"></div>      <p class=\"countdown\"></p>    </div>    <div class=\"").concat(t('step-footer'), "\">      <button>Pay with Wallet</button>    </div>  </div>  <div class=\"").concat(t('step'), " ").concat(t('result'), "\">    <div class=\"").concat(t('step-content'), "\">      <div class=\"").concat(t('result__success'), "\">        <svg viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\" class=\"icon-success\"><path d=\"M24,4 C35.045695,4 44,12.954305 44,24 C44,35.045695 35.045695,44 24,44 C12.954305,44 4,35.045695 4,24 C4,12.954305 12.954305,4 24,4 Z M34.5548098,16.4485711 C33.9612228,15.8504763 32.9988282,15.8504763 32.4052412,16.4485711 L32.4052412,16.4485711 L21.413757,27.5805811 L21.413757,27.5805811 L21.4034642,27.590855 C21.0097542,27.9781674 20.3766105,27.9729811 19.9892981,27.5792711 L19.9892981,27.5792711 L15.5947588,23.1121428 C15.0011718,22.514048 14.0387772,22.514048 13.4451902,23.1121428 C12.8516033,23.7102376 12.8516033,24.6799409 13.4451902,25.2780357 L13.4451902,25.2780357 L19.6260786,31.5514289 C20.2196656,32.1495237 21.1820602,32.1495237 21.7756472,31.5514289 L21.7756472,31.5514289 L34.5548098,18.614464 C35.1483967,18.0163692 35.1483967,17.0466659 34.5548098,16.4485711 Z\"></path></svg>        <span>Thank you! Your payment is finished.</span>      </div>      <div class=\"").concat(t('result__failed'), "\">        <svg viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\" class=\"icon-error\"><path d=\"M24,4 C35.045695,4 44,12.954305 44,24 C44,35.045695 35.045695,44 24,44 C12.954305,44 4,35.045695 4,24 C4,12.954305 12.954305,4 24,4 Z M32.57818,15.42182 C32.0157534,14.8593933 31.1038797,14.8593933 30.541453,15.42182 L30.541453,15.42182 L24.0006789,21.9625941 L17.458547,15.42182 C16.8961203,14.8593933 15.9842466,14.8593933 15.42182,15.42182 C14.8593933,15.9842466 14.8593933,16.8961203 15.42182,17.458547 L15.42182,17.458547 L21.9639519,23.9993211 L15.42182,30.541453 C14.8593933,31.1038797 14.8593933,32.0157534 15.42182,32.57818 C15.9842466,33.1406067 16.8961203,33.1406067 17.458547,32.57818 L17.458547,32.57818 L24.0006789,26.0360481 L30.541453,32.57818 C31.1038797,33.1406067 32.0157534,33.1406067 32.57818,32.57818 C33.1406067,32.0157534 33.1406067,31.1038797 32.57818,30.541453 L32.57818,30.541453 L26.0374059,23.9993211 L32.57818,17.458547 C33.1406067,16.8961203 33.1406067,15.9842466 32.57818,15.42182 Z\"></path></svg>        <span>Payment is invalid, please try again.</span>      </div>    </div>    <div class=\"").concat(t('step-footer'), "\">\n      <button>Pay it again</button>    </div>  </div></div>");
-var TEMPLATE_MODAL = "<div class=\"".concat(t('header'), "\"><img src=\"").concat(LOGO_IMAGE_URL, "\" class=\"").concat(t('header__logo'), "\" /><i class=\"").concat(t('header__close'), "\"></i></div>").concat(TEMPLATE_DEFAULT);
-
-var render = {
-  render: function render() {
-    var options = this.options,
-        element = this.element;
-    element.setAttribute('class', options.isModal ? "".concat(NAMESPACE, " ").concat(NAMESPACE, "-modal") : NAMESPACE);
-
-    if (options.isModal) {
-      if (options.hasMask) {
-        var mask = document.createElement('div');
-        mask.setAttribute('class', "".concat(NAMESPACE, "-mask"));
-        element.appendChild(mask);
-      }
-    }
-
-    var container = document.createElement('div');
-    container.setAttribute('class', "".concat(NAMESPACE, "-container"));
-    container.innerHTML = options.isModal ? TEMPLATE_MODAL : TEMPLATE_DEFAULT;
-    element.appendChild(container);
-    this.$quoteSelectorToggle = this.element.querySelector(".".concat(NAMESPACE, "-quote .").concat(NAMESPACE, "-selector__control"));
-    this.$quoteSelectorSelected = this.element.querySelector(".".concat(NAMESPACE, "-quote .").concat(NAMESPACE, "-selector__selected"));
-    this.$quoteSelectorList = this.element.querySelector(".".concat(NAMESPACE, "-quote .").concat(NAMESPACE, "-selector__list"));
-    this.$quoteInput = this.element.querySelector(".".concat(NAMESPACE, "-input input"));
-    this.$quoteInputUnit = this.element.querySelector(".".concat(NAMESPACE, "-input__right"));
-    this.$quoteInputErr = this.element.querySelector(".".concat(NAMESPACE, "-quote .").concat(NAMESPACE, "-step-error"));
-    this.$quoteBtn = this.element.querySelector(".".concat(NAMESPACE, "-quote button"));
-    this.$paymentSelectorToggle = this.element.querySelector(".".concat(NAMESPACE, "-payment .").concat(NAMESPACE, "-selector__control"));
-    this.$paymentSelectorSelected = this.element.querySelector(".".concat(NAMESPACE, "-payment .").concat(NAMESPACE, "-selector__selected"));
-    this.$paymentSelectorList = this.element.querySelector(".".concat(NAMESPACE, "-payment .").concat(NAMESPACE, "-selector__list"));
-    this.$paymentMethods = this.element.querySelectorAll(".".concat(NAMESPACE, "-radio input"));
-    this.$paymentBtn = this.element.querySelector(".".concat(NAMESPACE, "-payment button"));
-    this.$paymentErr = this.element.querySelector(".".concat(NAMESPACE, "-payment .").concat(NAMESPACE, "-step-error"));
-    this.$countdown = this.element.querySelector('.countdown');
-    this.$payInfoBtn = this.element.querySelector(".".concat(NAMESPACE, "-info button"));
-    this.$resultBtn = this.element.querySelector(".".concat(NAMESPACE, "-result button"));
-    var that = this;
-
-    if (options.isModal) {
-      that.element.querySelector(".".concat(NAMESPACE, "-header__close")).onclick = function () {
-        that.hide();
-      };
-    }
-
-    that.$quoteSelectorList.innerHTML = this.quoteAssets.map(function (item) {
-      return "<li data-id=\"".concat(item.assetId, "\" /><img src=\"").concat(item.iconUrl, "\" /><span>").concat(item.symbol, "</span></li>");
-    }).join('');
-    that.$paymentSelectorList.innerHTML = this.paymentAssets.map(function (item) {
-      return "<li data-id=\"".concat(item.assetId, "\" /><img src=\"").concat(item.iconUrl, "\" /><span>").concat(item.symbol, "</span>").concat(item.network ? "<em>".concat(item.network, "</em>") : '');
-    }).join('');
-
-    that.$quoteSelectorToggle.onclick = function () {
-      var payConfig = that.payConfig,
-          payInfo = that.payInfo;
-      var quoteAssetId = payConfig.quoteAssetId;
-      var quoteAsset = payInfo.quoteAsset;
-
-      if (quoteAssetId && quoteAsset && quoteAsset.assetId === quoteAssetId) {
-        return;
-      }
-
-      if (that.$quoteSelectorList.classList.contains('show')) {
-        that.$quoteSelectorList.classList.remove('show');
-      } else {
-        that.$quoteSelectorList.classList.add('show');
-      }
-    };
-
-    that.$quoteSelectorList.onclick = function (e) {
-      var target = e.target || e.srcElement;
-      if (target === this) return;
-
-      while (String(target.tagName).toUpperCase() !== 'LI') {
-        target = target.parentNode;
-      }
-
-      that.setQuoteAsset(target.dataset.id);
-      this.classList.remove('show');
-    };
-
-    that.$quoteInput.oninput = function (e) {
-      if (/[0-9]/.test(e.data)) {
-        that.setQuoteAmount(e.target.value);
-      }
-
-      if (e.data === null) {
-        that.setQuoteAmount(e.target.value);
-      }
-    };
-
-    that.$quoteBtn.onclick = function () {
-      var _that$payInfo$quoteAs = that.payInfo.quoteAsset,
-          maxQuoteAmount = _that$payInfo$quoteAs.maxQuoteAmount,
-          minQuoteAmount = _that$payInfo$quoteAs.minQuoteAmount;
-      var quoteAmount = that.payInfo.quoteAmount;
-      var errMsg = '';
-
-      if (+quoteAmount > +maxQuoteAmount || +quoteAmount < +minQuoteAmount) {
-        errMsg = "<span>Out of range ".concat(minQuoteAmount, "-").concat(maxQuoteAmount, "</span>");
-      }
-
-      that.$quoteInputErr.innerHTML = errMsg;
-
-      if (!errMsg) {
-        that.renderStep(1);
-      }
-    };
-
-    that.$paymentSelectorToggle.onclick = function () {
-      if (that.$paymentSelectorList.classList.contains('show')) {
-        that.$paymentSelectorList.classList.remove('show');
-      } else {
-        that.$paymentSelectorList.classList.add('show');
-      }
-    };
-
-    that.$paymentSelectorList.onclick = function (e) {
-      var target = e.target || e.srcElement;
-      if (target === this) return;
-
-      while (String(target.tagName).toUpperCase() !== 'LI') {
-        target = target.parentNode;
-      }
-
-      that.setPaymentAsset(target.dataset.id);
-      this.classList.remove('show');
-    };
-
-    that.$paymentBtn.onclick = function () {
-      var _this = this;
-
-      if (this.isSubmitting) return;
-      this.isSubmitting = true;
-      that.createPayment().then(function () {
-        _this.isSubmitting = false;
-        that.renderStep(2);
-      }).catch(function (err) {
-        _this.isSubmitting = false;
-        that.$paymentErr.innerHTML = "<span>".concat(err.message, "</span>");
-      });
-    };
-
-    [].forEach.call(that.$paymentMethods, function (el) {
-      el.onclick = function () {
-        that.setPaymentMethod(this.value);
-      };
-    });
+var OPTIONS_DEFAULT = {
+  isModal: true,
+  hasMask: true,
+  onReady: null,
+  onPaymentCreate: null,
+  onPaymentSuccess: null,
+  onPaymentFail: null
+};
+var PAYMENT_DEFAULT = {
+  clientId: '',
+  expireSeconds: 90,
+  isChain: false,
+  note: '',
+  payeeId: '',
+  paymentAssetId: '',
+  quoteAmount: '',
+  quoteAssetId: '',
+  remark: '',
+  settlementAssetId: '',
+  settlementMemo: '',
+  settlementMethod: 'mixin',
+  // 'mixin', 'mixpay'
+  traceId: ''
+};
+var LANG = {
+  quote: {
+    asset: 'Quote Asset',
+    amount: 'Quote Amount'
   },
-  renderStep: function renderStep(step) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    step = String(step);
-
-    switch (step) {
-      case '0':
-        this.renderQuote();
-        break;
-
-      case '1':
-        this.renderPayment();
-        break;
-
-      case '2':
-        this.renderPayInfo();
-        this.startCountdown();
-        this.startPollResult();
-        break;
-
-      case '3':
-        this.renderResult(options.status);
-        break;
-    }
-
-    var steps = this.element.querySelectorAll(".".concat(NAMESPACE, "-step"));
-    [].forEach.call(steps, function (el, index) {
-      el.style.display = String(index) === step ? 'block' : 'none';
-    });
+  payment: {
+    asset: 'Payment Asset',
+    wallet: 'Payment Wallet',
+    mixin: 'Mixin Wallet',
+    chain: 'On-chain Wallet'
   },
-  renderQuote: function renderQuote() {
-    var _this$payConfig = this.payConfig,
-        quoteAssetId = _this$payConfig.quoteAssetId,
-        quoteAmount = _this$payConfig.quoteAmount,
-        paymentMethod = _this$payConfig.paymentMethod,
-        paymentAssetId = _this$payConfig.paymentAssetId;
-    this.setQuoteAsset(quoteAssetId);
-    this.setQuoteAmount(quoteAmount);
-    this.setPaymentMethod(paymentMethod || 'mixin');
-    this.setPaymentAsset(paymentAssetId);
-    this.$quoteInputErr.innerHTML = '';
-    this.element.querySelector(".".concat(NAMESPACE, "-quote  .").concat(NAMESPACE, "-selector__icon")).style.opacity = quoteAssetId ? 0 : 1;
+  checkout: {
+    scanWithMixin: 'Scan with Mixin Messenger',
+    countdown: 'Payment amount will be refreshed after <strong>$1</strong>',
+    network: 'Network:',
+    address: 'Address:',
+    memo: 'Memo:'
   },
-  renderPayment: function renderPayment() {
-    var _this$payInfo = this.payInfo,
-        quoteAsset = _this$payInfo.quoteAsset,
-        quoteAmount = _this$payInfo.quoteAmount;
-    var $title = this.element.querySelector(".".concat(NAMESPACE, "-payment .").concat(NAMESPACE, "-step-title"));
-    $title.innerHTML = "<img src=\"".concat(quoteAsset.iconUrl, "\" /><strong>").concat(quoteAmount, " ").concat(quoteAsset.symbol, "</strong>");
-    this.$paymentErr.innerHTML = '';
+  result: {
+    checking: 'Checking',
+    checkingDesc: 'Payment information is being checked, please wait patlently.',
+    pending: 'Pending',
+    pendingDesc: 'Block confirmation takes time, please wait patiently.',
+    success: 'Success',
+    failed: 'Failed',
+    overtime: 'Overtime',
+    overtimeDesc: 'Payment overtime, please refresh and pay again.',
+    refundDesc: 'The payable amount is $1, but you paid $2, Please tap "Help" to contact customer service for a refund.'
   },
-  renderPayInfo: function renderPayInfo() {
-    var element = this.element,
-        paymentInfo = this.paymentInfo,
-        paymentAssets = this.paymentAssets;
-    var paymentAssetId = paymentInfo.paymentAssetId,
-        paymentAmount = paymentInfo.paymentAmount,
-        isChain = paymentInfo.isChain,
-        destination = paymentInfo.destination,
-        tag = paymentInfo.tag,
-        traceId = paymentInfo.traceId,
-        memo = paymentInfo.memo,
-        recipient = paymentInfo.recipient;
-    var paymentAsset = paymentAssets.find(function (item) {
-      return item.assetId === paymentAssetId;
-    });
-    var $qrious = element.querySelector('.qrious');
-    var $title = element.querySelector(".".concat(NAMESPACE, "-info .").concat(NAMESPACE, "-step-title"));
-    $qrious.innerHTML = '';
-    $title.innerHTML = "<img src=\"".concat(paymentAsset.iconUrl, "\" /><strong>").concat(paymentAmount, " ").concat(paymentAsset.symbol, "</strong>");
-
-    if (isChain) {
-      var wrapperAddress = document.createElement('div');
-      wrapperAddress.setAttribute('class', 'qrious-item');
-      var canvasAddress = document.createElement('canvas');
-      var textAddress = document.createElement('span');
-      textAddress.setAttribute('data-id', 'address');
-      textAddress.innerHTML = "Address: <br/><em>".concat(destination, "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\"><path d=\"M18.167 10h-6.375c-.783 0-1.417.597-1.417 1.333v6c0 .737.634 1.334 1.417 1.334h6.375c.782 0 1.416-.597 1.416-1.334v-6c0-.736-.634-1.333-1.416-1.333z\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7.542 14h-.709a1.46 1.46 0 01-1.001-.39 1.295 1.295 0 01-.415-.943v-6c0-.354.149-.693.415-.943a1.46 1.46 0 011.001-.39h6.375c.376 0 .736.14 1.002.39s.415.589.415.943v.666\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></em>"); // eslint-disable-next-line no-new
-
-      new qrious({
-        element: canvasAddress,
-        value: destination,
-        size: 600,
-        level: 'H'
-      });
-      wrapperAddress.appendChild(textAddress);
-      wrapperAddress.appendChild(canvasAddress);
-      $qrious.appendChild(wrapperAddress);
-
-      if (tag) {
-        var wrapperMemo = document.createElement('div');
-        wrapperMemo.setAttribute('class', 'qrious-item');
-        var canvasMemo = document.createElement('canvas');
-        var textMemo = document.createElement('span');
-        textMemo.setAttribute('data-id', 'memo');
-        textMemo.innerHTML = "Memo: <br/><em>".concat(tag, "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\"><path d=\"M18.167 10h-6.375c-.783 0-1.417.597-1.417 1.333v6c0 .737.634 1.334 1.417 1.334h6.375c.782 0 1.416-.597 1.416-1.334v-6c0-.736-.634-1.333-1.416-1.333z\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M7.542 14h-.709a1.46 1.46 0 01-1.001-.39 1.295 1.295 0 01-.415-.943v-6c0-.354.149-.693.415-.943a1.46 1.46 0 011.001-.39h6.375c.376 0 .736.14 1.002.39s.415.589.415.943v.666\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></em>"); // eslint-disable-next-line no-new
-
-        new qrious({
-          element: canvasMemo,
-          value: tag,
-          size: 600,
-          level: 'H'
-        });
-        wrapperMemo.appendChild(textMemo);
-        wrapperMemo.appendChild(canvasMemo);
-        $qrious.appendChild(wrapperMemo);
-      }
-
-      [].forEach.call($qrious.querySelectorAll('em'), function (el) {
-        el.onclick = function () {
-          var _this2 = this;
-
-          clearTimeout(this.timeout);
-
-          if (copy(this.textContent)) {
-            this.classList.add('copy-success');
-          }
-
-          this.timeout = setTimeout(function () {
-            _this2.classList.remove('copy-success');
-          }, 2000);
-        };
-      });
-      this.$payInfoBtn.innerText = 'Pay with any wallet';
-      this.$payInfoBtn.style.display = 'none';
-    } else {
-      var wrapper = document.createElement('div');
-      wrapper.setAttribute('class', 'qrious-item');
-      var canvas = document.createElement('canvas'); // eslint-disable-next-line no-new
-
-      new qrious({
-        element: canvas,
-        value: "https://mixin.one/pay?recipient=".concat(recipient, "&asset=").concat(paymentAssetId, "&amount=").concat(paymentAmount, "&trace=").concat(traceId, "&memo=").concat(memo),
-        size: 600,
-        level: 'H'
-      });
-      wrapper.appendChild(canvas);
-      $qrious.appendChild(wrapper);
-      this.$payInfoBtn.innerText = 'Pay with Mixin Wallet';
-      this.$payInfoBtn.style.display = IS_MIXIN ? 'block' : 'none';
-
-      this.$payInfoBtn.onclick = function () {
-        window.location.href = "https://mixin.one/pay?recipient=".concat(recipient, "&asset=").concat(paymentAssetId, "&amount=").concat(paymentAmount, "&trace=").concat(traceId, "&memo=").concat(memo);
-      };
+  error: {
+    notSupportChain: '<span>This crypto is not supported On-chain transaction.</span>',
+    codeTable: {
+      40000: 'Payment overtime.',
+      40001: 'Receipt address is invalid. Maybe repeat transfer or timeout.',
+      40020: 'Wrong asset paid.',
+      40021: 'Double payment.',
+      40022: 'Trace ID does not exist',
+      40024: 'The payable amount is $1, but you paid $2, Please tap "Help" to contact customer service for a refund.'
     }
   },
-  renderResult: function renderResult() {
-    var status = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'success';
-    var element = this.element;
-    var $success = element.querySelector(".".concat(NAMESPACE, "-result__success"));
-    var $failed = element.querySelector(".".concat(NAMESPACE, "-result__failed"));
-    var $button = element.querySelector(".".concat(NAMESPACE, "-result button"));
-    var that = this;
-
-    if (status === 'success') {
-      $success.style.display = 'flex';
-      $failed.style.display = 'none';
-      $button.style.display = 'none';
-    }
-
-    if (status === 'failed') {
-      $success.style.display = 'none';
-      $failed.style.display = 'flex';
-      $button.style.display = 'block';
-
-      $button.onclick = function () {
-        that.show();
-      };
-    }
-  },
-  startCountdown: function startCountdown() {
-    var _this3 = this;
-
-    clearInterval(this.countdownInterval);
-    var paymentInfo = this.paymentInfo,
-        element = this.element;
-
-    var countdown = function countdown() {
-      var diff = paymentInfo.expire - Math.ceil(new Date().getTime() / 1000);
-
-      if (diff >= 0) {
-        _this3.$countdown.innerHTML = "Please complete the payment within <strong>".concat(diff, "s</strong>");
-      } else {
-        clearInterval(_this3.countdownInterval);
-        clearInterval(_this3.pollResultInterval);
-
-        _this3.getPaymentInfo().then(function (status) {
-          if (status !== 'unpaid') {
-            dispatchEvent(element, EVENT_PAYMENT_SUCCESS);
-
-            _this3.renderStep(3, {
-              status: 'success'
-            });
-          } else {
-            dispatchEvent(element, EVENT_PAYMENT_ERROR);
-
-            _this3.renderStep(3, {
-              status: 'failed'
-            });
-          }
-        }).catch(function (err) {
-          dispatchEvent(element, EVENT_PAYMENT_ERROR, err);
-
-          _this3.renderStep(3, {
-            status: 'failed'
-          });
-        });
-      }
-    };
-
-    this.countdownInterval = setInterval(countdown, 1000);
-    countdown();
-  },
-  startPollResult: function startPollResult() {
-    var _this4 = this;
-
-    clearInterval(this.pollResultInterval);
-    this.pollResultInterval = setInterval(function () {
-      _this4.getPaymentInfo().then(function (status) {
-        if (status !== 'unpaid') {
-          clearInterval(_this4.pollResultInterval);
-          clearInterval(_this4.countdownInterval);
-
-          _this4.renderStep(3, {
-            status: 'success'
-          });
-        }
-      }).catch(function () {});
-    }, 2000);
-  },
-  setQuoteAsset: function setQuoteAsset(value) {
-    var selected = this.quoteAssets.find(function (item) {
-      return item.assetId === value;
-    }) || this.quoteAssets[0];
-    this.payInfo.quoteAsset = selected;
-    this.$quoteSelectorSelected.innerHTML = "<img src=\"".concat(selected.iconUrl, "\" /><span>").concat(selected.symbol, "</span>");
-    this.$quoteInputUnit.innerHTML = selected.symbol;
-    this.$quoteInputErr.innerHTML = '';
-  },
-  setQuoteAmount: function setQuoteAmount(value) {
-    var decimalDigit = this.payInfo.quoteAsset.decimalDigit;
-    var output = String(value).replace(/[^0-9.]/g, '');
-
-    if (output === '.') {
-      output = '0.';
-    }
-
-    var len = output.length - 1;
-
-    if (output[len - 1] === '.' && output.indexOf('.') !== len - 1) {
-      output = output.slice(0, len - 2);
-    }
-
-    var outputArr = output.split('.');
-
-    if (decimalDigit <= 0) {
-      var _outputArr = _slicedToArray(outputArr, 1);
-
-      output = _outputArr[0];
-    } else if (outputArr[1] !== undefined) {
-      output = "".concat(outputArr[0], ".").concat(outputArr[1].slice(0, decimalDigit));
-    }
-
-    this.payInfo.quoteAmount = output;
-    this.$quoteInput.value = output;
-  },
-  setPaymentAsset: function setPaymentAsset(value) {
-    var selected = this.paymentAssets.find(function (item) {
-      return item.assetId === value;
-    }) || this.paymentAssets[0];
-    this.payInfo.paymentAsset = selected;
-    this.$paymentSelectorSelected.innerHTML = "<img src=\"".concat(selected.iconUrl, "\" /><span>").concat(selected.symbol, "</span>").concat(selected.network ? "<em>".concat(selected.network, "</em>") : '');
-  },
-  setPaymentMethod: function setPaymentMethod(paymentMethod) {
-    if (paymentMethod === 'mixin') {
-      this.payInfo.isChain = false;
-      this.$paymentMethods[0].checked = true;
-      this.$paymentMethods[1].checked = false;
-    }
-
-    if (paymentMethod === 'chain') {
-      this.payInfo.isChain = true;
-      this.$paymentMethods[0].checked = false;
-      this.$paymentMethods[1].checked = true;
-    }
+  common: {
+    copied: 'Copied',
+    next: 'Next',
+    back: 'Back',
+    refresh: 'Refresh',
+    confirmed: 'I have paid',
+    help: 'Help',
+    termsOfUse: 'Terms Of Use',
+    openMixinMessenger: 'Open Mixin Messenger',
+    payAgain: 'Pay again'
   }
 };
 
-var API_URL = DEFAULT.apiUrl;
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, _typeof(obj);
+}
+
+// Unique ID creation requires a high quality random # generator. In the browser we therefore
+// require the crypto API and do not support built-in fallback to lower quality random number
+// generators (like Math.random()).
+var getRandomValues;
+var rnds8 = new Uint8Array(16);
+function rng() {
+  // lazy load so that environments that need to polyfill have a chance to do so
+  if (!getRandomValues) {
+    // getRandomValues needs to be invoked in a context where "this" is a Crypto implementation. Also,
+    // find the complete implementation of crypto (msCrypto) on IE11.
+    getRandomValues = typeof crypto !== 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto) || typeof msCrypto !== 'undefined' && typeof msCrypto.getRandomValues === 'function' && msCrypto.getRandomValues.bind(msCrypto);
+
+    if (!getRandomValues) {
+      throw new Error('crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported');
+    }
+  }
+
+  return getRandomValues(rnds8);
+}
+
+var REGEX = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
+
+function validate(uuid) {
+  return typeof uuid === 'string' && REGEX.test(uuid);
+}
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+
+var byteToHex = [];
+
+for (var i = 0; i < 256; ++i) {
+  byteToHex.push((i + 0x100).toString(16).substr(1));
+}
+
+function stringify(arr) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0; // Note: Be careful editing this code!  It's been tuned for performance
+  // and works in ways you may not expect. See https://github.com/uuidjs/uuid/pull/434
+
+  var uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + '-' + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + '-' + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + '-' + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + '-' + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase(); // Consistency check for valid UUID.  If this throws, it's likely due to one
+  // of the following:
+  // - One or more input array values don't map to a hex octet (leading to
+  // "undefined" in the uuid)
+  // - Invalid input values for the RFC `version` or `variant` fields
+
+  if (!validate(uuid)) {
+    throw TypeError('Stringified UUID is invalid');
+  }
+
+  return uuid;
+}
+
+function v4(options, buf, offset) {
+  options = options || {};
+  var rnds = options.random || (options.rng || rng)(); // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+
+  rnds[6] = rnds[6] & 0x0f | 0x40;
+  rnds[8] = rnds[8] & 0x3f | 0x80; // Copy bytes to buffer, if provided
+
+  if (buf) {
+    offset = offset || 0;
+
+    for (var i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
+    }
+
+    return buf;
+  }
+
+  return stringify(rnds);
+}
+
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var REGEXP_SPACES = /\s\s*/;
+
+var onceSupported = function () {
+  var supported = false;
+
+  if (IS_BROWSER) {
+    var once = false;
+
+    var listener = function listener() {};
+
+    var options = Object.defineProperty({}, 'once', {
+      get: function get() {
+        supported = true;
+        return once;
+      },
+      set: function set(value) {
+        once = value;
+      }
+    });
+    WINDOW.addEventListener('test', listener, options);
+    WINDOW.removeEventListener('test', listener, options);
+  }
+
+  return supported;
+}();
+
+function genUuid() {
+  return v4();
+}
+function isArray(value) {
+  return Array.isArray(value);
+}
+function isFunction(value) {
+  return typeof value === 'function';
+}
+function isObject(value) {
+  return _typeof(value) === 'object' && value !== null;
+}
+function isPlainObject(value) {
+  if (!isObject(value)) {
+    return false;
+  }
+
+  try {
+    var _constructor = value.constructor;
+    var prototype = _constructor.prototype;
+    return _constructor && prototype && hasOwnProperty.call(prototype, 'isPrototypeOf');
+  } catch (error) {
+    return false;
+  }
+}
+var assign = function () {
+  if (Object.assign) return Object.assign;
+  return function (target) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    if (isObject(target) && args.length > 0) {
+      args.forEach(function (arg) {
+        if (isObject(arg)) {
+          Object.keys(arg).forEach(function (key) {
+            target[key] = arg[key];
+          });
+        }
+      });
+    }
+
+    return target;
+  };
+}();
+function addListener(element, type, listener) {
+  var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+  var _handler = listener;
+  type.trim().split(REGEXP_SPACES).forEach(function (event) {
+    if (options.once && !onceSupported) {
+      var _element$listeners = element.listeners,
+          listeners = _element$listeners === void 0 ? {} : _element$listeners;
+
+      _handler = function handler() {
+        delete listeners[event][listener];
+        element.removeEventListener(event, _handler, options);
+
+        for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          args[_key2] = arguments[_key2];
+        }
+
+        listener.apply(element, args);
+      };
+
+      if (!listeners[event]) {
+        listeners[event] = {};
+      }
+
+      if (listeners[event][listener]) {
+        element.removeEventListener(event, listeners[event][listener], options);
+      }
+
+      listeners[event][listener] = _handler;
+      element.listeners = listeners;
+    }
+
+    element.addEventListener(event, _handler, options);
+  });
+}
+function dispatchEvent(element, type, data) {
+  var event; // Event and CustomEvent on IE9-11 are global objects, not constructors
+
+  if (isFunction(Event) && isFunction(CustomEvent)) {
+    event = new CustomEvent(type, {
+      detail: data,
+      bubbles: true,
+      cancelable: true
+    });
+  } else {
+    event = document.createEvent('CustomEvent');
+    event.initCustomEvent(type, true, true, data);
+  }
+
+  return element.dispatchEvent(event);
+}
+function copy(str) {
+  if (!IS_BROWSER) return false;
+  var e = document.createElement('textarea');
+  e.value = str;
+  e.setAttribute('readonly', '');
+  e.style.cssText = 'position:absolute;left:-9999px';
+  document.body.appendChild(e);
+
+  if (navigator.userAgent.match(/ipad|ipod|iphone/i)) {
+    var n = document.createRange();
+    n.selectNodeContents(e);
+    var r = window.getSelection();
+    r.removeAllRanges();
+    r.addRange(n);
+    e.setSelectionRange(0, 999999);
+  } else {
+    e.select();
+  }
+
+  try {
+    document.execCommand('copy');
+    e.remove();
+  } catch (t) {
+    e.remove();
+    return false;
+  }
+
+  return true;
+}
+function query(element, selector) {
+  if (!IS_BROWSER) return null;
+  return element.querySelector(selector);
+}
+function queryAll(element, selector) {
+  if (!IS_BROWSER) return null;
+  return element.querySelectorAll(selector);
+}
+function hasClass(element, className) {
+  return element.classList.contains(className);
+}
+function toggleClass(element, className) {
+  if (hasClass(element, className)) {
+    element.classList.remove(className);
+  } else {
+    element.classList.add(className);
+  }
+}
+function forEach(arr, handler) {
+  return [].forEach.call(arr, handler);
+}
+function setStyle(element, key, value) {
+  if (element) {
+    element.style[key] = value;
+  }
+}
+function setHTML(element, htmlStr) {
+  if (element) {
+    element.innerHTML = htmlStr;
+  }
+}
+function setText(element, str) {
+  if (element) {
+    element.innerText = str;
+  }
+}
+function pureAssign(source, target) {
+  var obj = assign({}, source);
+  Object.keys(obj).forEach(function (key) {
+    if (target[key] !== undefined) {
+      obj[key] = target[key];
+    }
+  });
+  return obj;
+}
+function toFixed(num, decimal, cmd) {
+  if (!decimal && decimal !== 0) {
+    decimal = 2;
+  }
+
+  var func;
+
+  if (typeof cmd === 'function') {
+    func = cmd;
+  } else {
+    switch (cmd) {
+      case 'floor':
+        func = Math.floor;
+        break;
+
+      case 'round':
+        func = Math.round;
+        break;
+
+      case 'ceil':
+        func = Math.ceil;
+        break;
+
+      default:
+        func = Math.round;
+    }
+  }
+
+  var rate = 1 / "1e".concat(-decimal);
+  return (func((num * rate).toFixed(10)) / rate).toFixed(decimal);
+}
+
 var ajax = {
   get: function get(url) {
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
-      xhr.open('GET', url.startsWith('/') ? API_URL + url : url, true);
+      xhr.open('GET', url.startsWith('/') ? CONFIG.API_URL + url : url, true);
+      xhr.timeout = 20000;
 
       xhr.ontimeout = function () {
         reject(new Error('Request timeout, please try it again later.'));
@@ -4062,8 +2622,9 @@ var ajax = {
   post: function post(url, data) {
     return new Promise(function (resolve, reject) {
       var xhr = new XMLHttpRequest();
-      xhr.open('POST', url.startsWith('/') ? API_URL + url : url, true);
+      xhr.open('POST', url.startsWith('/') ? CONFIG.API_URL + url : url, true);
       xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+      xhr.timeout = 20000;
 
       xhr.ontimeout = function () {
         reject(new Error('Request timeout, please try it again later.'));
@@ -4107,214 +2668,949 @@ var APIS = {
   getSettlementAssets: function getSettlementAssets() {
     return ajax.get('/setting/settlement_assets');
   },
-  getPaymentResult: function getPaymentResult(traceId) {
-    return ajax.get("/payments_result?traceId=".concat(traceId));
+  getEstAmount: function getEstAmount(paymentAssetId, settlementAssetId, quoteAmount, quoteAssetId) {
+    var url = "/payments_estimated?paymentAssetId=".concat(paymentAssetId, "&settlementAssetId=").concat(settlementAssetId, "&quoteAmount=").concat(quoteAmount, "&quoteAssetId=").concat(quoteAssetId);
+    return ajax.get(url);
+  },
+  getPaymentResult: function getPaymentResult(clientId, traceId) {
+    return ajax.get("/payments_result?clientId=".concat(clientId, "&traceId=").concat(traceId));
   },
   createPayment: function createPayment(data) {
     return ajax.post('/payments', data);
   }
 };
 
-var MixPay = /*#__PURE__*/function () {
-  function MixPay() {
-    var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+var t$1 = function t(name) {
+  return "".concat(NAMESPACE, "-").concat(name);
+};
 
-    _classCallCheck(this, MixPay);
+var template = "\n<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" style=\"position:absolute;z-index: -1;width: 0;height:0\">\n  <defs>\n    <linearGradient id=\"".concat(t$1('lg-1'), "\" x1=\"239.976667%\" y1=\"-2.65055491%\" x2=\"239.976667%\" y2=\"100.965784%\">\n      <stop stop-color=\"#00C0FF\" offset=\"0%\"></stop>\n      <stop stop-color=\"#2E65CB\" offset=\"100%\"></stop>\n    </linearGradient>\n    <linearGradient id=\"").concat(t$1('lg-2'), "\" x1=\"-139.975862%\" y1=\"-2.93073265%\" x2=\"-139.975862%\" y2=\"100.965784%\">\n      <stop stop-color=\"#00C0FF\" offset=\"0.26967%\"></stop>\n      <stop stop-color=\"#2E65CB\" offset=\"100%\"></stop>\n    </linearGradient>\n    <linearGradient id=\"").concat(t$1('lg-3'), "\" x1=\"239.977586%\" y1=\"-0.635394165%\" x2=\"239.977586%\" y2=\"100.658863%\">\n      <stop stop-color=\"#00C0FF\" offset=\"0.26967%\"></stop>\n      <stop stop-color=\"#2E65CB\" offset=\"100%\"></stop>\n    </linearGradient>\n  </defs>\n  <symbol id=\"").concat(t$1('dropdown'), "\" viewBox=\"0 0 24 24\">\n    <g transform=\"translate(10, 7)\" fill=\"currentColor\" fill-rule=\"nonzero\">\n      <path d=\"M4.40520237,5.5090561 L0.202466642,9.84599534 C-0.0472238789,10.1132757 -0.043539068,10.5375965 0.210753136,10.8002185 C0.465045341,11.0628404 0.8763269,11.0670789 1.13565329,10.80975 L5.80643471,5.99094423 C5.93036786,5.86317168 6,5.68982177 6,5.50906149 C6,5.32830121 5.93036786,5.15495131 5.80643471,5.02717876 L1.13564285,0.208362174 C0.969842975,0.0309899854 0.724125318,-0.0401838942 0.493069824,0.0222362957 C0.26201433,0.0846564856 0.0816416076,0.270939692 0.0213794845,0.509383065 C-0.0388826385,0.747826438 0.0303604565,1.00125763 0.202456194,1.17212765 L4.40520237,5.5090561 Z\" />\n    </g>\n  </symbol>\n  <symbol id=\"").concat(t$1('arrow-right'), "\" viewBox=\"0 0 16 16\">\n    <g transform=\"translate(3.2, 4)\" fill=\"currentColor\" fill-rule=\"nonzero\">\n      <path d=\"M10.2982295,3.74492096 L7.16479538,0.152861348 C7.07609585,0.0397927224 6.92950167,-0.0172240407 6.78357711,0.00458921255 C6.63765254,0.0264024658 6.51618606,0.123489761 6.46770344,0.257064796 C6.41922082,0.390639832 6.45162564,0.538927339 6.55197221,0.642686571 L9.13917859,3.61735832 L0.399672715,3.61735832 C0.17893957,3.61735832 0,3.78868818 0,4.00003427 C0,4.21138037 0.17893957,4.38271023 0.399672715,4.38271023 L9.13917859,4.38271023 L6.54929939,7.35738198 C6.44899449,7.46114893 6.4166209,7.60941633 6.46510846,7.74296703 C6.51359601,7.87651774 6.63504282,7.97358733 6.78094372,7.99540678 C6.92684462,8.01722622 7.07342252,7.96023966 7.16213505,7.8472072 L10.2982295,4.25514759 C10.4339235,4.10988469 10.4339235,3.89018385 10.2982295,3.74492096 Z\"/>\n    </g>\n  </symbol>\n  <symbol id=\"").concat(t$1('mixin-logo'), "\" viewBox=\"0 0 32 32\">\n    <g transform=\"translate(8, 10)\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"nonzero\">\n      <path \n        d=\"M3.30225778,1.25540072 L0.288592593,0.0161724377 C0.151691852,-0.040114065 0,0.0574445216 0,0.201767986 L0,12.7982094 C0,12.9483536 0.16301037,13.0457951 0.301108148,12.9781014 L3.32727704,11.4968037 C3.46725926,11.4282901 3.55555556,11.2890378 3.55555556,11.1367855 L3.55555556,1.62661524 C3.55555556,1.46471249 3.45578667,1.31851515 3.30225778,1.25540072 Z\" \n        fill=\"url(#").concat(t$1('lg-1'), ")\" \n      />\n      <path\n        d=\"M12.6977471,1.25540072 L15.711387,0.0161724377 C15.8483372,-0.040114065 16,0.0574445216 16,0.201767986 L16,12.7982094 C16,12.9483536 15.8369349,13.0457951 15.6988812,12.9781014 L12.6727356,11.4968037 C12.5327203,11.4282901 12.4444444,11.2890378 12.4444444,11.1367855 L12.4444444,1.62661524 C12.4444444,1.46471249 12.5442452,1.31851515 12.6977471,1.25540072 Z\"\n        fill=\"url(#").concat(t$1('lg-2'), ")\" \n      />\n      <path\n        d=\"M8.2428659,2.82878852 L5.53361379,4.32240495 C5.41074636,4.39015833 5.33333333,4.52706825 5.33333333,4.67668931 L5.33333333,8.29406628 C5.33333333,8.44251999 5.40959847,8.57859273 5.53104981,8.64686492 L8.24029119,10.1698419 C8.34478161,10.2284452 8.46879693,10.2291527 8.57371648,10.1716106 L11.3546207,8.64592161 C11.4778851,8.5783569 11.5555556,8.44122293 11.5555556,8.29135426 L11.5555556,4.67937774 C11.5555556,4.52835351 11.476705,4.39040595 11.352046,4.32334826 L8.57114176,2.8270434 C8.46761686,2.77134083 8.34585441,2.77196577 8.2428659,2.82878852 Z\"\n        fill=\"url(#").concat(t$1('lg-3'), ")\"\n      />\n    </g>\n  </symbol>\n  <symbol id=\"").concat(t$1('chain-logo'), "\" viewBox=\"0 0 32 32\">\n    <g transform=\"translate(10, 9)\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"nonzero\">\n    <path d=\"M5.45584747,11.2107815 C5.13805736,11.2111534 4.8589697,10.9918836 4.77331364,10.6745369 C4.68765758,10.3571903 4.81642557,10.0195417 5.0882273,9.84878722 L7.75754417,8.17122868 C7.91809115,8.07027319 8.11074421,8.03961062 8.2930982,8.08599015 C8.47545218,8.13236967 8.63256035,8.25198977 8.72984139,8.41852068 C8.93245828,8.76523411 8.82569467,9.21662723 8.49136865,9.42677573 L5.82205176,11.1043343 C5.71174024,11.1739606 5.58508746,11.2107815 5.4559486,11.2107815\" fill=\"#FFA527\"/>\n    <path d=\"M2.22210467,9.31047088 C1.88697783,9.31047088 1.61530384,9.02874975 1.61530384,8.68122913 L1.61530384,5.32317558 C1.61530384,4.97565496 1.88697783,4.69393383 2.22210467,4.69393383 C2.55723152,4.69393383 2.8289055,4.97565496 2.8289055,5.32317558 L2.8289055,8.68122913 C2.8289055,9.02874975 2.55723152,9.31047088 2.22210467,9.31047088\" fill=\"#164AFF\"/>\n    <path d=\"M8.33946617,5.90113465 C8.22383016,5.90113465 8.10997657,5.87157857 8.00795066,5.81513776 L5.07963094,4.20165701 C4.73437927,4.01141258 4.60317255,3.56699057 4.78654614,3.20892326 C4.97008012,2.85099066 5.39859916,2.71499549 5.74387559,2.90510435 L8.67219529,4.51858511 C8.95949687,4.67671966 9.10591799,5.01751976 9.02715935,5.34477598 C8.94840072,5.67203219 8.6647303,5.90152749 8.33946617,5.90113465\" fill=\"#62D37E\"/>\n    <path d=\"M3.04917422,1.46823078 C2.14858063,1.46823078 1.41586862,2.22804021 1.41586862,3.16193987 C1.41586862,4.09604926 2.14858063,4.85585869 3.04917422,4.85585869 C3.94986893,4.85585869 4.68258094,4.09604926 4.68258094,3.16204474 C4.68258094,2.22804021 3.94986893,1.46823078 3.04927534,1.46823078 M3.04927534,6.32408947 C1.36772909,6.32408947 0,4.90556879 0,3.16193987 C0,1.41841582 1.36772909,0 3.04917422,0 C4.7305182,0 6.09834841,1.41841582 6.09834841,3.16193987 C6.09834841,4.90556879 4.7305182,6.32408947 3.04917422,6.32408947\" fill=\"#164AFF\"/>\n    <path d=\"M3.13958754,9.14403644 C2.23889283,9.14403644 1.50618082,9.90384587 1.50618082,10.8378504 C1.50618082,11.7719598 2.23889283,12.5317692 3.13948641,12.5317692 C4.04028225,12.5317692 4.77299426,11.7719598 4.77299426,10.8378504 C4.77299426,9.90384587 4.04028225,9.14414132 3.13958754,9.14414131 M3.13958754,14 C1.45814243,14 0.0903121962,12.5814793 0.0903121962,10.8378504 C0.0903121962,9.09432634 1.45814241,7.67591053 3.13948641,7.67591053 C4.82103267,7.67591053 6.18886288,9.09432633 6.18886288,10.8378504 C6.18886288,12.5814793 4.82103267,14 3.13958754,14\" fill=\"#FFA527\"/>\n    <path d=\"M9.95072466,5.2351866 C9.05002995,5.2351866 8.31731795,5.9951009 8.31731795,6.92889569 C8.31731795,7.86300508 9.05002996,8.62281451 9.95062353,8.62281451 C10.8514194,8.62281451 11.5841314,7.86300508 11.5841314,6.92900056 C11.5841314,5.99510091 10.8514194,5.2351866 9.95072466,5.2351866 M9.95072466,10.0911502 C8.26927955,10.0911502 6.90144933,8.67262948 6.90144933,6.92900056 C6.90144933,5.1854765 8.26927955,3.76695582 9.95062353,3.76695582 C11.6321698,3.76695582 13,5.1854765 13,6.92889569 C13,8.67262949 11.6321698,10.0911502 9.95072466,10.0911502\" fill=\"#62D37E\"/></g>\n  </symbol>\n  <symbol id=\"").concat(t$1('status-success'), "\" viewBox=\"0 0 68 68\">\n    <g stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"nonzero\">\n      <circle  fill=\"currentColor\" cx=\"34\" cy=\"34\" r=\"34\" />\n      <path transform=\"translate(20.255319, 25.319149)\" fill=\"#FFFFFF\" d=\"M11.5146349,15.2816164 L26.2568801,0.340112637 C26.7043161,-0.113370896 27.4297531,-0.113370877 27.877189,0.340112679 C28.3246249,0.793596235 28.3246249,1.52883834 27.877189,1.98232192 L12.3247894,17.7449303 C12.1099427,17.9627383 11.8185141,18.0851064 11.5146349,18.0851064 C11.2107558,18.0851064 10.9193272,17.9627383 10.7044805,17.7449303 L0.335603095,7.23590548 C0.0461627628,6.94255305 -0.0668765612,6.51498255 0.0390659437,6.11425566 C0.145008449,5.71352877 0.453837595,5.40052544 0.849220427,5.293151 C1.24460326,5.18577656 1.66647171,5.30034374 1.95591202,5.59369619 L11.5146349,15.2816164 Z\"/>\n    </g>\n  </symbol>\n  <symbol id=\"").concat(t$1('status-pending'), "\" viewBox=\"0 0 68 68\">\n    <g stroke=\"none\" stroke-width=\"1\" fill-rule=\"nonzero\">\n      <circle fill=\"currentColor\" cx=\"34\" cy=\"34\" r=\"34\" />\n      <path transform=\"translate(22, 24)\" stroke=\"#FFFFFF\" fill=\"#FFFFFF\" d=\"M23.8812991,12.6785217 L22.3149952,10.3557391 C22.1350787,10.0959635 21.8141821,9.98254896 21.5167314,10.0736087 C21.2216465,10.1577093 21.0161949,10.4320028 21.0127051,10.7465217 C21.0127051,15.6258261 16.9973847,19.5948261 12.0602386,19.5948261 C9.2218684,19.5948261 6.52039428,18.2416957 4.83941778,15.9773478 C4.59961008,15.6641033 4.16327204,15.5979599 3.84558821,15.8266957 C3.69354767,15.9322847 3.59091033,16.0978715 3.5621044,16.2840457 C3.53329847,16.4702199 3.58090026,16.6603305 3.6935803,16.8091304 C5.64212629,19.4332174 8.77117826,21 12.0602386,21 C17.0809447,21 21.2802746,17.4573913 22.2305464,12.767087 L22.6981263,13.4591739 C22.8047101,13.6158371 22.9668303,13.723352 23.1497054,13.7586522 C23.3346039,13.7951739 23.5266139,13.7586522 23.6830665,13.6545652 C23.8389918,13.5550509 23.9484251,13.3942782 23.9858794,13.2096909 C24.0233336,13.0251037 23.9855395,12.8328149 23.8812991,12.6776087 L23.8812991,12.6785217 Z M11.7766682,1.40517392 C14.7368225,1.40517392 17.4942996,2.86513045 19.1539416,5.31117392 C19.3781202,5.63395832 19.8102418,5.71773228 20.1335482,5.50108695 C20.2876585,5.40023006 20.3950668,5.2391903 20.4309686,5.05515774 C20.4668704,4.87112518 20.4281611,4.68001315 20.3237803,4.52595652 C18.4027913,1.6927826 15.2070692,0 11.7775572,0 C6.84574458,0 2.71308474,3.46317392 1.70592115,8.07495652 L1.31301178,7.413 C1.10756684,7.07730509 0.680928088,6.96775275 0.345850263,7.16465217 C0.186220494,7.25584087 0.0695393668,7.40976331 0.0226006025,7.59107397 C-0.0243381618,7.77238462 0.00249863341,7.96550445 0.0969484012,8.12608695 L1.56991406,10.6095652 C1.73617351,10.8857564 2.05982657,11.0162745 2.36462215,10.9300435 C2.66695601,10.8514331 2.88000033,10.5737837 2.8837603,10.2534783 C2.8837603,5.37508695 6.87241262,1.40426085 11.7766682,1.40426087 L11.7766682,1.40517392 Z\" />\n    </g>\n  </symbol>\n  <symbol id=\"").concat(t$1('status-failed'), "\" viewBox=\"0 0 68 68\">\n    <g stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"nonzero\">\n      <circle fill=\"currentColor\" cx=\"34\" cy=\"34\" r=\"34\" />\n      <path transform=\"translate(25, 26)\" fill=\"#fff\" d=\"M10.7497315,8.99927446 L17.6403867,2.11065458 C18.1198711,1.63131178 18.1198711,0.838849896 17.6403867,0.359507098 C17.1609023,-0.119835699 16.3682062,-0.119835699 15.8887218,0.359507098 L8.9980666,7.24812698 L2.10741139,0.363372766 C1.62792696,-0.115970032 0.839097744,-0.115970032 0.359613319,0.359507098 C-0.119871106,0.838849896 -0.119871106,1.63131178 0.359613319,2.11065458 L7.25026853,8.99927446 L0.359613319,15.8878943 C-0.119871106,16.3672371 -0.119871106,17.1558334 0.359613319,17.6390418 C0.839097744,18.1222503 1.63179377,18.1183846 2.1112782,17.6390418 L8.9980666,10.7465563 L15.8887218,17.6351762 C16.3682062,18.114519 17.1609023,18.114519 17.6403867,17.6351762 C18.1198711,17.1558334 18.1198711,16.3633715 17.6403867,15.8840287 L10.7497315,8.99927446 Z\" />\n    </g>\n  </symbol>\n  <symbol id=\"").concat(t$1('copy'), "\" viewBox=\"0 0 20 20\">\n    <g transform=\"translate(4, 4)\" stroke=\"none\" stroke-width=\"1\" fill=\"currentColor\" fill-rule=\"nonzero\">\n      <path d=\"M10.1096996,9.25294899 C9.75782624,9.25294899 9.47257652,8.96921363 9.47257652,8.61920833 C9.47257652,8.26920302 9.75782624,7.98546766 10.1096996,7.98546766 C10.449937,7.98546766 10.7257538,7.71111509 10.7257538,7.37268403 L10.7257538,1.88026496 C10.7257538,1.5418339 10.449937,1.26748133 10.1096996,1.26748133 L4.58796616,1.26748133 C4.24772881,1.26748133 3.97191195,1.5418339 3.97191195,1.88026496 C3.97191195,2.23027026 3.68666223,2.51400562 3.33478886,2.51400562 C2.98291549,2.51400562 2.69766577,2.23027026 2.69766577,1.88026496 C2.69998309,0.842779565 3.54494345,0.00230501939 4.58796616,0 L10.1096996,0 C11.1527223,0.00230501939 11.9976827,0.842779565 12,1.88026496 L12,7.37268403 C11.9976827,8.41016942 11.1527223,9.25064397 10.1096996,9.25294899 L10.1096996,9.25294899 Z\" /><path d=\"M7.28478347,11.9999984 L1.99649326,11.9999984 C1.46678609,12.0006653 0.958581084,11.7916531 0.584021248,11.4190817 C0.209461413,11.0465104 -0.000666381253,10.5410034 2.8382467e-06,10.0141084 L2.8382467e-06,4.73293622 C-0.000890512228,4.20589607 0.209138329,3.70017341 0.583722514,3.32742058 C0.958306698,2.95466775 1.46663984,2.74554052 1.99649326,2.74620794 L7.28478347,2.74620794 C7.81449065,2.74554103 8.32269565,2.95455328 8.69725549,3.32712461 C9.07181532,3.69969594 9.28194312,4.20520293 9.28127104,4.73209794 L9.28127104,10.0132701 C9.30233993,11.1122569 8.38963582,11.9999984 7.28478347,11.9999984 Z M1.99649326,4.01366647 C1.8044605,4.01211123 1.61983144,4.08729297 1.48403913,4.22236437 C1.34824681,4.35743578 1.27266381,4.54108466 1.27422735,4.73209794 L1.27422735,10.0132701 C1.27266381,10.2042834 1.34824681,10.3879323 1.48403913,10.5230037 C1.61983144,10.6580751 1.8044605,10.7332568 1.99649326,10.7317016 L7.28478347,10.7317016 C7.47681623,10.7332568 7.6614453,10.6580751 7.79723761,10.5230037 C7.93302992,10.3879323 8.00861293,10.2042834 8.00704939,10.0132701 L8.00704939,4.73209794 C8.00861293,4.54108466 7.93302992,4.35743578 7.79723761,4.22236437 C7.6614453,4.08729297 7.47681623,4.01211123 7.28478347,4.01366647 L1.99649326,4.01366647 Z\" />\n    </g>\n  </symbol>\n</svg>\n<div class=\"").concat(t$1('header'), "\">\n  <div class=\"").concat(t$1('header__title'), "\">\n    <svg class=\"").concat(t$1('header__title-icon'), "\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n      viewBox=\"0 0 104 29\">\n      <g stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"nonzero\">\n        <g fill=\"#164aff\">\n          <path d=\"M1.22762799,2.27470289 C0.478910149,2.55597394 -0.0110200719,3.26346228 0,4.04719864 L0,4.04719864 L0,15.881562 C0,22.120747 9.04978437,27.3535484 12.0931897,28.803056 L12.0931897,28.803056 C12.3553209,28.9277353 12.642163,28.9949504 12.9336533,29 L12.9336533,29 C13.2252015,28.9953969 13.5121413,28.9281589 13.7741169,28.803056 L13.7741169,28.803056 C16.8134912,27.3535484 25.8671183,22.120747 25.8671183,15.881562 L25.8671183,15.881562 L25.8671183,8.36027165 L11.1539666,19.1705263 C10.7230567,19.4864235 10.1738854,19.6058907 9.64652556,19.4984563 C9.11916572,19.391022 8.66460252,19.0670728 8.3987778,18.609236 L8.3987778,18.609236 L3.9646773,11.9308659 C3.84248658,11.7276391 3.87740658,11.4692473 4.04939678,11.3039808 C4.22138699,11.1387144 4.48637009,11.1089275 4.69227288,11.2317148 L4.69227288,11.2317148 L9.17272988,14.2410187 L9.26342739,14.2902547 C9.68814332,14.5050461 10.1931276,14.5050461 10.6178435,14.2902547 L10.6178435,14.2902547 L25.8854354,6.49127334 L25.8854354,4.04129032 C25.8961507,3.25705652 25.4053141,2.54942134 24.6558026,2.26879457 L24.6558026,2.26879457 C20.9069722,0.821256367 17.3536453,0 12.9659013,0 L12.9659013,0 C8.57009531,0 5.01676842,0.821256367 1.276,2.26879457 L1.22762799,2.27470289 Z\"/>\n          <path d=\"M70.8651763,25.3132088 L69.8009922,21.2167742 L70.3733942,21.2167742 L70.8712228,23.2886248 C70.9961838,23.8065874 71.1070363,24.310764 71.1816098,24.7066214 L71.1957183,24.7066214 C71.2622298,24.2989474 71.3972683,23.8124958 71.5363379,23.2827165 L72.0966469,21.2167742 L72.6630025,21.2167742 L73.172924,23.2945331 C73.2918386,23.786893 73.4026911,24.2674363 73.4651716,24.6987436 L73.4772646,24.6987436 C73.5659466,24.2497114 73.6788146,23.7947708 73.8138531,23.2827165 L74.3721467,21.2167742 L74.9264092,21.2167742 L73.7372641,25.3132088 L73.1628465,25.3132088 L72.6347855,23.1862139 C72.5189044,22.7436057 72.4274036,22.2952423 72.3606775,21.843056 L72.3566465,21.843056 C72.2764047,22.2948377 72.1680383,22.7414167 72.0321509,23.1803056 L71.4275009,25.3132088 L70.8651763,25.3132088 Z\"/>\n          <path d=\"M75.8495083,23.9405093 C75.8616013,24.6573854 76.3291974,24.9547708 76.8774135,24.9547708 C77.1628665,24.9639925 77.446941,24.9122398 77.7098151,24.8031239 L77.8105901,25.1871647 C77.4917476,25.317668 77.1484469,25.3814045 76.80284,25.3742615 C75.8817564,25.3742615 75.3214473,24.7834295 75.3214473,23.8912733 C75.3214473,22.9991171 75.8616013,22.3039049 76.7322974,22.3039049 C77.7138461,22.3039049 77.9698146,23.1487946 77.9698146,23.6825127 C77.9717394,23.7662554 77.9656666,23.849991 77.9516751,23.9326316 L75.8495083,23.9405093 Z M77.4498155,23.5564686 C77.4498155,23.2157555 77.306715,22.6879457 76.6960184,22.6879457 C76.1357094,22.6879457 75.8998959,23.1862139 75.8555548,23.5564686 L77.4498155,23.5564686 Z\"/>\n          <path d=\"M78.9735337,21.0021053 L79.5217498,21.0021053 L79.5217498,22.8435314 L79.5338428,22.8435314 C79.746777,22.4909623 80.143485,22.2842199 80.5617479,22.3078438 C81.307483,22.3078438 81.8294975,22.9164007 81.8294975,23.804618 C81.8294975,24.8622071 81.1462429,25.3801698 80.4730659,25.3801698 C80.055667,25.4025864 79.6627406,25.1868083 79.4653158,24.8267572 L79.4532228,24.8267572 L79.4229902,25.3132088 L78.9493477,25.3132088 C78.9674872,25.1162649 78.9735337,24.8149406 78.9735337,24.5530051 L78.9735337,21.0021053 Z M79.5217339,24.1374533 C79.5213803,24.2035153 79.5274542,24.2694614 79.5398893,24.3343973 C79.6362045,24.7016899 79.9741904,24.9590999 80.3622134,24.9606791 C80.9406619,24.9606791 81.2772505,24.5057385 81.2772505,23.8302207 C81.2772505,23.2393888 80.9648479,22.7293039 80.3803529,22.7293039 C79.9829332,22.7380825 79.6420591,23.0087639 79.5519823,23.3870968 C79.5318288,23.4603077 79.5216633,23.5357997 79.5217339,23.6116129 L79.5217339,24.1374533 Z\"/>\n          <path d=\"M82.7888756,24.7066214 C83.0625179,24.8591246 83.3708223,24.9423939 83.6857732,24.9488625 C84.3811208,24.9488625 84.6048413,24.5175552 84.5987948,24.1827504 C84.5987948,23.6293379 84.0828268,23.3949745 83.5547657,23.3949745 L83.2504252,23.3949745 L83.2504252,23.0010866 L83.5547657,23.0010866 C83.9578658,23.0010866 84.4556943,22.8041426 84.4556943,22.3334465 C84.4556943,22.0163667 84.2541443,21.7426146 83.7462382,21.7426146 C83.457138,21.7513672 83.1769419,21.8424032 82.9400381,22.0045501 L82.7908911,21.6106621 C83.10853,21.4119704 83.4779273,21.3066917 83.8550752,21.3073652 C84.6511978,21.3073652 85.0119724,21.7682173 85.0119724,22.2487606 C85.0119724,22.662343 84.7580193,23.0089643 84.2662373,23.1862139 L84.2662373,23.1980306 C84.7826719,23.2661216 85.1678063,23.6971785 85.1671667,24.2063837 C85.1671667,24.8385739 84.6572443,25.3880475 83.6938352,25.3880475 C83.3248703,25.392834 82.9614127,25.3003041 82.6417441,25.1202037 L82.7888756,24.7066214 Z\"/>\n        </g>\n        <g fill=\"#1e1e22\">\n          <path d=\"M49.6883154,17.3724278 L50.8089335,17.3724278 L49.6883154,2.01079796 L48.3258373,2.01079796 L44.3734413,11.1962649 C43.4946832,13.234635 42.8577852,14.7786757 42.4405766,16.0666893 L42.3962356,16.0666893 C41.9346861,14.672326 41.3199585,13.0849576 40.5298824,11.174601 L36.7306645,2.00685908 L35.4125273,2.00685908 L34.1609017,17.368489 L35.2815198,17.368489 L35.8519064,10.3513752 C36.0715959,7.81867572 36.1824484,5.03388795 36.2550064,3.24760611 L36.2993474,3.24760611 C36.805238,4.87830221 37.5288026,6.7020034 38.5163977,9.1066893 L41.922593,17.3724278 L42.7791806,17.3724278 L46.4151431,8.98852292 C47.4228932,6.6724618 48.1504887,4.89011885 48.7652163,3.23775891 L48.8095573,3.23775891 C48.8095573,4.86845501 49.0292468,7.8521562 49.1824249,10.130798 L49.6883154,17.3724278 Z\"/>\n          <path d=\"M55.5292351,17.3724278 L55.5292351,6.42825127 L54.3884619,6.42825127 L54.3884619,17.3724278 L55.5292351,17.3724278 Z M54.9588485,4.17718166 C55.5154135,4.18316395 55.9715616,3.74713947 55.9776838,3.20329372 C55.9838061,2.65944797 55.537584,2.21372425 54.981019,2.20774194 C54.4410494,2.22992175 54.0151175,2.66436639 54.015594,3.1924618 C54.015594,3.70845501 54.3884619,4.17718166 54.9145075,4.17718166 L54.9588485,4.17718166 Z\"/>\n          <path d=\"M58.0989979,6.42825127 L62.3819358,11.7457385 L57.8450448,17.350764 L59.183337,17.350764 L61.3802322,14.5620374 C61.9949598,13.7880475 62.4786799,13.1834295 62.9402294,12.4803396 L62.9825549,12.4803396 C63.4884455,13.1440407 63.990305,13.8313752 64.5647226,14.5620374 L66.8039433,17.350764 L68.144251,17.350764 L63.611391,11.7457385 L67.922546,6.44991511 L66.6487498,6.44991511 L64.4679786,9.13229202 C63.9641035,9.77629881 63.4803835,10.3336503 63.0188339,10.977657 L62.9744929,10.977657 C62.5129434,10.3336503 62.0957348,9.79599321 61.5475187,9.13229202 L59.417135,6.42825127 L58.0989979,6.42825127 Z\"/>\n          <path d=\"M70.6172698,17.3724278 L71.7519964,17.3724278 L71.7519964,10.8279796 C72.411065,11.0406791 73.1789705,11.062343 73.9912171,11.062343 C76.0792754,11.062343 77.8791171,10.4833277 78.9332237,9.38831919 C79.7232998,8.61629881 80.1425238,7.564618 80.1425238,6.21358234 C80.1762872,5.09074364 79.7214707,4.00652444 78.8908982,3.22988115 C77.9476441,2.37120543 76.4319879,1.85117778 74.3459452,1.85117778 C73.0946128,1.84763706 71.8452219,1.94778138 70.6112233,2.15062818 L70.6172698,17.3724278 Z M71.7519964,3.01521222 C72.6002522,2.86842141 73.4603135,2.79657493 74.3217592,2.80054329 C76.8693515,2.80054329 79.0219057,3.70254669 79.0219057,6.36325976 C79.0219057,8.72658744 77.2643895,10.1189813 74.1464107,10.1189813 C73.2676526,10.1189813 72.411065,10.0539898 71.7741669,9.83932088 L71.7741669,3.01521222 L71.7519964,3.01521222 Z\"/>\n          <path d=\"M91.0866901,10.7610187 C91.0866901,9.0220034 90.6694815,6.14658524 86.8541396,6.14658524 C85.5460054,6.14240197 84.2644857,6.5076081 83.1637587,7.19830221 L83.5366262,7.9860781 C84.4933852,7.37368066 85.6179911,7.0598059 86.7614266,7.08604414 C89.7483979,7.06438031 89.9459169,9.53208829 89.9459169,10.3474363 L89.9459169,10.6054329 C84.7197248,10.5404414 82.3474811,12.1494737 82.3474811,14.6388455 C82.3474811,15.9701868 83.3794172,17.6442105 85.9270095,17.6442105 C87.5236295,17.6671357 89.0346812,16.9405944 89.9902579,15.6905263 L90.0345989,15.6905263 L90.236149,17.3862139 L91.2902556,17.3862139 C91.1580375,16.5124305 91.0906784,15.6304458 91.0887056,14.7471647 L91.0866901,10.7610187 Z M89.9439014,13.8727334 C89.9361353,14.0929097 89.8918922,14.3103997 89.8128939,14.5167402 C89.3735149,15.5014601 88.2004937,16.7481154 86.0358465,16.7481154 C84.7177093,16.7481154 83.5749207,15.9977589 83.5749207,14.4517487 C83.5749207,11.9190492 86.9791006,11.4680475 89.9439014,11.5547029 L89.9439014,13.8727334 Z\"/>\n          <path d=\"M93.1727328,6.42825127 L97.8285383,16.6004075 C97.9078574,16.7548304 97.9596586,16.9213348 97.9817163,17.0927674 C97.9654285,17.2425326 97.9210168,17.3880789 97.8507088,17.5221053 C97.1472992,19.0681154 96.2907116,19.9898132 95.6981546,20.4624788 C95.0951258,20.9581401 94.3918495,21.3238884 93.6342823,21.5358234 L93.9406384,22.4791851 C94.6890512,22.2874511 95.3911899,21.9527718 96.0065261,21.4944652 C97.5000118,20.4427844 98.5097774,18.7372496 100.037527,15.2710357 L104,6.42825127 L102.770545,6.42825127 L99.6303955,13.660034 C99.2555125,14.5403735 98.9491564,15.3773854 98.6851259,16.0627504 L98.6407849,16.0627504 C98.4210954,15.3773854 98.0482278,14.475382 97.7398563,13.7663837 L94.4021879,6.44991511 L93.1727328,6.44991511 L93.1727328,6.42825127 Z\"/>\n        </g>\n        <g fill=\"#9D9D9D\">\n          <path d=\"M33.9432277,21.2719185 C34.285624,21.2109149 34.6331859,21.1818989 34.9812103,21.1852632 C35.5173333,21.1852632 35.9083404,21.3073684 36.1582624,21.5259762 C36.4042099,21.7424316 36.5405244,22.0534699 36.5311299,22.3767742 C36.5487942,22.7008671 36.4292629,23.0177929 36.2005879,23.2531749 C35.8536347,23.5670594 35.3907454,23.7292085 34.9187298,23.7022071 C34.7727058,23.7066239 34.6266434,23.6947302 34.4833817,23.6667572 L34.4833817,25.3132088 L33.9432277,25.3132088 L33.9432277,21.2719185 Z M34.4833817,23.2413582 C34.6302853,23.2726678 34.7805167,23.2865541 34.9308228,23.2827165 C35.5858603,23.2827165 35.9829139,22.9735144 35.9829139,22.4141935 C35.9829139,21.8548727 35.5919068,21.6106621 34.9933033,21.6106621 C34.8222126,21.606633 34.6511927,21.6211644 34.4833817,21.6539898 L34.4833817,23.2413582 Z\"/>\n          <path d=\"M39.5039928,24.6081494 C39.5009044,24.8439174 39.5157254,25.0795843 39.5483338,25.3132088 L39.0565517,25.3132088 L39.0061642,24.9429542 L38.9880247,24.9429542 C38.7715167,25.2257798 38.428293,25.3886997 38.0669411,25.3801698 C37.8273989,25.3978616 37.5912622,25.3164524 37.4161163,25.155795 C37.2409704,24.9951376 37.1429133,24.7699981 37.1458575,24.5352801 C37.1458575,23.8243124 37.7928331,23.4343633 38.9598077,23.4422411 L38.9598077,23.3811885 C38.9598077,23.1369779 38.8912807,22.693854 38.2765531,22.6997623 C37.9971481,22.6967854 37.7228046,22.7726941 37.4864771,22.9183701 L37.361516,22.5599321 C37.6639929,22.3891078 38.0078262,22.3006932 38.3571732,22.3039049 C39.2843033,22.3039049 39.5080238,22.9183701 39.5080238,23.509202 L39.5039928,24.6081494 Z M38.9678697,23.8203735 C38.3632197,23.8085569 37.6940736,23.9109677 37.6940736,24.4821053 C37.6807392,24.6190477 37.7296405,24.7548011 37.8278182,24.8533894 C37.925996,24.9519778 38.0635382,25.0034479 38.2039951,24.9941596 C38.533625,25.0037681 38.83216,24.8050539 38.9436837,24.5017997 C38.9606007,24.4462169 38.9687562,24.3884407 38.9678697,24.3304584 L38.9678697,23.8203735 Z\"/>\n          <path d=\"M40.8563934,22.3807131 L41.5094155,24.1197284 C41.583989,24.3166723 41.6585625,24.5451273 41.7109655,24.7223769 L41.721043,24.7223769 C41.777477,24.5451273 41.8399575,24.328489 41.922593,24.1079117 L42.5272431,22.3807131 L43.1056917,22.3807131 L42.2853831,24.4781664 C41.882283,25.488489 41.6263145,25.9985739 41.2514315,26.321562 C41.060208,26.4875245 40.8294523,26.6039898 40.5802699,26.6603056 L40.4432159,26.2171817 C40.61697,26.1573209 40.7771523,26.0650133 40.9148429,25.945399 C41.1112288,25.7844365 41.2682464,25.5825559 41.374377,25.3545671 C41.3970695,25.3149154 41.4121002,25.2715215 41.418718,25.2265535 C41.4138826,25.1774702 41.398791,25.1298786 41.374377,25.0867233 L40.2598054,22.3807131 L40.8563934,22.3807131 Z\"/>\n          <path d=\"M43.9058453,23.168489 C43.9058453,22.8573175 43.8937523,22.6150764 43.8816593,22.3708659 L44.3593328,22.3708659 L44.3855343,22.8455008 L44.4036738,22.8455008 C44.5889583,22.5023059 44.9580737,22.292164 45.3549899,22.3039049 C45.7379561,22.3020834 46.0790582,22.5401597 46.2015,22.8947368 L46.213593,22.8947368 C46.2966532,22.7403392 46.4136646,22.6058247 46.5562281,22.5008489 C46.745403,22.361554 46.9787473,22.2918257 47.2152966,22.3039049 C47.6183967,22.3039049 48.2109538,22.5599321 48.2109538,23.5801019 L48.2109538,25.3132088 L47.6768462,25.3132088 L47.6768462,23.6470628 C47.6768462,23.0759253 47.4591722,22.74309 47.0238241,22.74309 C46.7254457,22.7543003 46.4653616,22.9449056 46.370802,23.2216638 C46.3425516,23.3083121 46.3276087,23.3985753 46.326461,23.4895076 L46.326461,25.3132088 L45.790338,25.3132088 L45.790338,23.5407131 C45.790338,23.0719864 45.5787105,22.7391511 45.1635174,22.7391511 C44.8441293,22.7581574 44.5718249,22.972128 44.4842938,23.2728693 C44.4545894,23.3570837 44.4402629,23.4457442 44.4419683,23.5348048 L44.4419683,25.3073005 L43.9058453,25.3073005 L43.9058453,23.168489 Z\"/>\n          <path d=\"M49.7245944,23.9405093 C49.7366874,24.6573854 50.2042835,24.9547708 50.750484,24.9547708 C51.0366023,24.9641535 51.3213685,24.9124001 51.5849011,24.8031239 L51.6836606,25.1871647 C51.3649577,25.3181206 51.0215576,25.3818756 50.6759105,25.3742615 C49.7568424,25.3742615 49.1965334,24.7834295 49.1965334,23.8912733 C49.1965334,22.9991171 49.7366874,22.3039049 50.6073835,22.3039049 C51.5889321,22.3039049 51.8449007,23.1487946 51.8449007,23.6825127 C51.8468255,23.7662554 51.8407527,23.849991 51.8267612,23.9326316 L49.7245944,23.9405093 Z M51.3228861,23.5564686 C51.3228861,23.2157555 51.1797856,22.6879457 50.5711045,22.6879457 C50.0107955,22.6879457 49.7649044,23.1862139 49.7306409,23.5564686 L51.3228861,23.5564686 Z\"/>\n          <path d=\"M52.8486198,23.168489 C52.8486198,22.8573175 52.8486198,22.6150764 52.8244338,22.3708659 L53.3101693,22.3708659 L53.3404018,22.8514092 L53.3524948,22.8514092 C53.5561428,22.5039344 53.9384993,22.2936795 54.3481519,22.3039049 C54.7653605,22.3039049 55.4123361,22.5481154 55.4123361,23.5564686 L55.4123361,25.3132088 L54.86412,25.3132088 L54.86412,23.6175212 C54.86412,23.1428862 54.6847405,22.74309 54.1687724,22.74309 C53.82921,22.7519868 53.5332559,22.9714548 53.4331148,23.2886248 C53.4079561,23.3696841 53.3957197,23.4540454 53.3968358,23.5387436 L53.3968358,25.3112394 L52.8486198,25.3112394 L52.8486198,23.168489 Z\"/>\n          <path d=\"M57.2545033,21.6658065 L57.2545033,22.3807131 L58.0465949,22.3807131 L58.0465949,22.774601 L57.2625653,22.774601 L57.2625653,24.3501528 C57.2625653,24.7144992 57.3693868,24.9212903 57.6656653,24.9212903 C57.7725307,24.9258898 57.8794413,24.9132473 57.9820988,24.883871 L58.0083004,25.291545 C57.8516962,25.3421988 57.6875071,25.3668302 57.5225648,25.3644143 C57.3020319,25.3748488 57.0873484,25.293229 56.9320232,25.1398981 C56.7691389,24.9156272 56.6940437,24.6416786 56.7203957,24.3678778 L56.7203957,22.774601 L56.2527997,22.774601 L56.2527997,22.3807131 L56.7203957,22.3807131 L56.7203957,21.8410866 L57.2545033,21.6658065 Z\"/>\n          <path d=\"M60.6667451,25.3132088 L60.6667451,22.774601 L60.2495366,22.774601 L60.2495366,22.3807131 L60.6667451,22.3807131 L60.6667451,22.2408829 C60.6382021,21.8660663 60.7661648,21.4959243 61.0214732,21.2148048 C61.2186141,21.0349901 61.4794217,20.9368633 61.7490688,20.9410526 C61.9090758,20.9394266 62.0678824,20.968188 62.2166648,21.0257385 L62.1481378,21.4393209 C62.0363185,21.3919549 61.915238,21.3690989 61.7934098,21.3723599 C61.3338757,21.3723599 61.2089147,21.7662479 61.2089147,22.2231579 L61.2089147,22.3807131 L61.9365103,22.3807131 L61.9365103,22.774601 L61.2149612,22.774601 L61.2149612,25.3092699 L60.6667451,25.3132088 Z\"/>\n          <path d=\"M63.8915455,25.3801698 C63.0853454,25.3801698 62.4464318,24.7893379 62.4464318,23.8676401 C62.4464318,22.8829202 63.1135624,22.3039049 63.9399175,22.3039049 C64.8045671,22.3039049 65.3910777,22.9183701 65.3910777,23.8124958 C65.3910777,24.9055348 64.6130946,25.3880475 63.897592,25.3880475 L63.8915455,25.3801698 Z M63.9157315,24.9862818 C64.4377461,24.9862818 64.8307686,24.5057385 64.8307686,23.836129 C64.8307686,23.3378608 64.5748001,22.7115789 63.9278245,22.7115789 C63.2808489,22.7115789 63.0067409,23.3024109 63.0067409,23.853854 C63.0067409,24.4998302 63.3796085,24.9862818 63.909685,24.9862818 L63.9157315,24.9862818 Z\"/>\n          <path d=\"M66.3968123,23.2886248 C66.3968123,22.9420034 66.3968123,22.644618 66.3726263,22.3708659 L66.8502998,22.3708659 L66.8765013,22.9498812 L66.8946408,22.9498812 C67.0029534,22.5800056 67.341716,22.3196343 67.7351044,22.3039049 C67.7850304,22.3046669 67.8348521,22.3086142 67.8842515,22.3157216 L67.8842515,22.8218676 C67.8221048,22.8136556 67.7595144,22.8090521 67.6968099,22.8080815 C67.3118494,22.8080815 67.0377414,23.0956197 66.9631679,23.4895076 C66.9508994,23.5723381 66.9448367,23.6559333 66.9450284,23.7396265 L66.9450284,25.3151783 L66.3968123,25.3151783 L66.3968123,23.2886248 Z\"/>\n        </g>\n      </g>\n    </svg>\n  </div>\n  <div class=\"").concat(t$1('header__action'), "\"></div>\n</div>\n<div class=\"").concat(t$1('body'), "\">\n  <div class=\"").concat(t$1('field'), "\" data-page=\"loading\">\n    <div class=\"").concat(t$1('loading'), "\"><svg viewBox=\"25 25 50 50\"><circle cx=\"50\" cy=\"50\" r=\"20\" fill=\"none\"></circle></svg></div>\n  </div>\n  <div class=\"").concat(t$1('field'), "\" data-page=\"quote\">\n    <div class=\"").concat(t$1('field__content'), "\">\n      <div class=\"").concat(t$1('field-item'), "\">\n        <div class=\"").concat(t$1('field-item__header'), "\">\n          <span class=\"").concat(t$1('field-item__title'), "\">").concat(LANG.quote.asset, "</span>\n        </div>\n        <div class=\"").concat(t$1('field-item__content'), "\">\n          <div class=\"").concat(t$1('dropdown'), "\">\n            <div class=\"").concat(t$1('dropdown__toggle'), "\">\n              <div class=\"").concat(t$1('dropdown__selected'), "\"></div>\n              <svg class=\"").concat(t$1('dropdown__icon'), "\"><use xlink:href=\"#").concat(t$1('dropdown'), "\" /></svg>\n            </div>\n            <ul class=\"").concat(t$1('dropdown__menu'), "\"></ul>\n          </div>\n        </div>\n      </div>\n      <div class=\"").concat(t$1('field-item'), "\">\n        <div class=\"").concat(t$1('field-item__header'), "\">\n          <span class=\"").concat(t$1('field-item__title'), "\">").concat(LANG.quote.amount, "</span>\n        </div>\n        <div class=\"").concat(t$1('field-item__content'), "\">\n          <div class=\"").concat(t$1('input-item'), "\">\n            <div class=\"").concat(t$1('input-item__control'), "\">\n              <input class=\"").concat(t$1('input-item__input'), "\" type=\"number\">\n            </div>\n            <span class=\"").concat(t$1('input-item__right'), "\">USD</span>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"").concat(t$1('field__footer'), "\">\n      <div class=\"").concat(t$1('field__error'), "\"></div>\n      <div class=\"").concat(t$1('btn-group'), "\">\n        <button class=\"").concat(t$1('btn-primary'), "\">\n        ").concat(LANG.common.next, "\n        </button>\n      </div>\n    </div>\n  </div>\n  <div class=\"").concat(t$1('field'), "\" data-page=\"payment\">\n    <div class=\"").concat(t$1('field__header'), "\">\n      <p class=\"").concat(t$1('field__header-main'), "\">\n        <img\n          src=\"https://mixin-images.zeromesh.net/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128\"\n          alt=\"XIN\" />\n        <span>0.1 XIN</span>\n      </p>\n    </div>\n    <div class=\"").concat(t$1('field__content'), "\">\n      <div class=\"").concat(t$1('field-item'), "\">\n        <div class=\"").concat(t$1('field-item__header'), "\">\n          <span class=\"").concat(t$1('field-item__title'), "\">").concat(LANG.payment.asset, "</span>\n        </div>\n        <div class=\"").concat(t$1('field-item__content'), "\">\n          <div class=\"").concat(t$1('dropdown'), "\">\n            <div class=\"").concat(t$1('dropdown__toggle'), "\">\n              <div class=\"").concat(t$1('dropdown__selected'), "\">\n                <img\n                  src=\"https://mixin-images.zeromesh.net/UasWtBZO0TZyLTLCFQjvE_UYekjC7eHCuT_9_52ZpzmCC-X-NPioVegng7Hfx0XmIUavZgz5UL-HIgPCBECc-Ws=s128\"\n                  alt=\"XIN\" />\n                <span>XIN</span>\n                <em>network</em>\n              </div>\n              <svg class=\"").concat(t$1('dropdown__icon'), "\"><use xlink:href=\"#").concat(t$1('dropdown'), "\" /></svg>\n            </div>\n            <ul class=\"").concat(t$1('dropdown__menu'), "\"></ul>\n          </div>\n        </div>\n        <div class=\"").concat(t$1('field-item__footer'), "\"></div>\n      </div>\n      <div class=\"").concat(t$1('field-item'), "\">\n        <div class=\"").concat(t$1('field-item__header'), "\">\n          <span class=\"").concat(t$1('field-item__title'), "\">").concat(LANG.payment.wallet, "</span>\n        </div>\n        <div class=\"").concat(t$1('field-item__content'), "\">\n          <div class=\"").concat(t$1('radio-item'), "\">\n            <input class=\"").concat(t$1('radio-item__radio'), "\" type=\"radio\" name=\"paymentWallet\" value=\"mixin\" checked>\n            <div class=\"").concat(t$1('radio-item__content'), "\">\n              <svg class=\"").concat(t$1('radio-item__logo'), "\"><use xlink:href=\"#").concat(t$1('mixin-logo'), "\" /></svg>\n              <p>").concat(LANG.payment.mixin, "</p>\n              <svg class=\"").concat(t$1('radio-item__checked'), "\"><use xlink:href=\"#").concat(t$1('status-success'), "\" /></svg>\n            </div>\n          </div>\n          <div class=\"").concat(t$1('radio-item'), "\">\n            <input class=\"").concat(t$1('radio-item__radio'), "\" type=\"radio\" name=\"paymentWallet\" value=\"chain\">\n            <div class=\"").concat(t$1('radio-item__content'), "\">\n              <svg class=\"").concat(t$1('radio-item__logo'), "\"><use xlink:href=\"#").concat(t$1('chain-logo'), "\" /></svg>\n              <p>").concat(LANG.payment.chain, "</p>\n              <svg class=\"").concat(t$1('radio-item__checked'), "\"><use xlink:href=\"#").concat(t$1('status-success'), "\" /></svg>\n            </div>\n          </div>\n        </div>\n      </div>\n    </div>\n    <div class=\"").concat(t$1('field__footer'), "\">\n      <div class=\"").concat(t$1('field__error'), "\"></div>\n      <div class=\"").concat(t$1('btn-group'), "\">\n        <button class=\"").concat(t$1('btn-primary'), "\">").concat(LANG.common.next, "</button>\n        <button class=\"").concat(t$1('btn-inline'), "\">\n          <svg class=\"").concat(t$1('btn-icon'), "\"><use xlink:href=\"#").concat(t$1('arrow-right'), "\" /></svg>\n          <span>").concat(LANG.common.back, "</span>\n        </button>\n      </div>\n    </div>\n  </div>\n  <div class=\"").concat(t$1('field'), "\" data-page=\"checkout-mixin\">\n    <div class=\"").concat(t$1('field__header'), "\">\n      <p class=\"").concat(t$1('field__header-main'), "\">\n        <img />\n        <span class=\"").concat(t$1('copy-toggle'), "\" data-success=\"").concat(LANG.common.copied, "\">\n          <span class=\"").concat(t$1('field__header-main-text'), "\"><span class=\"").concat(t$1('copy-content'), "\">0.1111</span> XIN</span>\n          <svg class=\"").concat(t$1('copy-icon'), "\"><use xlink:href=\"#").concat(t$1('copy'), "\" /></svg>\n        </span>\n      </p>\n      <p class=\"").concat(t$1('field__header-sub'), "\"></p>\n    </div>\n    <div class=\"").concat(t$1('field__content'), "\">\n      <p class=\"").concat(t$1('checkout__brief'), "\">").concat(LANG.checkout.scanWithMixin, "</p>\n      <div class=\"").concat(t$1('checkout__qrious'), "\">\n        <div class=\"").concat(t$1('checkout__qrious-box'), "\">\n          <canvas></canvas>\n        </div>\n      </div>\n      <p class=\"").concat(t$1('checkout__countdown'), "\">").concat(LANG.checkout.countdown, "</p>\n    </div>\n    <div class=\"").concat(t$1('field__footer'), "\">\n      <div class=\"").concat(t$1('btn-group'), "\">\n        <button class=\"").concat(t$1('btn-primary'), "\">").concat(LANG.common.openMixinMessenger, "</button>\n        <button class=\"").concat(t$1('btn-inline'), "\"><svg class=\"").concat(t$1('btn-icon'), "\"><use xlink:href=\"#").concat(t$1('arrow-right'), "\" /></svg><span>Back</span></button>\n      </div>\n    </div>\n  </div>\n  <div class=\"").concat(t$1('field'), "\" data-page=\"checkout-chain\">\n    <div class=\"").concat(t$1('field__header'), "\">\n      <p class=\"").concat(t$1('field__header-main'), "\">\n        <img />\n        <span class=\"").concat(t$1('copy-toggle'), "\" data-success=\"").concat(LANG.common.copied, "\">\n          <span class=\"").concat(t$1('field__header-main-text'), "\"><span class=\"").concat(t$1('copy-content'), "\">0.1111</span> XIN</span>\n          <svg class=\"").concat(t$1('copy-icon'), "\"><use xlink:href=\"#").concat(t$1('copy'), "\" /></svg>\n        </span>\n      </p>\n      <p class=\"").concat(t$1('field__header-sub'), "\"></p>\n    </div>\n    <div class=\"").concat(t$1('field__content'), "\">\n      <div class=\"").concat(t$1('checkout__content'), "\">\n        <div class=\"").concat(t$1('checkout__info'), "\">\n          <div class=\"").concat(t$1('checkout__info-item'), "\">\n            <h4>").concat(LANG.checkout.network, "</h4>\n            <p>XIN</p>\n          </div>\n          <div class=\"").concat(t$1('checkout__info-item'), "\">\n            <h4>").concat(LANG.checkout.address, "</h4>\n            <p class=\"").concat(t$1('copy-toggle'), "\" data-success=\"").concat(LANG.common.copied, "\">\n              <span class=\"").concat(t$1('copy-content'), "\"></span>\n              <svg class=\"").concat(t$1('copy-icon'), "\"><use xlink:href=\"#").concat(t$1('copy'), "\" /></svg>\n            </p>\n          </div>\n          <div class=\"").concat(t$1('checkout__info-item'), "\">\n            <h4>").concat(LANG.checkout.memo, "</h4>\n            <p class=\"").concat(t$1('copy-toggle'), "\" data-success=\"").concat(LANG.common.copied, "\">\n              <span class=\"").concat(t$1('copy-content'), "\">1231231</span>\n              <svg class=\"").concat(t$1('copy-icon'), "\"><use xlink:href=\"#").concat(t$1('copy'), "\" /></svg>\n            </p>\n          </div>\n        </div>\n        <div class=\"").concat(t$1('checkout__qrious'), "\">\n          <div class=\"").concat(t$1('checkout__qrious-box'), "\">\n            <canvas></canvas>\n          </div>\n        </div>\n      </div>\n      <p class=\"").concat(t$1('checkout__countdown'), "\">").concat(LANG.checkout.countdown, "</p>\n    </div>\n    <div class=\"").concat(t$1('field__footer'), "\">\n      <div class=\"").concat(t$1('btn-group'), "\">\n        <button class=\"").concat(t$1('btn-primary'), "\">").concat(LANG.common.confirmed, "</button>\n        <button class=\"").concat(t$1('btn-inline'), "\">\n          <svg class=\"").concat(t$1('btn-icon'), "\"><use xlink:href=\"#").concat(t$1('arrow-right'), "\" /></svg>\n          <span>").concat(LANG.common.back, "</span>\n        </button>\n      </div>\n    </div>\n  </div>\n  <div class=\"").concat(t$1('field'), "\" data-page=\"checking\">\n    <div class=\"").concat(t$1('field__header'), "\">\n      <svg class=\"").concat(t$1('status-icon'), "\"><use xlink:href=\"#").concat(t$1('status-pending'), "\" /></svg>\n    </div>\n    <div class=\"").concat(t$1('field__content'), "\">\n      <h4 class=\"").concat(t$1('status-title'), "\">").concat(LANG.result.checking, "</h4>\n      <p class=\"").concat(t$1('status-des'), "\">").concat(LANG.result.checkingDesc, "</p>\n      <p class=\"").concat(t$1('status-payment'), "\"></p>\n      <p class=\"").concat(t$1('status-quote'), "\"></p>\n    </div>\n    <div class=\"").concat(t$1('field__footer'), "\">\n      <div class=\"").concat(t$1('btn-group'), "\">\n        <button class=\"").concat(t$1('btn-inline'), "\"><svg class=\"").concat(t$1('btn-icon'), "\"><use xlink:href=\"#").concat(t$1('arrow-right'), "\" /></svg><span>Back</span></button>\n      </div>\n    </div>\n  </div>\n  <div class=\"").concat(t$1('field'), "\" data-page=\"pending\">\n    <div class=\"").concat(t$1('field__header'), "\">\n      <svg class=\"").concat(t$1('status-icon'), "\"><use xlink:href=\"#").concat(t$1('status-pending'), "\" /></svg>\n    </div>\n    <div class=\"").concat(t$1('field__content'), "\">\n      <h4 class=\"").concat(t$1('status-title'), "\">").concat(LANG.result.pending, "</h4>\n      <p class=\"").concat(t$1('status-des'), "\">").concat(LANG.result.pendingDesc, "</p>\n      <p class=\"").concat(t$1('status-payment'), "\"></p>\n      <p class=\"").concat(t$1('status-quote'), "\"></p>\n    </div>\n  </div>\n  <div class=\"").concat(t$1('field'), "\" data-page=\"success\">\n    <div class=\"").concat(t$1('field__header'), "\">\n      <svg class=\"").concat(t$1('status-icon'), "\"><use xlink:href=\"#").concat(t$1('status-success'), "\" /></svg>\n    </div>\n    <div class=\"").concat(t$1('field__content'), "\">\n      <h4 class=\"").concat(t$1('status-title'), "\">").concat(LANG.result.success, "</h4>\n      <p class=\"").concat(t$1('status-des'), "\"></p>\n      <p class=\"").concat(t$1('status-payment'), "\"></p>\n      <p class=\"").concat(t$1('status-quote'), "\"></p>\n    </div>\n  </div>\n  <div class=\"").concat(t$1('field'), "\" data-page=\"failed\">\n    <div class=\"").concat(t$1('field__header'), "\">\n      <svg class=\"").concat(t$1('status-icon'), "\"><use xlink:href=\"#").concat(t$1('status-failed'), "\" /></svg>\n    </div>\n    <div class=\"").concat(t$1('field__content'), "\">\n      <h4 class=\"").concat(t$1('status-title'), "\">").concat(LANG.result.failed, "</h4>\n      <p class=\"").concat(t$1('status-des'), "\"></p>\n      <p class=\"").concat(t$1('status-payment'), "\"></p>\n      <p class=\"").concat(t$1('status-quote'), "\"></p>\n    </div>\n    <div class=\"").concat(t$1('field__footer'), "\">\n      <div class=\"").concat(t$1('btn-group'), "\">\n        <button class=\"").concat(t$1('btn-primary'), "\">").concat(LANG.common.payAgain, "</button>\n      </div>\n    </div>\n  </div>\n  <div class=\"").concat(t$1('field'), "\" data-page=\"overtime\">\n    <div class=\"").concat(t$1('field__header'), "\">\n      <svg class=\"").concat(t$1('status-icon'), "\"><use xlink:href=\"#").concat(t$1('status-failed'), "\" /></svg>\n    </div>\n    <div class=\"").concat(t$1('field__content'), "\">\n      <h4 class=\"").concat(t$1('status-title'), "\">").concat(LANG.result.overtime, "</h4>\n      <p class=\"").concat(t$1('status-des'), "\">").concat(LANG.result.overtimeDesc, "</p>\n      <p class=\"").concat(t$1('status-payment'), "\"></p>\n      <p class=\"").concat(t$1('status-quote'), "\"></p>\n    </div>\n    <div class=\"").concat(t$1('field__footer'), "\">\n      <div class=\"").concat(t$1('field__error'), "\"></div>\n      <div class=\"").concat(t$1('btn-group'), "\">\n        <button class=\"").concat(t$1('btn-primary'), "\">").concat(LANG.common.refresh, "</button>\n      </div>\n    </div>\n  </div>\n</div>\n<div class=\"").concat(t$1('footer'), "\">\n  <a class=\"").concat(t$1('link'), "\" href=\"https://help.mixpay.me/en_US/faq/how-to-contact-customer-service\"  target=\"_blank\">").concat(LANG.common.help, "</a>\n  <a class=\"").concat(t$1('link'), "\" href=\"https://mixpay.me/user-agreement\"  target=\"_blank\">").concat(LANG.common.termsOfUse, "</a>\n</div>");
+var result = template.replace(new RegExp('(?<=>)\s*?(?=<)', 'g'), '');
 
-    this.options = assign({}, DEFAULT, isPlainObject(options) && options);
-    this.ready = false;
-    this.quoteAssets = [];
-    this.paymentAssets = [];
-    var container = document.createElement('div');
+var t = function t(name) {
+  return ".".concat(NAMESPACE, "-").concat(name);
+};
 
-    if (!element || !(element instanceof HTMLElement)) {
-      element = document.body;
+function MixPay(element) {
+  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  this.$wrapper = element || document.body;
+  this.$element = null;
+  this.options = assign({}, OPTIONS_DEFAULT, isPlainObject(options) && options);
+  this.options.clientId = this.options.clientId || genUuid();
+  this.quoteAssets = [];
+  this.paymentAssets = [];
+  this.payConfig = pureAssign(PAYMENT_DEFAULT, this.options); // 支付信息
+
+  this.params = {
+    quoteAsset: {},
+    quoteAmount: '',
+    paymentAsset: {},
+    paymentMethod: 'mixin'
+  };
+  this.payments = {
+    isChain: false,
+    clientId: '',
+    traceId: '',
+    destination: '',
+    tag: '',
+    paymentAmount: '',
+    paymentAssetId: '',
+    quoteAmount: '',
+    quoteAssetId: '',
+    recipient: '',
+    memo: '',
+    expire: ''
+  };
+  this.result = {
+    status: 'unpaid',
+    payableAmount: '',
+    paymentAmount: '',
+    paymentSymbol: '',
+    quoteAmount: '',
+    quoteSymbol: '',
+    txid: '',
+    date: '',
+    failureCode: '',
+    failureReason: '',
+    surplusAmount: ''
+  };
+  this.coutdownKey = null;
+  this.resultKey = null;
+  this.isReady = false;
+  this.isShow = false;
+  this.isUserConfirmed = false;
+  this.init();
+}
+
+MixPay.prototype = {
+  $apis: APIS,
+  init: function init() {
+    var _this = this;
+
+    if (!IS_BROWSER) {
+      throw new Error('A browser is needed!');
     }
 
-    element.appendChild(container);
-    this.element = container;
-    this.payConfig = copyTemplate(PAYMENT_DEFAULT, this.options);
-    this.payInfo = {};
-    this.paymentInfo = {};
-    this.isSubmitting = false;
-    this.countdownInterval = null;
-    this.pollResultInterval = null;
-    this.init();
-  }
-
-  _createClass(MixPay, [{
-    key: "init",
-    value: function init() {
-      this.bind();
-      this.load();
-    }
-  }, {
-    key: "load",
-    value: function load() {
-      var _this = this;
-
-      var element = this.element;
-      var promises = [];
-
-      if (!this.quoteAssets.length) {
-        promises.push(MixPay.getQuoteAssets().then(function (data) {
-          _this.quoteAssets = isArray(data.data) ? data.data : [];
-        }));
-      }
-
-      if (!this.paymentAssets.length) {
-        promises.push(MixPay.getPaymentAssets().then(function (data) {
-          _this.paymentAssets = isArray(data.data) ? data.data : [];
-        }));
-      }
-
-      Promise.all(promises).then(function () {
-        _this.ready = true;
-
-        _this.build();
-
-        dispatchEvent(element, EVENT_READY);
-      }).catch(function () {
-        setTimeout(function () {
-          _this.load();
-        }, 1000);
+    this.render();
+    this.bindEvents();
+    var _this$payConfig = this.payConfig,
+        quoteAssetId = _this$payConfig.quoteAssetId,
+        quoteAmount = _this$payConfig.quoteAmount;
+    this.renderPage('loading');
+    addListener(this.$element, EVENT_READY, function () {
+      var asset = _this.quoteAssets.find(function (item) {
+        return item.assetId === quoteAssetId;
       });
-    }
-  }, {
-    key: "build",
-    value: function build() {
-      this.render();
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (!this.ready) return;
-      this.ready = false;
-      var element = this.element;
-      var parentNode = element && element.parentNode;
 
-      if (parentNode) {
-        parentNode.removeChild(element);
-      }
+      _this.params.quoteAsset = asset || _this.quoteAssets[0];
+      _this.params.quoteAmount = quoteAmount > 0 ? quoteAmount : '';
+      _this.params.paymentAsset = _this.paymentAssets[0];
+      _this.params.paymentMethod = 'mixin';
 
-      this.unbind();
-    }
-  }, {
-    key: "pay",
-    value: function pay() {
-      var _this2 = this;
-
-      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      this.payConfig = copyTemplate(copyTemplate(PAYMENT_DEFAULT, this.options), isPlainObject(options) && options);
-
-      if (this.ready) {
-        this.show();
+      if (asset && quoteAmount > 0) {
+        _this.renderPage('payment');
       } else {
-        addListener(this.element, EVENT_READY, function () {
-          _this2.show();
-        }, {
-          once: true
-        });
+        _this.renderPage('quote');
+      }
+    }, {
+      once: true
+    });
+    this.load();
+  },
+  load: function load() {
+    var _this2 = this;
+
+    var promises = [];
+
+    if (!this.quoteAssets.length) {
+      promises.push(this.$apis.getQuoteAssets().then(function (data) {
+        _this2.quoteAssets = isArray(data.data) ? data.data : [];
+      }));
+    }
+
+    if (!this.paymentAssets.length) {
+      promises.push(this.$apis.getPaymentAssets().then(function (data) {
+        _this2.paymentAssets = isArray(data.data) ? data.data : [];
+      }));
+    }
+
+    Promise.all(promises).then(function () {
+      _this2.isReady = true;
+      dispatchEvent(_this2.$element, EVENT_READY);
+    }).catch(function () {
+      setTimeout(function () {
+        _this2.load();
+      }, 3000);
+    });
+  },
+  render: function render() {
+    var _this$options = this.options,
+        isModal = _this$options.isModal,
+        hasMask = _this$options.hasMask;
+    var $wrapper = this.$wrapper;
+    var $element = document.createElement('div');
+    $element.classList.add(NAMESPACE);
+
+    if (isModal) {
+      toggleClass($element, 'is-modal');
+      setStyle($element, 'display', 'none');
+
+      if (hasMask) {
+        var mask = document.createElement('div');
+        toggleClass(mask, "".concat(NAMESPACE, "-mask"));
+        $element.appendChild(mask);
       }
     }
-  }, {
-    key: "show",
-    value: function show() {
-      var element = this.element,
-          payConfig = this.payConfig;
-      this.renderStep(0);
 
-      if (payConfig.quoteAssetId && payConfig.quoteAmount > 0) {
-        this.renderStep(1);
-      }
+    var container = document.createElement('div');
+    toggleClass(container, "".concat(NAMESPACE, "-container"));
+    container.innerHTML = result;
+    $element.appendChild(container);
+    $wrapper.appendChild($element);
+    this.$element = $element;
+    var $closeBtn = query($element, t('header__action'));
+    var $quote = query($element, t('field[data-page=quote]'));
+    var $quoteDropdown = query($quote, t('dropdown__toggle'));
+    var $quoteList = query($quote, t('dropdown__menu'));
+    var $quoteSelected = query($quote, t('dropdown__selected'));
+    var $quoteInput = query($quote, t('input-item__input'));
+    var $quoteUnit = query($quote, t('input-item__right'));
+    var $quoteError = query($quote, t('field__error'));
+    var $quoteNextBtn = query($quote, 'button');
+    var $payment = query($element, t('field[data-page=payment'));
+    var $paymentDropdown = query($payment, t('dropdown__toggle'));
+    var $paymentList = query($payment, t('dropdown__menu'));
+    var $paymentSelected = query($payment, t('dropdown__selected'));
+    var $paymentError = query($payment, t('field__error'));
+    var $paymentNextBtn = query($payment, t('btn-primary'));
+    var $paymentBackBtn = query($payment, t('btn-inline'));
+    var $paymentRadios = query($payment, "".concat(t('field-item:nth-child(2)'), " ").concat(t('field-item__content')));
+    var $mixin = query($element, t('field[data-page="checkout-mixin"]'));
+    var $mixinPaidBtn = query($mixin, t('btn-primary'));
+    var $mixinBackBtn = query($mixin, t('btn-inline'));
+    var $mixinCountdown = query($mixin, t('checkout__countdown'));
+    var $chain = query($element, t('field[data-page=checkout-chain]'));
+    var $chainPaidBtn = query($chain, t('btn-primary'));
+    var $chainBackBtn = query($chain, t('btn-inline'));
+    var $chainCountdown = query($chain, t('checkout__countdown'));
+    var $checking = query($element, t('field[data-page=checking]'));
+    var $checkingBackBtn = query($checking, t('btn-inline'));
+    var $failed = query($element, t('field[data-page=failed]'));
+    var $failedBtn = query($failed, t('btn-primary'));
+    var $overtime = query($element, t('field[data-page=overtime]'));
+    var $overtimeBtn = query($overtime, t('btn-primary'));
+    var $overtimeError = query($overtime, t('field__error'));
+    var that = this;
 
-      if (!element.classList.contains('show')) {
-        element.classList.add('show');
-      }
-    }
-  }, {
-    key: "hide",
-    value: function hide() {
-      clearInterval(this.countdownInterval);
-      clearInterval(this.pollResultInterval);
-      dispatchEvent(this.element, EVENT_MODAL_CLOSE);
-      var element = this.element;
-
-      if (element.classList.contains('show')) {
-        element.classList.remove('show');
-      }
-    }
-  }, {
-    key: "createPayment",
-    value: function createPayment() {
+    var copyEvent = function copyEvent() {
       var _this3 = this;
 
-      var payInfo = this.payInfo,
-          payConfig = this.payConfig,
-          element = this.element;
-      var obj = copyTemplate(payConfig, {
-        quoteAssetId: payInfo.quoteAsset.assetId,
-        quoteAmount: payInfo.quoteAmount,
-        paymentAssetId: payInfo.paymentAsset.assetId,
-        note: payInfo.note,
-        isChain: payInfo.isChain
+      var content = query(this, t('copy-content'));
+      if (!content) return;
+
+      if (copy(content.innerText)) {
+        clearTimeout(this.timeout);
+
+        if (!hasClass(this, 'copy-success')) {
+          toggleClass(this, 'copy-success');
+        }
+
+        this.timeout = setTimeout(function () {
+          toggleClass(_this3, 'copy-success');
+        }, 3000);
+      }
+    };
+
+    forEach(queryAll($element, t('copy-toggle')), function (ele) {
+      ele.onclick = copyEvent;
+    });
+
+    var regularTaskFn = function regularTaskFn(isChain) {
+      var countdown = isChain ? $chainCountdown : $mixinCountdown;
+      return function (diff) {
+        countdown.innerHTML = LANG.checkout.countdown.replace(/\$1/, "".concat(diff, "s"));
+      };
+    };
+
+    var endTask = function endTask() {
+      var _that$payments = that.payments,
+          clientId = _that$payments.clientId,
+          traceId = _that$payments.traceId,
+          isChain = _that$payments.isChain,
+          paymentAssetId = _that$payments.paymentAssetId,
+          quoteAmount = _that$payments.quoteAmount,
+          quoteAssetId = _that$payments.quoteAssetId;
+      var $field = query(that.$element, t("field[data-page=checkout-".concat(isChain ? 'chain' : 'mixin', "]")));
+      var $btns = query($field, t('btn-group'));
+      setStyle($btns, 'visibility', 'hidden');
+      that.$apis.getPaymentResult(clientId, traceId) // eslint-disable-next-line consistent-return
+      .then(function (result) {
+        var r = result.data;
+        that.result.status = r.status;
+        that.result.payableAmount = r.payableAmount;
+        that.result.paymentAmount = r.paymentAmount;
+        that.result.paymentSymbol = r.paymentSymbol;
+        that.result.quoteAmount = r.quoteAmount;
+        that.result.quoteSymbol = r.quoteSymbol;
+        that.result.txid = r.txid;
+        that.result.date = r.date;
+        that.result.failureCode = r.failureCode;
+        that.result.failureReason = r.failureReason;
+        that.result.surplusAmount = r.surplusAmount;
+
+        if (r.status === 'unpaid') {
+          var data = assign({}, that.payConfig, {
+            quoteAssetId: quoteAssetId,
+            quoteAmount: quoteAmount,
+            paymentAssetId: paymentAssetId,
+            isChain: isChain,
+            traceId: traceId
+          });
+          return that.$apis.createPayment(data).then(function (_data) {
+            var d = _data.data;
+            that.payments = {
+              isChain: d.isChain,
+              clientId: d.clientId,
+              traceId: d.traceId,
+              destination: d.destination,
+              tag: d.tag,
+              paymentAmount: d.paymentAmount,
+              paymentAssetId: d.paymentAssetId,
+              quoteAmount: d.quoteAmount,
+              quoteAssetId: d.quoteAssetId,
+              recipient: d.recipient,
+              memo: d.memo,
+              expire: d.expire
+            };
+            dispatchEvent(that.$element, EVENT_PAYMENT_CREATE, d);
+            var regularTask = regularTaskFn(d.isChain);
+            that.startCountdown(regularTask, endTask);
+            that.startQueryOrder();
+            that.renderPage(d.isChain ? 'checkoutChain' : 'checkoutMixin');
+          });
+        }
+
+        switch (r.status) {
+          case 'pending':
+            that.renderPage('pending');
+            break;
+
+          case 'success':
+            that.renderPage('success');
+            dispatchEvent(that.$element, EVENT_PAYMENT_SUCCESS);
+            break;
+
+          case 'failed':
+            that.renderPage('failed');
+            dispatchEvent(that.$element, EVENT_PAYMENT_FAILED, {
+              code: r.failureCode,
+              reason: r.failureReason
+            });
+            break;
+        }
+      }).catch(function () {
+        that.renderPage('overtime');
+      });
+    };
+
+    $closeBtn.onclick = function () {
+      that.hide();
+    };
+
+    $quoteDropdown.onclick = function () {
+      if (hasClass(this, 'disabled')) return;
+      toggleClass($quoteList, 'show');
+    };
+
+    $quoteList.onclick = function (e) {
+      var quoteAssets = that.quoteAssets,
+          quoteAsset = that.params.quoteAsset;
+      var target = e.target || e.srcElement;
+      if (target === this) return;
+
+      while (String(target.tagName).toUpperCase() !== 'LI') {
+        target = target.parentNode;
+      }
+
+      var assetId = target.dataset.id;
+      var asset = quoteAssets.find(function (item) {
+        return item.assetId === assetId;
+      });
+      if (!asset) return;
+
+      if (asset.assetId === quoteAsset.assetId) {
+        toggleClass($quoteList, 'show');
+        return;
+      }
+
+      setHTML($quoteSelected, "<img src=\"".concat(asset.iconUrl, "\" /><span>").concat(asset.symbol, "</span>"));
+      $quoteInput.value = '';
+      $quoteInput.setAttribute('placeholder', "".concat(asset.minQuoteAmount, " - ").concat(asset.maxQuoteAmount));
+      setText($quoteUnit, asset.symbol);
+      setHTML($quoteError, '');
+      that.params.quoteAsset = asset;
+      that.params.quoteAmount = '';
+      toggleClass($quoteList, 'show');
+    };
+
+    $quoteInput.oninput = function (e) {
+      var decimalDigit = that.params.quoteAsset.decimalDigit;
+      var output = e.target.value;
+      var outputArr = output.split('.');
+
+      if (outputArr[1] !== undefined) {
+        output = "".concat(outputArr[0] || '0', ".").concat(outputArr[1].slice(0, decimalDigit));
+      }
+
+      if (output !== this.value) {
+        this.value = output;
+      }
+
+      that.params.quoteAmount = this.value;
+    };
+
+    $quoteNextBtn.onclick = function () {
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
+      var _that$params = that.params,
+          _that$params$quoteAss = _that$params.quoteAsset,
+          minQuoteAmount = _that$params$quoteAss.minQuoteAmount,
+          maxQuoteAmount = _that$params$quoteAss.maxQuoteAmount,
+          symbol = _that$params$quoteAss.symbol,
+          quoteAmount = _that$params.quoteAmount;
+
+      if (+quoteAmount < +minQuoteAmount || +quoteAmount > +maxQuoteAmount) {
+        setHTML($quoteError, "<span>Out of range ".concat(minQuoteAmount, " - ").concat(maxQuoteAmount, " ").concat(symbol, "</span>"));
+      } else {
+        setHTML($quoteError, '');
+        that.renderPage('payment');
+      }
+
+      this.isSubmitting = false;
+    };
+
+    $paymentDropdown.onclick = function () {
+      toggleClass($paymentList, 'show');
+    };
+
+    $paymentList.onclick = function (e) {
+      var paymentAssets = that.paymentAssets,
+          _that$params2 = that.params,
+          paymentAsset = _that$params2.paymentAsset,
+          paymentMethod = _that$params2.paymentMethod;
+      var target = e.target || e.srcElement;
+      if (target === this) return;
+
+      while (String(target.tagName).toUpperCase() !== 'LI') {
+        target = target.parentNode;
+      }
+
+      var assetId = target.dataset.id;
+      var asset = paymentAssets.find(function (item) {
+        return item.assetId === assetId;
       });
 
-      if (!obj.traceId) {
-        obj.traceId = genUuid();
+      if (!asset) {
+        return;
       }
 
-      if (!obj.clientId) {
-        obj.clientId = genUuid();
+      if (paymentAsset.assetId === assetId) {
+        toggleClass(this, 'show');
+        return;
       }
 
-      return APIS.createPayment(obj).then(function (data) {
-        var d = data.data;
-        _this3.paymentInfo = {
+      setHTML($paymentSelected, "<img src=\"".concat(asset.iconUrl, "\" /><span>").concat(asset.symbol, "</span><em>").concat(asset.network, "</em>"));
+      setHTML($paymentError, !asset.onChainSupported && paymentMethod === 'chain' ? LANG.error.notSupportChain : '');
+      that.params.paymentAsset = asset;
+      toggleClass(this, 'show');
+    };
+
+    $paymentRadios.onclick = function (e) {
+      var target = e.target || e.srcElement;
+      var onChainSupported = that.params.paymentAsset.onChainSupported;
+
+      if (String(target.tagName).toUpperCase() === 'INPUT') {
+        that.params.paymentMethod = target.value;
+        setHTML($paymentError, !onChainSupported && target.value === 'chain' ? LANG.error.notSupportChain : '');
+      }
+    };
+
+    $paymentNextBtn.onclick = function () {
+      var _this4 = this;
+
+      if (this.isSubmitting) return;
+      var _that$params3 = that.params,
+          paymentAsset = _that$params3.paymentAsset,
+          paymentMethod = _that$params3.paymentMethod,
+          quoteAsset = _that$params3.quoteAsset,
+          quoteAmount = _that$params3.quoteAmount;
+
+      if (!paymentAsset.onChainSupported && paymentMethod === 'chain') {
+        setHTML($paymentError, LANG.error.notSupportChain);
+        return;
+      }
+
+      $paymentError.innerHTML = '';
+      toggleClass(this, 'inactive');
+      this.isSubmitting = true;
+      var data = assign({}, that.payConfig, {
+        quoteAssetId: quoteAsset.assetId,
+        quoteAmount: quoteAmount,
+        paymentAssetId: paymentAsset.assetId,
+        isChain: paymentMethod === 'chain'
+      });
+      data.traceId = data.traceId || genUuid();
+      that.$apis.createPayment(data).then(function (_data) {
+        var d = _data.data;
+        that.payments = {
+          isChain: d.isChain,
           clientId: d.clientId,
+          traceId: d.traceId,
           destination: d.destination,
           tag: d.tag,
-          expire: d.expire,
-          isChain: d.isChain,
-          quoteAssetId: d.quoteAssetId,
-          quoteAmount: d.quoteAmount,
-          paymentAssetId: d.paymentAssetId,
           paymentAmount: d.paymentAmount,
-          memo: d.memo,
+          paymentAssetId: d.paymentAssetId,
+          quoteAmount: d.quoteAmount,
+          quoteAssetId: d.quoteAssetId,
           recipient: d.recipient,
-          traceId: d.traceId
+          memo: d.memo,
+          expire: d.expire
         };
-        dispatchEvent(element, EVENT_PAYMENT_CREATE, _this3.paymentInfo);
-      }).catch(function (err) {
-        return Promise.reject(err);
+        dispatchEvent(that.$element, EVENT_PAYMENT_CREATE, d);
+        var regularTask = regularTaskFn(d.isChain);
+        that.startCountdown(regularTask, endTask);
+        that.startQueryOrder();
+        that.renderPage(d.isChain ? 'checkoutChain' : 'checkoutMixin');
+      }).catch(function (_err) {
+        setHTML($paymentError, "<span>".concat(_err.message, "</span>"));
+      }).finally(function () {
+        _this4.isSubmitting = false;
+        toggleClass(_this4, 'inactive');
       });
+    };
+
+    $paymentBackBtn.onclick = function () {
+      that.renderPage('quote');
+    };
+
+    $mixinPaidBtn.onclick = function () {
+      var _this5 = this;
+
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
+      var _that$payments2 = that.payments,
+          recipient = _that$payments2.recipient,
+          paymentAssetId = _that$payments2.paymentAssetId,
+          paymentAmount = _that$payments2.paymentAmount,
+          traceId = _that$payments2.traceId,
+          memo = _that$payments2.memo;
+      window.location.href = "mixin://pay?recipient=".concat(recipient, "&asset=").concat(paymentAssetId, "&amount=").concat(paymentAmount, "&trace=").concat(traceId, "&memo=").concat(memo);
+      setTimeout(function () {
+        _this5.isSubmitting = false;
+      }, 3000);
+    };
+
+    $mixinBackBtn.onclick = function () {
+      clearInterval(that.coutdownKey);
+      clearInterval(that.resultKey);
+      that.renderPage('payment');
+    };
+
+    $chainPaidBtn.onclick = function () {
+      clearInterval(that.coutdownKey);
+      that.isUserConfirmed = true;
+      that.renderPage('checking');
+    };
+
+    $chainBackBtn.onclick = function () {
+      clearInterval(that.coutdownKey);
+      clearInterval(that.resultKey);
+      that.renderPage('payment');
+    };
+
+    $checkingBackBtn.onclick = function () {
+      var isChain = that.payments.isChain;
+      that.isUserConfirmed = false;
+      var regularTask = regularTaskFn(isChain);
+      that.startCountdown(regularTask, endTask);
+      that.startQueryOrder();
+      that.renderPage(isChain ? 'checkoutChain' : 'checkoutMixin');
+    };
+
+    $failedBtn.onclick = function () {
+      var _that$payConfig = that.payConfig,
+          quoteAssetId = _that$payConfig.quoteAssetId,
+          quoteAmount = _that$payConfig.quoteAmount;
+
+      if (quoteAssetId && quoteAmount > 0) {
+        that.renderPage('payment');
+      } else {
+        that.renderPage('quote');
+      }
+    };
+
+    $overtimeBtn.onclick = function () {
+      var _this6 = this;
+
+      if (this.isSubmitting) return;
+      this.isSubmitting = true;
+      toggleClass(this, 'inactive');
+      var _that$payments3 = that.payments,
+          traceId = _that$payments3.traceId,
+          isChain = _that$payments3.isChain,
+          paymentAssetId = _that$payments3.paymentAssetId,
+          quoteAmount = _that$payments3.quoteAmount,
+          quoteAssetId = _that$payments3.quoteAssetId;
+      var data = assign({}, that.payConfig, {
+        quoteAssetId: quoteAssetId,
+        quoteAmount: quoteAmount,
+        paymentAssetId: paymentAssetId,
+        isChain: isChain,
+        traceId: traceId
+      });
+      that.$apis.createPayment(data).then(function (_data) {
+        var d = _data.data;
+        that.payments = {
+          isChain: d.isChain,
+          clientId: d.clientId,
+          traceId: d.traceId,
+          destination: d.destination,
+          tag: d.tag,
+          paymentAmount: d.paymentAmount,
+          paymentAssetId: d.paymentAssetId,
+          quoteAmount: d.quoteAmount,
+          quoteAssetId: d.quoteAssetId,
+          recipient: d.recipient,
+          memo: d.memo,
+          expire: d.expire
+        };
+        dispatchEvent(that.$element, EVENT_PAYMENT_CREATE, d);
+        var regularTask = regularTaskFn(d.isChain);
+        that.startCountdown(regularTask, endTask);
+        that.startQueryOrder();
+        that.renderPage(d.isChain ? 'checkoutChain' : 'checkoutMixin');
+      }).catch(function (err) {
+        setHTML($overtimeError, "<span>".concat(err.message, "</span>"));
+      }).finally(function () {
+        _this6.isSubmitting = false;
+        toggleClass(_this6, 'inactive');
+      });
+    };
+  },
+  bindEvents: function bindEvents() {
+    var $element = this.$element,
+        options = this.options;
+
+    if (isFunction(options.onReady)) {
+      addListener($element, EVENT_READY, options.onReady);
     }
-  }, {
-    key: "getPaymentInfo",
-    value: function getPaymentInfo() {
-      return APIS.getPaymentResult(this.paymentInfo.traceId).then(function (data) {
+
+    if (isFunction(options.onClose)) {
+      addListener($element, EVENT_MODAL_CLOSE, options.onClose);
+    }
+
+    if (isFunction(options.onPaymentCreate)) {
+      addListener($element, EVENT_PAYMENT_CREATE, options.onPaymentCreate);
+    }
+
+    if (isFunction(options.onPaymentSuccess)) {
+      addListener($element, EVENT_PAYMENT_SUCCESS, options.onPaymentSuccess);
+    }
+
+    if (isFunction(options.onPaymentFail)) {
+      addListener($element, EVENT_PAYMENT_FAILED, options.onPaymentFail);
+    }
+  },
+  startCountdown: function startCountdown(regularTask, endTask) {
+    var _this7 = this;
+
+    clearInterval(this.coutdownKey);
+    var expire = this.payments.expire;
+
+    var task = function task() {
+      var diff = expire - Math.ceil(new Date().getTime() / 1000);
+
+      if (diff >= 0) {
+        regularTask(diff);
+      } else {
+        clearInterval(_this7.coutdownKey);
+        clearInterval(_this7.resultKey);
+        endTask();
+      }
+    };
+
+    this.coutdownKey = setInterval(task, 1000);
+    task();
+  },
+  startQueryOrder: function startQueryOrder() {
+    var _this8 = this;
+
+    clearInterval(this.resultKey);
+    var _this$payments = this.payments,
+        clientId = _this$payments.clientId,
+        traceId = _this$payments.traceId;
+    this.resultKey = setInterval(function () {
+      _this8.$apis.getPaymentResult(clientId, traceId).then(function (data) {
         var d = data.data;
-        return Promise.resolve(d.status);
-      }).catch(function (err) {
-        return Promise.reject(err);
+        var statusChanged = false;
+        var page = '';
+
+        if (_this8.result.status !== d.status) {
+          statusChanged = true;
+        }
+
+        _this8.result.status = d.status;
+        _this8.result.payableAmount = d.payableAmount;
+        _this8.result.paymentAmount = d.paymentAmount;
+        _this8.result.paymentSymbol = d.paymentSymbol;
+        _this8.result.quoteAmount = d.quoteAmount;
+        _this8.result.quoteSymbol = d.quoteSymbol;
+        _this8.result.txid = d.txid;
+        _this8.result.date = d.date;
+        _this8.result.failureCode = d.failureCode;
+        _this8.result.failureReason = d.failureReason;
+        _this8.result.surplusAmount = d.surplusAmount;
+
+        switch (_this8.result.status) {
+          case 'unpaid':
+            if (_this8.isUserConfirmed) {
+              page = 'checking';
+            }
+
+            break;
+
+          case 'pending':
+            clearInterval(_this8.coutdownKey);
+            page = 'pending';
+            break;
+
+          case 'failed':
+            clearInterval(_this8.coutdownKey);
+            clearInterval(_this8.resultKey);
+            page = 'failed';
+            dispatchEvent(_this8.$element, EVENT_PAYMENT_FAILED, {
+              code: d.failureCode,
+              reason: d.failureReason
+            });
+            break;
+
+          case 'success':
+            clearInterval(_this8.coutdownKey);
+            clearInterval(_this8.resultKey);
+            page = 'success';
+            dispatchEvent(_this8.$element, EVENT_PAYMENT_SUCCESS);
+            break;
+        }
+
+        if (statusChanged && page) {
+          _this8.renderPage(page);
+        }
+      }).catch(function () {});
+    }, 5000);
+  },
+  renderPage: function renderPage(page) {
+    var quoteAssets = this.quoteAssets,
+        paymentAssets = this.paymentAssets,
+        _this$payments2 = this.payments,
+        paymentAmount = _this$payments2.paymentAmount,
+        destination = _this$payments2.destination,
+        paymentAssetId = _this$payments2.paymentAssetId,
+        traceId = _this$payments2.traceId,
+        memo = _this$payments2.memo,
+        recipient = _this$payments2.recipient,
+        tag = _this$payments2.tag,
+        _this$params = this.params,
+        _this$params$quoteAss = _this$params.quoteAsset,
+        qIcon = _this$params$quoteAss.iconUrl,
+        qSymbol = _this$params$quoteAss.symbol,
+        minQuoteAmount = _this$params$quoteAss.minQuoteAmount,
+        maxQuoteAmount = _this$params$quoteAss.maxQuoteAmount,
+        quoteAmount = _this$params.quoteAmount,
+        _this$params$paymentA = _this$params.paymentAsset,
+        pIcon = _this$params$paymentA.iconUrl,
+        pSymbol = _this$params$paymentA.symbol,
+        network = _this$params$paymentA.network,
+        paymentMethod = _this$params.paymentMethod,
+        _this$payConfig2 = this.payConfig,
+        payAssetId = _this$payConfig2.quoteAssetId,
+        payAmount = _this$payConfig2.quoteAmount,
+        result = this.result;
+    var activeIndex;
+    var activeField;
+    var fields = queryAll(this.$element, t('field'));
+
+    var q = function q(selector) {
+      return query(activeField, t(selector));
+    };
+
+    switch (page) {
+      case 'loading':
+        activeIndex = 0;
+        break;
+
+      case 'quote':
+        activeIndex = 1;
+        activeField = fields[activeIndex];
+
+        if (payAssetId) {
+          toggleClass(q('dropdown__toggle'), 'disabled');
+        }
+
+        setHTML(q('dropdown__selected'), "<img src=\"".concat(qIcon, "\" /><span>").concat(qSymbol, "</span>"));
+        setHTML(q('dropdown__menu'), quoteAssets.map(function (item) {
+          return "<li data-id=\"".concat(item.assetId, "\"><img src=\"").concat(item.iconUrl, "\" /><span>").concat(item.symbol, "</span></li>");
+        }).join(''));
+        var qInput = q('input-item__input');
+        qInput.setAttribute('value', quoteAmount);
+        qInput.setAttribute('placeholder', "".concat(minQuoteAmount, " - ").concat(maxQuoteAmount));
+        setText(q('input-item__right'), qSymbol);
+        setHTML(q('filed__error'), '');
+        break;
+
+      case 'payment':
+        activeIndex = 2;
+        activeField = fields[activeIndex];
+        setHTML(q('field__header-main'), "<img src=\"".concat(qIcon, "\" /><span>").concat(quoteAmount, " ").concat(qSymbol, "</span>"));
+        setHTML(q('dropdown__selected'), "<img src=\"".concat(pIcon, "\" /><span>").concat(pSymbol, "</span><em>").concat(network, "</em>"));
+        setHTML(q('dropdown__menu'), paymentAssets.map(function (item) {
+          return "<li data-id=\"".concat(item.assetId, "\"><img src=\"").concat(item.iconUrl, "\" /><span>").concat(item.symbol, "</span><em>").concat(item.network, "</em></li>");
+        }).join(''));
+        var pInput = queryAll(activeField, 'input')[paymentMethod === 'chain' ? 1 : 0];
+        pInput.setAttribute('checked', true);
+        setStyle(q('btn-inline'), 'display', payAssetId && payAmount > 0 ? 'none' : 'inline-flex');
+        break;
+
+      case 'checkoutMixin':
+        activeIndex = 3;
+        activeField = fields[activeIndex];
+        this.isUserConfirmed = false;
+        var mixinImg = q('field__header-main img');
+        mixinImg.setAttribute('src', pIcon);
+        setHTML(q('field__header-main-text'), "<span class=\"".concat("".concat(NAMESPACE, "-copy-content"), "\">", paymentAmount, "</span> ").concat(pSymbol));
+        setText(q('field__header-sub'), "".concat(quoteAmount, " ").concat(qSymbol));
+        var mixinCanvas = q('checkout__qrious canvas');
+        new qrious({
+          element: mixinCanvas,
+          level: 'H',
+          size: 600,
+          value: "mixin://pay?recipient=".concat(recipient, "&asset=").concat(paymentAssetId, "&amount=").concat(paymentAmount, "&trace=").concat(traceId, "&memo=").concat(memo)
+        });
+        setStyle(q('btn-group'), 'visibility', 'visible');
+        setStyle(q('btn-primary'), 'display', 'inline-flex' );
+        break;
+
+      case 'checkoutChain':
+        activeIndex = 4;
+        activeField = fields[activeIndex];
+        this.isUserConfirmed = false;
+        var chainImg = q('field__header-main img');
+        chainImg.setAttribute('src', pIcon);
+        setHTML(q('field__header-main-text'), "<span class=\"".concat("".concat(NAMESPACE, "-copy-content"), "\">", paymentAmount, "</span> ").concat(pSymbol));
+        setText(q('field__header-sub'), "".concat(quoteAmount, " ").concat(qSymbol));
+        var chainCanvas = q('checkout__qrious canvas');
+        new qrious({
+          element: chainCanvas,
+          level: 'H',
+          size: 600,
+          value: destination
+        });
+        var infos = queryAll(activeField, t('checkout__info-item > p'));
+        setText(infos[0], network);
+        setText(query(infos[1], t('copy-content')), destination);
+        setText(infos[2], tag);
+        setStyle(infos[2].parentNode, 'display', tag ? 'block' : 'none');
+        setStyle(q('btn-group'), 'visibility', 'visible');
+        break;
+
+      case 'checking':
+        activeIndex = 5;
+        activeField = fields[activeIndex];
+        setText(q('status-payment'), "".concat(paymentAmount, " ").concat(pSymbol));
+        setText(q('status-quote'), "".concat(quoteAmount, " ").concat(qSymbol));
+        break;
+
+      case 'pending':
+        activeIndex = 6;
+        activeField = fields[activeIndex];
+        setText(q('status-payment'), "".concat(result.payableAmount, " ").concat(result.paymentSymbol));
+        setText(q('status-quote'), "".concat(result.quoteAmount, " ").concat(result.quoteSymbol));
+        break;
+
+      case 'success':
+        activeIndex = 7;
+        activeField = fields[activeIndex];
+        setText(q('status-payment'), "".concat(result.payableAmount, " ").concat(result.paymentSymbol));
+        setText(q('status-quote'), "".concat(result.quoteAmount, " ").concat(result.quoteSymbol));
+        var desc = '';
+
+        if (result.surplusAmount > 0) {
+          desc = LANG.result.refundDesc.replace(/\$1/, "".concat(result.payableAmount, " ").concat(result.paymentSymbol)).replace(/\$2/, toFixed(Number(result.paymentAmount) + Number(result.surplusAmount), 8) + ' ' + result.paymentSymbol);
+        }
+
+        setText(q('status-des'), desc);
+        setStyle(q('status-des'), 'display', result.surplusAmount > 0 ? 'block' : 'none');
+        break;
+
+      case 'failed':
+        activeIndex = 8;
+        activeField = fields[activeIndex];
+        var reason = LANG.error.codeTable[result.failureCode] || result.failureReason;
+
+        if (String(result.failureCode) === '40024') {
+          reason = reason.replace(/\$1/, "".concat(result.payableAmount, " ").concat(result.paymentSymbol)).replace(/\$2/, "".concat(result.paymentAmount, " ").concat(result.paymentSymbol));
+        }
+
+        setText(q('status-des'), reason);
+        setText(q('status-payment'), "".concat(result.payableAmount, " ").concat(result.paymentSymbol));
+        setText(q('status-quote'), "".concat(result.quoteAmount, " ").concat(result.quoteSymbol));
+        break;
+
+      case 'overtime':
+        activeIndex = 9;
+        activeField = fields[activeIndex];
+        setText(q('status-payment'), "".concat(result.payableAmount, " ").concat(result.paymentSymbol));
+        setText(q('status-quote'), "".concat(result.quoteAmount, " ").concat(result.quoteSymbol));
+        break;
+    }
+
+    forEach(fields, function (field, index) {
+      if (index === activeIndex) {
+        field.style.display = 'block';
+      } else {
+        field.style.display = 'none';
+      }
+    });
+  },
+  show: function show() {
+    this.isShow = true;
+    setStyle(this.$element, 'display', 'block');
+  },
+  hide: function hide() {
+    this.isShow = false;
+    setStyle(this.$element, 'display', 'none');
+    dispatchEvent(this.$element, EVENT_MODAL_CLOSE);
+  },
+  pay: function pay(options) {
+    var _this9 = this;
+
+    this.payConfig = pureAssign(pureAssign(PAYMENT_DEFAULT, this.options), isPlainObject(options) && options);
+
+    var callback = function callback() {
+      var _this9$payConfig = _this9.payConfig,
+          quoteAssetId = _this9$payConfig.quoteAssetId,
+          quoteAmount = _this9$payConfig.quoteAmount;
+
+      var asset = _this9.quoteAssets.find(function (item) {
+        return item.assetId === quoteAssetId;
+      });
+
+      _this9.params.quoteAsset = asset || _this9.quoteAssets[0];
+      _this9.params.quoteAmount = quoteAmount > 0 ? quoteAmount : '';
+      _this9.params.paymentAsset = _this9.paymentAssets[0];
+      _this9.params.paymentMethod = 'mixin';
+
+      if (asset && quoteAmount > 0) {
+        _this9.renderPage('payment');
+      } else {
+        _this9.renderPage('quote');
+      }
+    };
+
+    if (this.isReady) {
+      callback();
+    } else {
+      addListener(this.$element, EVENT_READY, function () {
+        setTimeout(function () {
+          callback();
+        }, 0);
+      }, {
+        once: true
       });
     }
-  }], [{
-    key: "setDefaults",
-    value: function setDefaults(options) {
-      assign(DEFAULT, isPlainObject(options) && options);
+
+    if (!this.isShow && this.options.isModal) {
+      this.show();
     }
-  }]);
-
-  return MixPay;
-}();
-
-assign(MixPay.prototype, events, render);
-assign(MixPay, APIS, {
-  newUUID: function newUUID() {
-    return genUuid();
   }
-});
+};
+
+MixPay.setOptionDefault = function (options) {
+  assign(OPTIONS_DEFAULT, isPlainObject(options) && options);
+};
+
+MixPay.setPaymentDefault = function (options) {
+  assign(PAYMENT_DEFAULT, isPlainObject(options) && options);
+};
+
+MixPay.setLang = function (options) {
+  assign(LANG, isPlainObject(options) && options);
+};
+
+MixPay.setConfig = function (options) {
+  assign(CONFIG, isPlainObject(options) && options);
+};
+
+MixPay.newUUID = genUuid;
 
 export { MixPay as default };
+//# sourceMappingURL=mixpay.esm.js.map

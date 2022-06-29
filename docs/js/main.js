@@ -1,6 +1,15 @@
 window.onload = function () {
   var MixPay = window.MixPay;
+
+  var origin = window.location.origin;
+
+  if (origin.startsWith('file://') || origin.startsWith('https://mixpay.mixpmt.me')) {
+    MixPay.setConfig({ API_URL: 'https://mixpay-api.mixpmt.me/v1' });
+  }
+
   var app = document.getElementById('app');
+
+  var MixPay = window.MixPay;
   var btn1 = document.getElementById('button1');
   var btn2 = document.getElementById('button2');
   var btn3 = document.getElementById('button3');
@@ -48,7 +57,7 @@ window.onload = function () {
   btn3.onclick = function () {
     mixpay.pay({
       quoteAssetId: 'usd',
-      quoteAmount: '1',
+      quoteAmount: '0.05',
     });
   }
-}
+};

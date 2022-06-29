@@ -1,13 +1,14 @@
-import createMd5 from 'crypto-js/md5';
-import { WINDOW, IS_BROWSER } from './constants';
+import { v4 as uuidv4 } from 'uuid';
+import { IS_BROWSER, WINDOW } from './constants';
 
+const { hasOwnProperty } = Object.prototype;
 const REGEXP_SPACES = /\s\s*/;
 const onceSupported = (() => {
   let supported = false;
 
   if (IS_BROWSER) {
     let once = false;
-    const listener = () => { };
+    const listener = () => {};
     const options = Object.defineProperty({}, 'once', {
       get() {
         supported = true;
@@ -25,6 +26,10 @@ const onceSupported = (() => {
   return supported;
 })();
 
+export function genUuid() {
+  return uuidv4();
+}
+
 export function isArray(value) {
   return Array.isArray(value);
 }
@@ -37,8 +42,6 @@ export function isObject(value) {
   return typeof value === 'object' && value !== null;
 }
 
-const { hasOwnProperty } = Object.prototype;
-
 export function isPlainObject(value) {
   if (!isObject(value)) {
     return false;
@@ -48,18 +51,16 @@ export function isPlainObject(value) {
     const { constructor } = value;
     const { prototype } = constructor;
 
-    return (
-      constructor
-      && prototype
-      && hasOwnProperty.call(prototype, 'isPrototypeOf')
-    );
+    return constructor && prototype && hasOwnProperty.call(prototype, 'isPrototypeOf');
   } catch (error) {
     return false;
   }
 }
 
-export const assign = Object.assign
-  || function assign(target, ...args) {
+export const assign = (() => {
+  if (Object.assign) return Object.assign;
+
+  return function (target, ...args) {
     if (isObject(target) && args.length > 0) {
       args.forEach((arg) => {
         if (isObject(arg)) {
@@ -69,9 +70,9 @@ export const assign = Object.assign
         }
       });
     }
-
     return target;
   };
+})();
 
 export function removeListener(element, type, listener, options = {}) {
   let handler = listener;
@@ -122,11 +123,7 @@ export function addListener(element, type, listener, options = {}) {
         }
 
         if (listeners[event][listener]) {
-          element.removeEventListener(
-            event,
-            listeners[event][listener],
-            options,
-          );
+          element.removeEventListener(event, listeners[event][listener], options);
         }
 
         listeners[event][listener] = handler;
@@ -139,7 +136,6 @@ export function addListener(element, type, listener, options = {}) {
 
 export function dispatchEvent(element, type, data) {
   let event;
-
   // Event and CustomEvent on IE9-11 are global objects, not constructors
   if (isFunction(Event) && isFunction(CustomEvent)) {
     event = new CustomEvent(type, {
@@ -151,29 +147,11 @@ export function dispatchEvent(element, type, data) {
     event = document.createEvent('CustomEvent');
     event.initCustomEvent(type, true, true, data);
   }
-
   return element.dispatchEvent(event);
 }
 
-export function copyTemplate(template, source) {
-  const obj = {};
-  if (!isObject(template)) {
-    return obj;
-  }
-  if (!isObject(source)) {
-    return assign(obj, template);
-  }
-  Object.keys(template).forEach((key) => {
-    if (source[key] !== undefined && hasOwnProperty.call(source, key)) {
-      obj[key] = source[key];
-    } else {
-      obj[key] = template[key];
-    }
-  });
-  return obj;
-}
-
 export function copy(str) {
+  if (!IS_BROWSER) return false;
   const e = document.createElement('textarea');
   e.value = str;
   e.setAttribute('readonly', '');
@@ -200,8 +178,82 @@ export function copy(str) {
   return true;
 }
 
-export function genUuid() {
-  const ran = Math.random().toString(36).substr(2);
-  const md5 = createMd5(ran).toString();
-  return `${md5.substr(0, 8)}-${md5.substr(8, 4)}-${md5.substr(12, 4)}-${md5.substr(16, 4)}-${md5.substr(20, 12)}`;
+export function query(element, selector) {
+  if (!IS_BROWSER) return null;
+  return element.querySelector(selector);
+}
+
+export function queryAll(element, selector) {
+  if (!IS_BROWSER) return null;
+  return element.querySelectorAll(selector);
+}
+
+export function hasClass(element, className) {
+  return element.classList.contains(className);
+}
+
+export function toggleClass(element, className) {
+  if (hasClass(element, className)) {
+    element.classList.remove(className);
+  } else {
+    element.classList.add(className);
+  }
+}
+
+export function forEach(arr, handler) {
+  return [].forEach.call(arr, handler);
+}
+
+export function setStyle(element, key, value) {
+  if (element) {
+    element.style[key] = value;
+  }
+}
+
+export function setHTML(element, htmlStr) {
+  if (element) {
+    element.innerHTML = htmlStr;
+  }
+}
+
+export function setText(element, str) {
+  if (element) {
+    element.innerText = str;
+  }
+}
+
+export function pureAssign(source, target) {
+  const obj = assign({}, source);
+  Object.keys(obj).forEach((key) => {
+    if (target[key] !== undefined) {
+      obj[key] = target[key];
+    }
+  });
+  return obj;
+}
+
+export function toFixed(num, decimal, cmd) {
+  if (!decimal && decimal !== 0) {
+    decimal = 2;
+  }
+  let func;
+  if (typeof cmd === 'function') {
+    func = cmd;
+  } else {
+    switch (cmd) {
+      case 'floor':
+        func = Math.floor;
+        break;
+      case 'round':
+        func = Math.round;
+        break;
+      case 'ceil':
+        func = Math.ceil;
+        break;
+      default:
+        func = Math.round;
+    }
+  }
+  const rate = 1 / `1e${-decimal}`;
+  return (func((num * rate).toFixed(10)) / rate).toFixed(decimal);
 }
