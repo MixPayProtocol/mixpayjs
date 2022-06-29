@@ -1,11 +1,11 @@
 /*!
- * mixpayjs v1.0.2
+ * mixpayjs v1.1.0
  * https://MixPayHQ.github.io/mixpayjs
  *
  * Copyright 2022 gypsophila@mathunion.xyz
  * Released under the MIT license
  *
- * Date: 2022-06-29T02:14:52.009Z
+ * Date: 2022-06-29T02:21:04.018Z
  */
 
 (function (global, factory) {
@@ -3621,4 +3621,3 @@
 	return MixPay;
 
 }));
-//# sourceMappingURL=mixpay.js.map

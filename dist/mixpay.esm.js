@@ -1,11 +1,11 @@
 /*!
- * mixpayjs v1.0.2
+ * mixpayjs v1.1.0
  * https://MixPayHQ.github.io/mixpayjs
  *
  * Copyright 2022 gypsophila@mathunion.xyz
  * Released under the MIT license
  *
- * Date: 2022-06-29T02:14:52.009Z
+ * Date: 2022-06-29T02:21:04.018Z
  */
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -3613,4 +3613,3 @@ MixPay.setConfig = function (options) {
 MixPay.newUUID = genUuid;
 
 export { MixPay as default };
-//# sourceMappingURL=mixpay.esm.js.map

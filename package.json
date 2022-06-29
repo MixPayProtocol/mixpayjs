@@ -1,6 +1,6 @@
 {
   "name": "mixpayjs",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "",
   "main": "dist/mixpay.common.js",
   "module": "dist/mixpay.esm.js",
@@ -32,7 +32,7 @@
   "scripts": {
     "build": "npm run build:js && npm run build:css",
     "build:js": "rollup -c",
-    "build:css": "sass src/css/mixpay.scss dist/mixpay.css --no-source-map",
+    "build:css": "sass src/mixpay.scss dist/mixpay.css --no-source-map",
     "compress": "npm run compress:css && npm run compress:js",
     "compress:css": "postcss dist/mixpay.css -u cssnano -o dist/mixpay.min.css --no-map",
     "compress:js": "uglifyjs dist/mixpay.js -o dist/mixpay.min.js -c -m --comments /^!/",
@@ -42,7 +42,7 @@
     "commit": "git cz",
     "watch": "npm-run-all --parallel watch:*",
     "watch:js": "rollup -c -m -w",
-    "watch:css": "sass --watch src/css/mixpay.scss docs/css/mixpay.css --no-source-map",
+    "watch:css": "sass --watch src/mixpay.scss docs/css/mixpay.css --no-source-map",
     "release": "npm run clean && npm run lint && npm run build && npm run compress",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
