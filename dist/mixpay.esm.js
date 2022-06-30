@@ -1,11 +1,11 @@
 /*!
  * mixpayjs v1.1.0
- * https://MixPayHQ.github.io/mixpayjs
+ * https://mixpay.me
  *
  * Copyright 2022 gypsophila@mathunion.xyz
  * Released under the MIT license
  *
- * Date: 2022-06-29T02:21:04.018Z
+ * Date: 2022-06-30T01:37:04.390Z
  */
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -2195,6 +2195,7 @@ var CONFIG = {
 var OPTIONS_DEFAULT = {
   isModal: true,
   hasMask: true,
+  fontSize: 14,
   onReady: null,
   onPaymentCreate: null,
   onPaymentSuccess: null,
@@ -2806,10 +2807,19 @@ MixPay.prototype = {
   render: function render() {
     var _this$options = this.options,
         isModal = _this$options.isModal,
-        hasMask = _this$options.hasMask;
+        hasMask = _this$options.hasMask,
+        fontSize = _this$options.fontSize;
     var $wrapper = this.$wrapper;
     var $element = document.createElement('div');
+
+    var _fontSize = parseFloat(fontSize);
+
+    if (Number.isNaN(_fontSize)) {
+      _fontSize = 14;
+    }
+
     $element.classList.add(NAMESPACE);
+    setStyle($element, 'font-size', _fontSize + 'px');
 
     if (isModal) {
       toggleClass($element, 'is-modal');
@@ -2903,8 +2913,7 @@ MixPay.prototype = {
       var $field = query(that.$element, t("field[data-page=checkout-".concat(isChain ? 'chain' : 'mixin', "]")));
       var $btns = query($field, t('btn-group'));
       setStyle($btns, 'visibility', 'hidden');
-      that.$apis.getPaymentResult(clientId, traceId) // eslint-disable-next-line consistent-return
-      .then(function (result) {
+      that.$apis.getPaymentResult(clientId, traceId).then(function (result) {
         var r = result.data;
         that.result.status = r.status;
         that.result.payableAmount = r.payableAmount;
@@ -3413,7 +3422,9 @@ MixPay.prototype = {
         activeField = fields[activeIndex];
 
         if (payAssetId) {
-          toggleClass(q('dropdown__toggle'), 'disabled');
+          q('dropdown__toggle').classList.add('disabled'); // toggleClass(q('dropdown__toggle'), 'disabled');
+        } else {
+          q('dropdown__toggle').classList.remove('disabled');
         }
 
         setHTML(q('dropdown__selected'), "<img src=\"".concat(qIcon, "\" /><span>").concat(qSymbol, "</span>"));
@@ -3421,7 +3432,7 @@ MixPay.prototype = {
           return "<li data-id=\"".concat(item.assetId, "\"><img src=\"").concat(item.iconUrl, "\" /><span>").concat(item.symbol, "</span></li>");
         }).join(''));
         var qInput = q('input-item__input');
-        qInput.setAttribute('value', quoteAmount);
+        qInput.value = quoteAmount;
         qInput.setAttribute('placeholder', "".concat(minQuoteAmount, " - ").concat(maxQuoteAmount));
         setText(q('input-item__right'), qSymbol);
         setHTML(q('filed__error'), '');
@@ -3436,7 +3447,7 @@ MixPay.prototype = {
           return "<li data-id=\"".concat(item.assetId, "\"><img src=\"").concat(item.iconUrl, "\" /><span>").concat(item.symbol, "</span><em>").concat(item.network, "</em></li>");
         }).join(''));
         var pInput = queryAll(activeField, 'input')[paymentMethod === 'chain' ? 1 : 0];
-        pInput.setAttribute('checked', true);
+        pInput.checked = true;
         setStyle(q('btn-inline'), 'display', payAssetId && payAmount > 0 ? 'none' : 'inline-flex');
         break;
 
@@ -3542,13 +3553,17 @@ MixPay.prototype = {
     });
   },
   show: function show() {
-    this.isShow = true;
-    setStyle(this.$element, 'display', 'block');
+    if (this.options.isModal && !this.isShow) {
+      this.isShow = true;
+      setStyle(this.$element, 'display', 'block');
+    }
   },
   hide: function hide() {
-    this.isShow = false;
-    setStyle(this.$element, 'display', 'none');
-    dispatchEvent(this.$element, EVENT_MODAL_CLOSE);
+    if (this.options.isModal && this.isShow) {
+      this.isShow = false;
+      setStyle(this.$element, 'display', 'none');
+      dispatchEvent(this.$element, EVENT_MODAL_CLOSE);
+    }
   },
   pay: function pay(options) {
     var _this9 = this;

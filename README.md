@@ -23,8 +23,8 @@ npm install mixpayjs
 In browser:
 
 ```html
-<link href="/path/to/mixpay.css" rel="stylesheet" />
-<script src="/path/to/mixpay.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/mixpayjs/dist/mixpay.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/mixpayjs/dist/mixpay.min.js""></script>
 ```
 
 #### Syntax
@@ -75,7 +75,6 @@ mixpay.pay({
   quoteAmount: '',
   paymentAssetId: '',
   note: '',
-  isChain: true,
 });
 ```
 
@@ -115,35 +114,16 @@ mixpay.pay({
   - note
   - traceId
 
+### show()
+### hide()
+
+show/hide the modal, if `isModal` is `true`
+
 ## Global Methods
 
 ### newUUID()
 
 create a random UUID for `clientId` and `traceId`
-
-### getQuoteAssets()
-
-Get quote assets support cryptocurrency and fiat currency. See the [Quote Assets](https://developers.mixpay.me/docs/api/assets/quote-assets) section in guide.
-
-### getPaymentAssets()
-
-Get payment assets only support cryptocurrency. See the [Payment Assets](https://developers.mixpay.me/docs/api/assets/payment-assets) section in guide.
-
-### getSettlementAssets()
-
-Get settlement assets support cryptocurrency and fiat currency. See the [Settlement Assets](https://developers.mixpay.me/docs/api/assets/settlement-assets) section in guide.
-
-### createPayment(options)
-
-Create a payment. See the [Accepting Payments](https://developers.mixpay.me/docs/api/payments/accepting-payments) section and the [On-chain Payments](https://developers.mixpay.me/docs/api/payments/onchain-payments) section in guide.
-
-### getPaymentDetail(traceId)
-
-The details of the payment. See the [Payments Results](https://developers.mixpay.me/docs/api/payments/payments-results) section in guide.
-
-### getEstPaymentAmount(options)
-
-Get the estimated price and the estimated amount of the transaction. See the [Payments Estimated](https://developers.mixpay.me/docs/api/payments/payments-estimated) section in guide.
 
 ## Resources
 

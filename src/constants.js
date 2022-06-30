@@ -18,6 +18,7 @@ export const CONFIG = {
 export const OPTIONS_DEFAULT = {
   isModal: true,
   hasMask: true,
+  fontSize: 14,
 
   onReady: null,
   onPaymentCreate: null,

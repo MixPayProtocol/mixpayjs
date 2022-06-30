@@ -152,10 +152,15 @@ MixPay.prototype = {
   },
 
   render() {
-    const { isModal, hasMask } = this.options;
+    const { isModal, hasMask, fontSize } = this.options;
     const $wrapper = this.$wrapper;
     const $element = document.createElement('div');
+    let _fontSize = parseFloat(fontSize);
+    if (Number.isNaN(_fontSize)) {
+      _fontSize = 14;
+    }
     $element.classList.add(NAMESPACE);
+    setStyle($element, 'font-size', _fontSize + 'px');
     if (isModal) {
       toggleClass($element, 'is-modal');
       setStyle($element, 'display', 'none');
@@ -247,7 +252,6 @@ MixPay.prototype = {
       setStyle($btns, 'visibility', 'hidden');
       that.$apis
         .getPaymentResult(clientId, traceId)
-        // eslint-disable-next-line consistent-return
         .then((result) => {
           const r = result.data;
           that.result.status = r.status;
@@ -685,7 +689,10 @@ MixPay.prototype = {
         activeIndex = 1;
         activeField = fields[activeIndex];
         if (payAssetId) {
-          toggleClass(q('dropdown__toggle'), 'disabled');
+          q('dropdown__toggle').classList.add('disabled');
+          // toggleClass(q('dropdown__toggle'), 'disabled');
+        } else {
+          q('dropdown__toggle').classList.remove('disabled');
         }
         setHTML(q('dropdown__selected'), `<img src="${qIcon}" /><span>${qSymbol}</span>`);
         setHTML(
@@ -693,7 +700,7 @@ MixPay.prototype = {
           quoteAssets.map((item) => `<li data-id="${item.assetId}"><img src="${item.iconUrl}" /><span>${item.symbol}</span></li>`).join('')
         );
         const qInput = q('input-item__input');
-        qInput.setAttribute('value', quoteAmount);
+        qInput.value = quoteAmount;
         qInput.setAttribute('placeholder', `${minQuoteAmount} - ${maxQuoteAmount}`);
         setText(q('input-item__right'), qSymbol);
         setHTML(q('filed__error'), '');
@@ -710,7 +717,7 @@ MixPay.prototype = {
             .join('')
         );
         const pInput = queryAll(activeField, 'input')[paymentMethod === 'chain' ? 1 : 0];
-        pInput.setAttribute('checked', true);
+        pInput.checked = true;
         setStyle(q('btn-inline'), 'display', payAssetId && payAmount > 0 ? 'none' : 'inline-flex');
         break;
       case 'checkoutMixin':
@@ -808,13 +815,17 @@ MixPay.prototype = {
   },
 
   show() {
-    this.isShow = true;
-    setStyle(this.$element, 'display', 'block');
+    if (this.options.isModal && !this.isShow) {
+      this.isShow = true;
+      setStyle(this.$element, 'display', 'block');
+    }
   },
   hide() {
-    this.isShow = false;
-    setStyle(this.$element, 'display', 'none');
-    dispatchEvent(this.$element, EVENT_MODAL_CLOSE);
+    if (this.options.isModal && this.isShow) {
+      this.isShow = false;
+      setStyle(this.$element, 'display', 'none');
+      dispatchEvent(this.$element, EVENT_MODAL_CLOSE);
+    }
   },
 
   pay(options) {

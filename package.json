@@ -28,7 +28,7 @@
   "bugs": {
     "url": "https://github.com/MixPayHQ/mixpayjs/issues"
   },
-  "homepage": "https://MixPayHQ.github.io/mixpayjs",
+  "homepage": "https://mixpay.me",
   "scripts": {
     "build": "npm run build:js && npm run build:css",
     "build:js": "rollup -c",
