@@ -62,19 +62,15 @@ const mixpay = new MixPay(element, {
   clientId: '',
   expireSeconds: '',
   remark: '',
+  note: '',
+  quoteAssetId: '',
+  quoteAmount: '',
 
   onReady() {},
   onClose() {},
   onPaymentCreate() {},
   onPaymentSuccess() {},
   onPaymentFail() {},
-});
-
-mixpay.pay({
-  quoteAssetId: '',
-  quoteAmount: '',
-  paymentAssetId: '',
-  note: '',
 });
 ```
 
@@ -89,8 +85,10 @@ mixpay.pay({
 | settlementMemo | string | '' | memo |
 | settlementMethod | string | mixin | 'mixin' or 'mixpay', settle to your Mixin Wallet or MixPay Account |
 | clientId | string | MixPay.newUUID() |  UUID of client of the payment |
-| expireSeconds | number | 60 |  60-172800, expiration date of the payment  |
+| expireSeconds | number | null |  60-172800, expiration date of the payment  |
 | remark | string | '' | Payees leave a message to payers |
+| quoteAssetId | string | '' | AssetId of quote cryptocurrency |
+| quoteAmount | number | '' | Amount of quote cryptocurrency|
 | onReady | function | null | This event fires when quote assets and payment assets are loaded |
 | onClose | function | null | This event fires when the modal is closed |
 | onPaymentCreate | function | null  | This event fires when a payment is created |
@@ -99,20 +97,9 @@ mixpay.pay({
 
 ## Instance Methods
 
-### pay(options)
+### destory()
 
-- **options**
-  - payeeId
-  - settlementAssetId
-  - settlementMemo
-  - settlementMethod
-  - clientId
-  - expireSeconds
-  - quoteAssetId
-  - quoteAmount
-  - paymentAssetId
-  - note
-  - traceId
+remove the modal/element and events from document
 
 ### show()
 ### hide()

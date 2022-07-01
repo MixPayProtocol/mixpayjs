@@ -2,11 +2,12 @@ export const IS_BROWSER = typeof window !== 'undefined' && typeof window.documen
 export const WINDOW = IS_BROWSER ? window : {};
 export const EVENT_READY = 'ready';
 export const EVENT_MODAL_CLOSE = 'close';
+export const EVENT_MODAL_SHOW = 'show';
 export const EVENT_PAYMENT_CREATE = 'create';
 export const EVENT_PAYMENT_SUCCESS = 'success';
 export const EVENT_PAYMENT_FAILED = 'failed';
 export const NAMESPACE = '--mixpay';
-export const IS_MIXIN = true || !!(
+export const IS_MIXIN = !!(
   (WINDOW.webkit && WINDOW.webkit.messageHandlers && WINDOW.webkit.messageHandlers.MixinContext) ||
   (WINDOW.MixinContext && WINDOW.MixinContext.getContext)
 );
@@ -28,7 +29,7 @@ export const OPTIONS_DEFAULT = {
 
 export const PAYMENT_DEFAULT = {
   clientId: '',
-  expireSeconds: 90,
+  expireSeconds: null,
   isChain: false,
   note: '',
   payeeId: '',

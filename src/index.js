@@ -2,6 +2,7 @@ import Qrious from 'qrious';
 import {
   CONFIG,
   EVENT_MODAL_CLOSE,
+  EVENT_MODAL_SHOW,
   EVENT_PAYMENT_CREATE,
   EVENT_PAYMENT_FAILED,
   EVENT_PAYMENT_SUCCESS,
@@ -21,12 +22,12 @@ import {
   forEach,
   genUuid,
   hasClass,
-  isArray,
   isFunction,
   isPlainObject,
   pureAssign,
   query,
   queryAll,
+  removeListener,
   setHTML,
   setStyle,
   setText,
@@ -34,20 +35,26 @@ import {
   toggleClass,
 } from './utilities';
 import APIS from './apis';
-import template from './template';
+import { SVG_TEMPLATE, TEMPLATE } from './template';
 
 const t = (name) => `.${NAMESPACE}-${name}`;
 
-function MixPay(element, options = {}) {
-  this.$wrapper = element || document.body;
+function MixPay(wrapper, options) {
+  if (!IS_BROWSER) {
+    throw new Error('A browser is needed!');
+  }
+
+  this.$wrapper = wrapper || document.body;
   this.$element = null;
+
   this.options = assign({}, OPTIONS_DEFAULT, isPlainObject(options) && options);
-  this.options.clientId = this.options.clientId || genUuid();
+  this.options.clientId = this.options.clientId || MixPay.newUUID();
 
-  this.quoteAssets = [];
-  this.paymentAssets = [];
+  this.isShow = false;
+  this.isUserConfirmed = false;
 
-  this.payConfig = pureAssign(PAYMENT_DEFAULT, this.options); // 支付信息
+  this.countdownPoll = null;
+  this.paymentResultPoll = null;
 
   this.params = {
     quoteAsset: {},
@@ -55,6 +62,7 @@ function MixPay(element, options = {}) {
     paymentAsset: {},
     paymentMethod: 'mixin',
   };
+
   this.payments = {
     isChain: false,
     clientId: '',
@@ -69,6 +77,7 @@ function MixPay(element, options = {}) {
     memo: '',
     expire: '',
   };
+
   this.result = {
     status: 'unpaid',
     payableAmount: '',
@@ -83,72 +92,42 @@ function MixPay(element, options = {}) {
     surplusAmount: '',
   };
 
-  this.coutdownKey = null;
-  this.resultKey = null;
-
-  this.isReady = false;
-  this.isShow = false;
-  this.isUserConfirmed = false;
-
   this.init();
 }
 
 MixPay.prototype = {
-  $apis: APIS,
-  init() {
-    if (!IS_BROWSER) {
-      throw new Error('A browser is needed!');
-    }
-    this.render();
-    this.bindEvents();
-    const { quoteAssetId, quoteAmount } = this.payConfig;
-    this.renderPage('loading');
-    addListener(
-      this.$element,
-      EVENT_READY,
-      () => {
-        const asset = this.quoteAssets.find((item) => item.assetId === quoteAssetId);
-        this.params.quoteAsset = asset || this.quoteAssets[0];
-        this.params.quoteAmount = quoteAmount > 0 ? quoteAmount : '';
-        this.params.paymentAsset = this.paymentAssets[0];
-        this.params.paymentMethod = 'mixin';
-        if (asset && quoteAmount > 0) {
-          this.renderPage('payment');
-        } else {
-          this.renderPage('quote');
-        }
-      },
-      { once: true }
-    );
-    this.load();
-  },
-  load() {
-    const promises = [];
-    if (!this.quoteAssets.length) {
-      promises.push(
-        this.$apis.getQuoteAssets().then((data) => {
-          this.quoteAssets = isArray(data.data) ? data.data : [];
-        })
-      );
-    }
-    if (!this.paymentAssets.length) {
-      promises.push(
-        this.$apis.getPaymentAssets().then((data) => {
-          this.paymentAssets = isArray(data.data) ? data.data : [];
-        })
-      );
-    }
+  $svg: { isSVGLoaded: false },
+  $apis: new APIS(),
 
-    Promise.all(promises)
-      .then(() => {
-        this.isReady = true;
-        dispatchEvent(this.$element, EVENT_READY);
-      })
-      .catch(() => {
-        setTimeout(() => {
-          this.load();
-        }, 3000);
-      });
+  init() {
+    this.renderSVG();
+    this.render();
+    this.bind();
+    this.renderPage('loading');
+    this.$apis.addReadyCallback(() => {
+      const { quoteAssetId, quoteAmount } = this.options;
+      const asset = this.$apis.quoteAssets.find((item) => item.assetId === quoteAssetId);
+      this.params.quoteAsset = asset || this.$apis.quoteAssets[0];
+      this.params.quoteAmount = quoteAmount > 0 ? quoteAmount : '';
+      this.params.paymentAsset = this.$apis.paymentAssets[0];
+      this.params.paymentMethod = 'mixin';
+      if (quoteAssetId && quoteAmount > 0) {
+        this.renderPage('payment');
+      } else {
+        this.renderPage('quote');
+      }
+      dispatchEvent(this.$element, EVENT_READY);
+    });
+  },
+
+  renderSVG() {
+    if (this.$svg.isSVGLoaded) return;
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute('style', 'position:absolute;width:0;height:0;');
+    wrapper.innerHTML = SVG_TEMPLATE;
+    const body = document.body;
+    body.insertBefore(wrapper, body.childNodes[0]);
+    this.$svg.isSVGLoaded = true;
   },
 
   render() {
@@ -172,14 +151,11 @@ MixPay.prototype = {
     }
     const container = document.createElement('div');
     toggleClass(container, `${NAMESPACE}-container`);
-    container.innerHTML = template;
+    container.innerHTML = TEMPLATE;
     $element.appendChild(container);
-
     $wrapper.appendChild($element);
     this.$element = $element;
-
     const $closeBtn = query($element, t('header__action'));
-
     const $quote = query($element, t('field[data-page=quote]'));
     const $quoteDropdown = query($quote, t('dropdown__toggle'));
     const $quoteList = query($quote, t('dropdown__menu'));
@@ -188,7 +164,6 @@ MixPay.prototype = {
     const $quoteUnit = query($quote, t('input-item__right'));
     const $quoteError = query($quote, t('field__error'));
     const $quoteNextBtn = query($quote, 'button');
-
     const $payment = query($element, t('field[data-page=payment'));
     const $paymentDropdown = query($payment, t('dropdown__toggle'));
     const $paymentList = query($payment, t('dropdown__menu'));
@@ -197,23 +172,18 @@ MixPay.prototype = {
     const $paymentNextBtn = query($payment, t('btn-primary'));
     const $paymentBackBtn = query($payment, t('btn-inline'));
     const $paymentRadios = query($payment, `${t('field-item:nth-child(2)')} ${t('field-item__content')}`);
-
     const $mixin = query($element, t('field[data-page="checkout-mixin"]'));
     const $mixinPaidBtn = query($mixin, t('btn-primary'));
     const $mixinBackBtn = query($mixin, t('btn-inline'));
     const $mixinCountdown = query($mixin, t('checkout__countdown'));
-
     const $chain = query($element, t('field[data-page=checkout-chain]'));
     const $chainPaidBtn = query($chain, t('btn-primary'));
     const $chainBackBtn = query($chain, t('btn-inline'));
     const $chainCountdown = query($chain, t('checkout__countdown'));
-
     const $checking = query($element, t('field[data-page=checking]'));
     const $checkingBackBtn = query($checking, t('btn-inline'));
-
     const $failed = query($element, t('field[data-page=failed]'));
     const $failedBtn = query($failed, t('btn-primary'));
-
     const $overtime = query($element, t('field[data-page=overtime]'));
     const $overtimeBtn = query($overtime, t('btn-primary'));
     const $overtimeError = query($overtime, t('field__error'));
@@ -233,18 +203,15 @@ MixPay.prototype = {
         }, 3000);
       }
     };
-
     forEach(queryAll($element, t('copy-toggle')), (ele) => {
       ele.onclick = copyEvent;
     });
-
     const regularTaskFn = function (isChain) {
       const countdown = isChain ? $chainCountdown : $mixinCountdown;
       return function (diff) {
         countdown.innerHTML = LANG.checkout.countdown.replace(/\$1/, `${diff}s`);
       };
     };
-
     const endTask = function () {
       const { clientId, traceId, isChain, paymentAssetId, quoteAmount, quoteAssetId } = that.payments;
       const $field = query(that.$element, t(`field[data-page=checkout-${isChain ? 'chain' : 'mixin'}]`));
@@ -267,7 +234,7 @@ MixPay.prototype = {
           that.result.surplusAmount = r.surplusAmount;
 
           if (r.status === 'unpaid') {
-            const data = assign({}, that.payConfig, {
+            const data = assign({}, pureAssign(PAYMENT_DEFAULT, this.options), {
               quoteAssetId,
               quoteAmount,
               paymentAssetId,
@@ -316,7 +283,6 @@ MixPay.prototype = {
           that.renderPage('overtime');
         });
     };
-
     $closeBtn.onclick = function () {
       that.hide();
     };
@@ -326,7 +292,7 @@ MixPay.prototype = {
     };
     $quoteList.onclick = function (e) {
       const {
-        quoteAssets,
+        $apis: { quoteAssets },
         params: { quoteAsset },
       } = that;
       let target = e.target || e.srcElement;
@@ -381,14 +347,12 @@ MixPay.prototype = {
       }
       this.isSubmitting = false;
     };
-
     $paymentDropdown.onclick = function () {
       toggleClass($paymentList, 'show');
     };
-
     $paymentList.onclick = function (e) {
       const {
-        paymentAssets,
+        $apis: { paymentAssets },
         params: { paymentAsset, paymentMethod },
       } = that;
       let target = e.target || e.srcElement;
@@ -430,7 +394,7 @@ MixPay.prototype = {
       $paymentError.innerHTML = '';
       toggleClass(this, 'inactive');
       this.isSubmitting = true;
-      const data = assign({}, that.payConfig, {
+      const data = assign({}, pureAssign(PAYMENT_DEFAULT, that.options), {
         quoteAssetId: quoteAsset.assetId,
         quoteAmount,
         paymentAssetId: paymentAsset.assetId,
@@ -472,7 +436,6 @@ MixPay.prototype = {
     $paymentBackBtn.onclick = function () {
       that.renderPage('quote');
     };
-
     $mixinPaidBtn.onclick = function () {
       if (this.isSubmitting) return;
       this.isSubmitting = true;
@@ -482,25 +445,21 @@ MixPay.prototype = {
         this.isSubmitting = false;
       }, 3000);
     };
-
     $mixinBackBtn.onclick = function () {
-      clearInterval(that.coutdownKey);
-      clearInterval(that.resultKey);
+      clearInterval(that.countdownPoll);
+      clearInterval(that.paymentResultPoll);
       that.renderPage('payment');
     };
-
     $chainPaidBtn.onclick = function () {
-      clearInterval(that.coutdownKey);
+      clearInterval(that.countdownPoll);
       that.isUserConfirmed = true;
       that.renderPage('checking');
     };
-
     $chainBackBtn.onclick = function () {
-      clearInterval(that.coutdownKey);
-      clearInterval(that.resultKey);
+      clearInterval(that.countdownPoll);
+      clearInterval(that.paymentResultPoll);
       that.renderPage('payment');
     };
-
     $checkingBackBtn.onclick = function () {
       const { isChain } = that.payments;
       that.isUserConfirmed = false;
@@ -509,22 +468,20 @@ MixPay.prototype = {
       that.startQueryOrder();
       that.renderPage(isChain ? 'checkoutChain' : 'checkoutMixin');
     };
-
     $failedBtn.onclick = function () {
-      const { quoteAssetId, quoteAmount } = that.payConfig;
+      const { quoteAssetId, quoteAmount } = that.options;
       if (quoteAssetId && quoteAmount > 0) {
         that.renderPage('payment');
       } else {
         that.renderPage('quote');
       }
     };
-
     $overtimeBtn.onclick = function () {
       if (this.isSubmitting) return;
       this.isSubmitting = true;
       toggleClass(this, 'inactive');
       const { traceId, isChain, paymentAssetId, quoteAmount, quoteAssetId } = that.payments;
-      const data = assign({}, that.payConfig, {
+      const data = assign({}, pureAssign(PAYMENT_DEFAULT, that.options), {
         quoteAssetId,
         quoteAmount,
         paymentAssetId,
@@ -564,109 +521,9 @@ MixPay.prototype = {
         });
     };
   },
-
-  bindEvents() {
-    const { $element, options } = this;
-
-    if (isFunction(options.onReady)) {
-      addListener($element, EVENT_READY, options.onReady);
-    }
-
-    if (isFunction(options.onClose)) {
-      addListener($element, EVENT_MODAL_CLOSE, options.onClose);
-    }
-
-    if (isFunction(options.onPaymentCreate)) {
-      addListener($element, EVENT_PAYMENT_CREATE, options.onPaymentCreate);
-    }
-
-    if (isFunction(options.onPaymentSuccess)) {
-      addListener($element, EVENT_PAYMENT_SUCCESS, options.onPaymentSuccess);
-    }
-
-    if (isFunction(options.onPaymentFail)) {
-      addListener($element, EVENT_PAYMENT_FAILED, options.onPaymentFail);
-    }
-  },
-
-  startCountdown(regularTask, endTask) {
-    clearInterval(this.coutdownKey);
-    const { expire } = this.payments;
-    const task = () => {
-      const diff = expire - Math.ceil(new Date().getTime() / 1000);
-      if (diff >= 0) {
-        regularTask(diff);
-      } else {
-        clearInterval(this.coutdownKey);
-        clearInterval(this.resultKey);
-        endTask();
-      }
-    };
-    this.coutdownKey = setInterval(task, 1000);
-    task();
-  },
-
-  startQueryOrder() {
-    clearInterval(this.resultKey);
-    const { clientId, traceId } = this.payments;
-    this.resultKey = setInterval(() => {
-      this.$apis
-        .getPaymentResult(clientId, traceId)
-        .then((data) => {
-          const d = data.data;
-          let statusChanged = false;
-          let page = '';
-          if (this.result.status !== d.status) {
-            statusChanged = true;
-          }
-          this.result.status = d.status;
-          this.result.payableAmount = d.payableAmount;
-          this.result.paymentAmount = d.paymentAmount;
-          this.result.paymentSymbol = d.paymentSymbol;
-          this.result.quoteAmount = d.quoteAmount;
-          this.result.quoteSymbol = d.quoteSymbol;
-          this.result.txid = d.txid;
-          this.result.date = d.date;
-          this.result.failureCode = d.failureCode;
-          this.result.failureReason = d.failureReason;
-          this.result.surplusAmount = d.surplusAmount;
-
-          switch (this.result.status) {
-            case 'unpaid':
-              if (this.isUserConfirmed) {
-                page = 'checking';
-              }
-              break;
-            case 'pending':
-              clearInterval(this.coutdownKey);
-              page = 'pending';
-              break;
-            case 'failed':
-              clearInterval(this.coutdownKey);
-              clearInterval(this.resultKey);
-              page = 'failed';
-              dispatchEvent(this.$element, EVENT_PAYMENT_FAILED, { code: d.failureCode, reason: d.failureReason });
-              break;
-            case 'success':
-              clearInterval(this.coutdownKey);
-              clearInterval(this.resultKey);
-              page = 'success';
-              dispatchEvent(this.$element, EVENT_PAYMENT_SUCCESS);
-              break;
-            default:
-          }
-          if (statusChanged && page) {
-            this.renderPage(page);
-          }
-        })
-        .catch(() => {});
-    }, 5000);
-  },
-
   renderPage(page) {
     const {
-      quoteAssets,
-      paymentAssets,
+      $apis: { quoteAssets, paymentAssets },
       payments: { paymentAmount, destination, paymentAssetId, traceId, memo, recipient, tag },
       params: {
         quoteAsset: { iconUrl: qIcon, symbol: qSymbol, minQuoteAmount, maxQuoteAmount },
@@ -674,7 +531,7 @@ MixPay.prototype = {
         paymentAsset: { iconUrl: pIcon, symbol: pSymbol, network },
         paymentMethod,
       },
-      payConfig: { quoteAssetId: payAssetId, quoteAmount: payAmount },
+      options: { quoteAssetId: payAssetId, quoteAmount: payAmount },
       result,
     } = this;
     let activeIndex;
@@ -690,7 +547,6 @@ MixPay.prototype = {
         activeField = fields[activeIndex];
         if (payAssetId) {
           q('dropdown__toggle').classList.add('disabled');
-          // toggleClass(q('dropdown__toggle'), 'disabled');
         } else {
           q('dropdown__toggle').classList.remove('disabled');
         }
@@ -813,53 +669,166 @@ MixPay.prototype = {
       }
     });
   },
+  startCountdown(regularTask, endTask) {
+    clearInterval(this.countdownPoll);
+    const { expire } = this.payments;
+    const task = () => {
+      const diff = expire - Math.ceil(new Date().getTime() / 1000);
+      if (diff >= 0) {
+        regularTask(diff);
+      } else {
+        clearInterval(this.countdownPoll);
+        clearInterval(this.paymentResultPoll);
+        endTask();
+      }
+    };
+    this.countdownPoll = setInterval(task, 1000);
+    task();
+  },
+  startQueryOrder() {
+    clearInterval(this.paymentResultPoll);
+    const { clientId, traceId } = this.payments;
+    this.paymentResultPoll = setInterval(() => {
+      this.$apis
+        .getPaymentResult(clientId, traceId)
+        .then((data) => {
+          const d = data.data;
+          let statusChanged = false;
+          let page = '';
+          if (this.result.status !== d.status) {
+            statusChanged = true;
+          }
+          this.result.status = d.status;
+          this.result.payableAmount = d.payableAmount;
+          this.result.paymentAmount = d.paymentAmount;
+          this.result.paymentSymbol = d.paymentSymbol;
+          this.result.quoteAmount = d.quoteAmount;
+          this.result.quoteSymbol = d.quoteSymbol;
+          this.result.txid = d.txid;
+          this.result.date = d.date;
+          this.result.failureCode = d.failureCode;
+          this.result.failureReason = d.failureReason;
+          this.result.surplusAmount = d.surplusAmount;
+
+          switch (this.result.status) {
+            case 'unpaid':
+              if (this.isUserConfirmed) {
+                page = 'checking';
+              }
+              break;
+            case 'pending':
+              clearInterval(this.countdownPoll);
+              page = 'pending';
+              break;
+            case 'failed':
+              clearInterval(this.countdownPoll);
+              clearInterval(this.paymentResultPoll);
+              page = 'failed';
+              dispatchEvent(this.$element, EVENT_PAYMENT_FAILED, { code: d.failureCode, reason: d.failureReason });
+              break;
+            case 'success':
+              clearInterval(this.countdownPoll);
+              clearInterval(this.paymentResultPoll);
+              page = 'success';
+              dispatchEvent(this.$element, EVENT_PAYMENT_SUCCESS);
+              break;
+            default:
+          }
+          if (statusChanged && page) {
+            this.renderPage(page);
+          }
+        })
+        .catch(() => {});
+    }, 5000);
+  },
+
+  destroy() {
+    clearInterval(this.countdownPoll);
+    clearInterval(this.paymentResultPoll);
+
+    this.unbind();
+
+    if (this.$wrapper && this.$element) {
+      this.$wrapper.removeChild(this.$element);
+    }
+  },
+
+  bind() {
+    const { $element, options } = this;
+
+    if (!$element) return;
+
+    if (isFunction(options.onReady)) {
+      addListener($element, EVENT_READY, options.onReady);
+    }
+
+    if (isFunction(options.onShow)) {
+      addListener($element, EVENT_MODAL_SHOW, options.onShow);
+    }
+
+    if (isFunction(options.onClose)) {
+      addListener($element, EVENT_MODAL_CLOSE, options.onClose);
+    }
+
+    if (isFunction(options.onPaymentCreate)) {
+      addListener($element, EVENT_PAYMENT_CREATE, options.onPaymentCreate);
+    }
+
+    if (isFunction(options.onPaymentSuccess)) {
+      addListener($element, EVENT_PAYMENT_SUCCESS, options.onPaymentSuccess);
+    }
+
+    if (isFunction(options.onPaymentFail)) {
+      addListener($element, EVENT_PAYMENT_FAILED, options.onPaymentFail);
+    }
+  },
+
+  unbind() {
+    const { $element, options } = this;
+
+    if (!$element) return;
+
+    if (isFunction(options.onReady)) {
+      removeListener($element, EVENT_READY, options.onReady);
+    }
+
+    if (isFunction(options.onShow)) {
+      removeListener($element, EVENT_MODAL_SHOW, options.onShow);
+    }
+
+    if (isFunction(options.onClose)) {
+      removeListener($element, EVENT_MODAL_CLOSE, options.onClose);
+    }
+
+    if (isFunction(options.onPaymentCreate)) {
+      removeListener($element, EVENT_PAYMENT_CREATE, options.onPaymentCreate);
+    }
+
+    if (isFunction(options.onPaymentSuccess)) {
+      removeListener($element, EVENT_PAYMENT_SUCCESS, options.onPaymentSuccess);
+    }
+
+    if (isFunction(options.onPaymentFail)) {
+      removeListener($element, EVENT_PAYMENT_FAILED, options.onPaymentFail);
+    }
+  },
 
   show() {
     if (this.options.isModal && !this.isShow) {
       this.isShow = true;
       setStyle(this.$element, 'display', 'block');
+      dispatchEvent(this.$element, EVENT_MODAL_SHOW);
     }
+    return this;
   },
+
   hide() {
     if (this.options.isModal && this.isShow) {
       this.isShow = false;
       setStyle(this.$element, 'display', 'none');
       dispatchEvent(this.$element, EVENT_MODAL_CLOSE);
     }
-  },
-
-  pay(options) {
-    this.payConfig = pureAssign(pureAssign(PAYMENT_DEFAULT, this.options), isPlainObject(options) && options);
-    const callback = () => {
-      const { quoteAssetId, quoteAmount } = this.payConfig;
-      const asset = this.quoteAssets.find((item) => item.assetId === quoteAssetId);
-      this.params.quoteAsset = asset || this.quoteAssets[0];
-      this.params.quoteAmount = quoteAmount > 0 ? quoteAmount : '';
-      this.params.paymentAsset = this.paymentAssets[0];
-      this.params.paymentMethod = 'mixin';
-      if (asset && quoteAmount > 0) {
-        this.renderPage('payment');
-      } else {
-        this.renderPage('quote');
-      }
-    };
-    if (this.isReady) {
-      callback();
-    } else {
-      addListener(
-        this.$element,
-        EVENT_READY,
-        () => {
-          setTimeout(() => {
-            callback();
-          }, 0);
-        },
-        { once: true }
-      );
-    }
-    if (!this.isShow && this.options.isModal) {
-      this.show();
-    }
+    return this;
   },
 };
 

@@ -12,11 +12,10 @@ window.onload = function () {
   var MixPay = window.MixPay;
   var btn1 = document.getElementById('button1');
   var btn2 = document.getElementById('button2');
-  var btn3 = document.getElementById('button3');
 
   var clientId = MixPay.newUUID();
 
-  var mixpay = new MixPay(app, {
+  var instance1 = new MixPay(app, {
     isModal: true,
     hasMask: true,
     payeeId: '093bf620-9aba-4dab-90ad-6f2c9b32bb39',
@@ -31,6 +30,9 @@ window.onload = function () {
     onReady: function () {
       console.log('ready');
     },
+    onShow: function () {
+      console.log('show');
+    },
     onClose: function () {
       console.log('close');
     },
@@ -41,24 +43,19 @@ window.onload = function () {
       console.log('success');
     },
     onPaymentFail: function () {
-      console.log('fail')
-    }
+      console.log('fail');
+    },
   });
 
   btn1.onclick = function () {
-    mixpay.pay();
-  }
+    if (!instance1.isShow) {
+      instance1.show();
+    } else {
+      instance1.close();
+    }
+  };
 
-  btn2.onclick = function() {
-    mixpay.pay({
-      quoteAssetId: 'usd'
-    });
-  }
-
-  btn3.onclick = function () {
-    mixpay.pay({
-      quoteAssetId: 'usd',
-      quoteAmount: '0.05',
-    });
-  }
+  btn2.onclick = function () {
+    instance1 && instance1.destroy();
+  };
 };
