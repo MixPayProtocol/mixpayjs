@@ -52,7 +52,9 @@ import 'mixpay/dist/mixpay.css';
 
 const element = document.getElementById('app');
 
-const mixpay = new MixPay(element, {
+// render as a modal/popup
+
+const mixpayModal = new MixPay(element, {
   isModal: true,
   hasMask: true,
   payeeId: '',
@@ -67,11 +69,39 @@ const mixpay = new MixPay(element, {
   quoteAmount: '',
 
   onReady() {},
+  onShow() {},
   onClose() {},
   onPaymentCreate() {},
   onPaymentSuccess() {},
   onPaymentFail() {},
 });
+
+mixpayModal.show();
+
+// render as a normal flow
+
+const mixpay = new MixPay(element, {
+  isModal: false,
+  hasMask: true,
+  payeeId: '',
+  settlementAssetId: '',
+  settlementMemo: '',
+  settlementMethod: '',
+  clientId: '',
+  expireSeconds: '',
+  remark: '',
+  note: '',
+  quoteAssetId: 'usd',
+  quoteAmount: '100',
+
+  onReady() {},
+  onShow() {},
+  onClose() {},
+  onPaymentCreate() {},
+  onPaymentSuccess() {},
+  onPaymentFail() {},
+});
+
 ```
 
 ## Options
@@ -85,15 +115,28 @@ const mixpay = new MixPay(element, {
 | settlementMemo | string | '' | memo |
 | settlementMethod | string | mixin | 'mixin' or 'mixpay', settle to your Mixin Wallet or MixPay Account |
 | clientId | string | MixPay.newUUID() |  UUID of client of the payment |
+| traceId | string | '' | UUID of the payment for preventing duplicate payment |
 | expireSeconds | number | null |  60-172800, expiration date of the payment  |
 | remark | string | '' | Payees leave a message to payers |
-| quoteAssetId | string | '' | AssetId of quote cryptocurrency |
-| quoteAmount | number | '' | Amount of quote cryptocurrency|
+| note   | string | '' | Payers leave a message to payees |
+| quoteAssetId | string | '' | assetId of quote cryptocurrencies |
+| quoteAmount | number | '' | Amount of quote cryptocurrency |
 | onReady | function | null | This event fires when quote assets and payment assets are loaded |
+| onShow  | function | null | This event fires when the modal is show |
 | onClose | function | null | This event fires when the modal is closed |
 | onPaymentCreate | function | null  | This event fires when a payment is created |
 | onPaymentSuccess | function | null | This event fires when a payment is successful |
-| onPaymentFail | function | null | This event fires when a payment is failed  |
+| onPaymentFail | function | null | This event fires when a payment is failed |
+
+## Instance properties
+
+### payments
+
+the infomation of the payment you create.
+
+### result
+
+the result infomation of the your payment;
 
 ## Instance Methods
 
@@ -104,7 +147,7 @@ remove the modal/element and events from document
 ### show()
 ### hide()
 
-show/hide the modal, if `isModal` is `true`
+show/hide the modal/popup, if `isModal` is `true`
 
 ## Global Methods
 
