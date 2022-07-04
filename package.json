@@ -1,6 +1,6 @@
 {
   "name": "mixpayjs",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "main": "dist/mixpay.common.js",
   "module": "dist/mixpay.esm.js",
