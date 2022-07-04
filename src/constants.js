@@ -30,6 +30,7 @@ export const OPTIONS_DEFAULT = {
 export const PAYMENT_DEFAULT = {
   clientId: '',
   expireSeconds: null,
+  orderId: null,
   isChain: false,
   note: '',
   payeeId: '',

@@ -98,7 +98,6 @@ function MixPay(wrapper, options) {
 MixPay.prototype = {
   $svg: { isSVGLoaded: false },
   $apis: new APIS(),
-
   init() {
     this.renderSVG();
     this.render();
@@ -119,7 +118,6 @@ MixPay.prototype = {
       dispatchEvent(this.$element, EVENT_READY);
     });
   },
-
   renderSVG() {
     if (this.$svg.isSVGLoaded) return;
     const wrapper = document.createElement('div');
@@ -129,7 +127,6 @@ MixPay.prototype = {
     body.insertBefore(wrapper, body.childNodes[0]);
     this.$svg.isSVGLoaded = true;
   },
-
   render() {
     const { isModal, hasMask, fontSize } = this.options;
     const $wrapper = this.$wrapper;
@@ -234,7 +231,7 @@ MixPay.prototype = {
           that.result.surplusAmount = r.surplusAmount;
 
           if (r.status === 'unpaid') {
-            const data = assign({}, pureAssign(PAYMENT_DEFAULT, this.options), {
+            const data = assign({}, pureAssign(PAYMENT_DEFAULT, that.options), {
               quoteAssetId,
               quoteAmount,
               paymentAssetId,
@@ -279,7 +276,8 @@ MixPay.prototype = {
             default:
           }
         })
-        .catch(() => {
+        .catch((e) => {
+          console.error(e);
           that.renderPage('overtime');
         });
     };
@@ -741,7 +739,6 @@ MixPay.prototype = {
         .catch(() => {});
     }, 5000);
   },
-
   destroy() {
     clearInterval(this.countdownPoll);
     clearInterval(this.paymentResultPoll);
@@ -752,7 +749,6 @@ MixPay.prototype = {
       this.$wrapper.removeChild(this.$element);
     }
   },
-
   bind() {
     const { $element, options } = this;
 
@@ -782,7 +778,6 @@ MixPay.prototype = {
       addListener($element, EVENT_PAYMENT_FAILED, options.onPaymentFail);
     }
   },
-
   unbind() {
     const { $element, options } = this;
 
@@ -812,7 +807,6 @@ MixPay.prototype = {
       removeListener($element, EVENT_PAYMENT_FAILED, options.onPaymentFail);
     }
   },
-
   show() {
     if (this.options.isModal && !this.isShow) {
       this.isShow = true;
@@ -821,7 +815,6 @@ MixPay.prototype = {
     }
     return this;
   },
-
   hide() {
     if (this.options.isModal && this.isShow) {
       this.isShow = false;

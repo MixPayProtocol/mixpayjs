@@ -1,11 +1,11 @@
 /*!
- * mixpayjs v2.0.1
+ * mixpayjs v2.0.2
  * https://mixpay.me
  *
  * Copyright 2022 gypsophila@mathunion.xyz
  * Released under the MIT license
  *
- * Date: 2022-07-04T02:51:43.039Z
+ * Date: 2022-07-04T06:58:01.886Z
  */
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -2206,6 +2206,7 @@ var OPTIONS_DEFAULT = {
 var PAYMENT_DEFAULT = {
   clientId: '',
   expireSeconds: null,
+  orderId: null,
   isChain: false,
   note: '',
   payeeId: '',
@@ -3006,8 +3007,6 @@ MixPay.prototype = {
     };
 
     var endTask = function endTask() {
-      var _this3 = this;
-
       var _that$payments = that.payments,
           clientId = _that$payments.clientId,
           traceId = _that$payments.traceId,
@@ -3033,7 +3032,7 @@ MixPay.prototype = {
         that.result.surplusAmount = r.surplusAmount;
 
         if (r.status === 'unpaid') {
-          var data = assign({}, pureAssign(PAYMENT_DEFAULT, _this3.options), {
+          var data = assign({}, pureAssign(PAYMENT_DEFAULT, that.options), {
             quoteAssetId: quoteAssetId,
             quoteAmount: quoteAmount,
             paymentAssetId: paymentAssetId,
@@ -3082,7 +3081,8 @@ MixPay.prototype = {
             });
             break;
         }
-      }).catch(function () {
+      }).catch(function (e) {
+        console.error(e);
         that.renderPage('overtime');
       });
     };
@@ -3210,7 +3210,7 @@ MixPay.prototype = {
     };
 
     $paymentNextBtn.onclick = function () {
-      var _this4 = this;
+      var _this3 = this;
 
       if (this.isSubmitting) return;
       var _that$params3 = that.params,
@@ -3258,8 +3258,8 @@ MixPay.prototype = {
       }).catch(function (_err) {
         setHTML($paymentError, "<span>".concat(_err.message, "</span>"));
       }).finally(function () {
-        _this4.isSubmitting = false;
-        toggleClass(_this4, 'inactive');
+        _this3.isSubmitting = false;
+        toggleClass(_this3, 'inactive');
       });
     };
 
@@ -3268,7 +3268,7 @@ MixPay.prototype = {
     };
 
     $mixinPaidBtn.onclick = function () {
-      var _this5 = this;
+      var _this4 = this;
 
       if (this.isSubmitting) return;
       this.isSubmitting = true;
@@ -3280,7 +3280,7 @@ MixPay.prototype = {
           memo = _that$payments2.memo;
       window.location.href = "mixin://pay?recipient=".concat(recipient, "&asset=").concat(paymentAssetId, "&amount=").concat(paymentAmount, "&trace=").concat(traceId, "&memo=").concat(memo);
       setTimeout(function () {
-        _this5.isSubmitting = false;
+        _this4.isSubmitting = false;
       }, 3000);
     };
 
@@ -3324,7 +3324,7 @@ MixPay.prototype = {
     };
 
     $overtimeBtn.onclick = function () {
-      var _this6 = this;
+      var _this5 = this;
 
       if (this.isSubmitting) return;
       this.isSubmitting = true;
@@ -3366,8 +3366,8 @@ MixPay.prototype = {
       }).catch(function (err) {
         setHTML($overtimeError, "<span>".concat(err.message, "</span>"));
       }).finally(function () {
-        _this6.isSubmitting = false;
-        toggleClass(_this6, 'inactive');
+        _this5.isSubmitting = false;
+        toggleClass(_this5, 'inactive');
       });
     };
   },
@@ -3548,7 +3548,7 @@ MixPay.prototype = {
     });
   },
   startCountdown: function startCountdown(regularTask, endTask) {
-    var _this7 = this;
+    var _this6 = this;
 
     clearInterval(this.countdownPoll);
     var expire = this.payments.expire;
@@ -3559,8 +3559,8 @@ MixPay.prototype = {
       if (diff >= 0) {
         regularTask(diff);
       } else {
-        clearInterval(_this7.countdownPoll);
-        clearInterval(_this7.paymentResultPoll);
+        clearInterval(_this6.countdownPoll);
+        clearInterval(_this6.paymentResultPoll);
         endTask();
       }
     };
@@ -3569,67 +3569,67 @@ MixPay.prototype = {
     task();
   },
   startQueryOrder: function startQueryOrder() {
-    var _this8 = this;
+    var _this7 = this;
 
     clearInterval(this.paymentResultPoll);
     var _this$payments2 = this.payments,
         clientId = _this$payments2.clientId,
         traceId = _this$payments2.traceId;
     this.paymentResultPoll = setInterval(function () {
-      _this8.$apis.getPaymentResult(clientId, traceId).then(function (data) {
+      _this7.$apis.getPaymentResult(clientId, traceId).then(function (data) {
         var d = data.data;
         var statusChanged = false;
         var page = '';
 
-        if (_this8.result.status !== d.status) {
+        if (_this7.result.status !== d.status) {
           statusChanged = true;
         }
 
-        _this8.result.status = d.status;
-        _this8.result.payableAmount = d.payableAmount;
-        _this8.result.paymentAmount = d.paymentAmount;
-        _this8.result.paymentSymbol = d.paymentSymbol;
-        _this8.result.quoteAmount = d.quoteAmount;
-        _this8.result.quoteSymbol = d.quoteSymbol;
-        _this8.result.txid = d.txid;
-        _this8.result.date = d.date;
-        _this8.result.failureCode = d.failureCode;
-        _this8.result.failureReason = d.failureReason;
-        _this8.result.surplusAmount = d.surplusAmount;
+        _this7.result.status = d.status;
+        _this7.result.payableAmount = d.payableAmount;
+        _this7.result.paymentAmount = d.paymentAmount;
+        _this7.result.paymentSymbol = d.paymentSymbol;
+        _this7.result.quoteAmount = d.quoteAmount;
+        _this7.result.quoteSymbol = d.quoteSymbol;
+        _this7.result.txid = d.txid;
+        _this7.result.date = d.date;
+        _this7.result.failureCode = d.failureCode;
+        _this7.result.failureReason = d.failureReason;
+        _this7.result.surplusAmount = d.surplusAmount;
 
-        switch (_this8.result.status) {
+        switch (_this7.result.status) {
           case 'unpaid':
-            if (_this8.isUserConfirmed) {
+            if (_this7.isUserConfirmed) {
               page = 'checking';
             }
 
             break;
 
           case 'pending':
-            clearInterval(_this8.countdownPoll);
+            clearInterval(_this7.countdownPoll);
             page = 'pending';
             break;
 
           case 'failed':
-            clearInterval(_this8.countdownPoll);
-            clearInterval(_this8.paymentResultPoll);
+            clearInterval(_this7.countdownPoll);
+            clearInterval(_this7.paymentResultPoll);
             page = 'failed';
-            dispatchEvent(_this8.$element, EVENT_PAYMENT_FAILED, {
+            dispatchEvent(_this7.$element, EVENT_PAYMENT_FAILED, {
               code: d.failureCode,
               reason: d.failureReason
             });
             break;
 
           case 'success':
-            clearInterval(_this8.countdownPoll);
-            clearInterval(_this8.paymentResultPoll);
+            clearInterval(_this7.countdownPoll);
+            clearInterval(_this7.paymentResultPoll);
             page = 'success';
-            dispatchEvent(_this8.$element, EVENT_PAYMENT_SUCCESS);
+            dispatchEvent(_this7.$element, EVENT_PAYMENT_SUCCESS);
             break;
         }
 
         if (statusChanged && page) {
-          _this8.renderPage(page);
+          _this7.renderPage(page);
         }
       }).catch(function () {});
     }, 5000);
@@ -3740,4 +3740,3 @@ MixPay.setConfig = function (options) {
 MixPay.newUUID = genUuid;
 
 export { MixPay as default };
-//# sourceMappingURL=mixpay.esm.js.map
