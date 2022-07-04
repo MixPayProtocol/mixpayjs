@@ -24,6 +24,7 @@ window.onload = function () {
     settlementMethod: 'mixin',
     clientId: clientId,
     expireSeconds: 180,
+    orderId: '123131',
     fontSize: 16,
     remark: 'this is a demo.',
 

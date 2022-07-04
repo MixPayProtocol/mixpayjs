@@ -89,6 +89,7 @@ const mixpay = new MixPay(element, {
   settlementMethod: '',
   clientId: '',
   expireSeconds: '',
+  orderId: null,
   remark: '',
   note: '',
   quoteAssetId: 'usd',
@@ -116,6 +117,7 @@ const mixpay = new MixPay(element, {
 | settlementMethod | string | mixin | 'mixin' or 'mixpay', settle to your Mixin Wallet or MixPay Account |
 | clientId | string | MixPay.newUUID() |  UUID of client of the payment |
 | traceId | string | '' | UUID of the payment for preventing duplicate payment |
+| orderId | string | null | orderId and payeeId makes a payment unique, must be 6-36 letters, [0-9a-zA-Z_-]{6,36} |
 | expireSeconds | number | null |  60-172800, expiration date of the payment  |
 | remark | string | '' | Payees leave a message to payers |
 | note   | string | '' | Payers leave a message to payees |
