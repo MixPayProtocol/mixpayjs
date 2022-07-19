@@ -8,7 +8,6 @@ import {
   EVENT_PAYMENT_SUCCESS,
   EVENT_READY,
   IS_BROWSER,
-  IS_MIXIN,
   LANG,
   NAMESPACE,
   OPTIONS_DEFAULT,
@@ -590,7 +589,7 @@ MixPay.prototype = {
           value: `mixin://pay?recipient=${recipient}&asset=${paymentAssetId}&amount=${paymentAmount}&trace=${traceId}&memo=${memo}`,
         });
         setStyle(q('btn-group'), 'visibility', 'visible');
-        setStyle(q('btn-primary'), 'display', IS_MIXIN ? 'inline-flex' : 'none');
+        // setStyle(q('btn-primary'), 'display', IS_MIXIN ? 'inline-flex' : 'none');
         break;
       case 'checkoutChain':
         activeIndex = 4;

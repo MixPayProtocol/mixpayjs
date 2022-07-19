@@ -75,7 +75,6 @@ export const LANG = {
   },
   error: {
     notSupportChain: '<span>This crypto is not supported On-chain transaction.</span>',
-
     codeTable: {
       40000: 'Payment overtime.',
       40001: 'Receipt address is invalid. Maybe repeat transfer or timeout.',
@@ -93,7 +92,7 @@ export const LANG = {
     confirmed: 'I have paid',
     help: 'Help',
     termsOfUse: 'Terms Of Use',
-    openMixinMessenger: 'Open Mixin Messenger',
+    openMixinMessenger: 'Mixin Pay',
     payAgain: 'Pay again'
   },
 };

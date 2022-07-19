@@ -1,11 +1,11 @@
 /*!
- * mixpayjs v2.0.2
+ * mixpayjs v2.1.0
  * https://mixpay.me
  *
  * Copyright 2022 gypsophila@mathunion.xyz
  * Released under the MIT license
  *
- * Date: 2022-07-04T06:58:01.886Z
+ * Date: 2022-07-19T07:13:27.634Z
  */
 
 (function (global, factory) {
@@ -2196,7 +2196,7 @@
 	var EVENT_PAYMENT_SUCCESS = 'success';
 	var EVENT_PAYMENT_FAILED = 'failed';
 	var NAMESPACE = '--mixpay';
-	var IS_MIXIN = !!(WINDOW.webkit && WINDOW.webkit.messageHandlers && WINDOW.webkit.messageHandlers.MixinContext || WINDOW.MixinContext && WINDOW.MixinContext.getContext);
+	!!(WINDOW.webkit && WINDOW.webkit.messageHandlers && WINDOW.webkit.messageHandlers.MixinContext || WINDOW.MixinContext && WINDOW.MixinContext.getContext);
 	var CONFIG = {
 	  API_URL: 'https://api.mixpay.me/v1'
 	};
@@ -2274,7 +2274,7 @@
 	    confirmed: 'I have paid',
 	    help: 'Help',
 	    termsOfUse: 'Terms Of Use',
-	    openMixinMessenger: 'Open Mixin Messenger',
+	    openMixinMessenger: 'Mixin Pay',
 	    payAgain: 'Pay again'
 	  }
 	};
@@ -3467,8 +3467,8 @@
 	          size: 600,
 	          value: "mixin://pay?recipient=".concat(recipient, "&asset=").concat(paymentAssetId, "&amount=").concat(paymentAmount, "&trace=").concat(traceId, "&memo=").concat(memo)
 	        });
-	        setStyle(q('btn-group'), 'visibility', 'visible');
-	        setStyle(q('btn-primary'), 'display', IS_MIXIN ? 'inline-flex' : 'none');
+	        setStyle(q('btn-group'), 'visibility', 'visible'); // setStyle(q('btn-primary'), 'display', IS_MIXIN ? 'inline-flex' : 'none');
+
 	        break;
 
 	      case 'checkoutChain':
