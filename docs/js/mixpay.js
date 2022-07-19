@@ -1,11 +1,11 @@
 /*!
- * mixpayjs v2.1.0
+ * mixpayjs v2.1.1
  * https://mixpay.me
  *
  * Copyright 2022 gypsophila@mathunion.xyz
  * Released under the MIT license
  *
- * Date: 2022-07-19T07:13:27.634Z
+ * Date: 2022-07-19T07:58:36.626Z
  */
 
 (function (global, factory) {
@@ -3045,6 +3045,13 @@
 	            isChain: isChain,
 	            traceId: traceId
 	          });
+
+	          for (var k in data) {
+	            if (data[k] === '' || data[k] === null) {
+	              delete data[k];
+	            }
+	          }
+
 	          return that.$apis.createPayment(data).then(function (_data) {
 	            var d = _data.data;
 	            that.payments = {
@@ -3240,6 +3247,13 @@
 	        isChain: paymentMethod === 'chain'
 	      });
 	      data.traceId = data.traceId || genUuid();
+
+	      for (var k in data) {
+	        if (data[k] === '' || data[k] === null) {
+	          delete data[k];
+	        }
+	      }
+
 	      that.$apis.createPayment(data).then(function (_data) {
 	        var d = _data.data;
 	        that.payments = {
@@ -3348,6 +3362,13 @@
 	        isChain: isChain,
 	        traceId: traceId
 	      });
+
+	      for (var k in data) {
+	        if (data[k] === '' || data[k] === null) {
+	          delete data[k];
+	        }
+	      }
+
 	      that.$apis.createPayment(data).then(function (_data) {
 	        var d = _data.data;
 	        that.payments = {

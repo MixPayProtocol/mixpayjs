@@ -20,13 +20,9 @@ window.onload = function () {
     hasMask: true,
     payeeId: '093bf620-9aba-4dab-90ad-6f2c9b32bb39',
     settlementAssetId: '4d8c508b-91c5-375b-92b0-ee702ed2dac5',
-    settlementMemo: 'this is a demo.',
     settlementMethod: 'mixin',
     clientId: clientId,
-    expireSeconds: 180,
-    orderId: '123131',
     fontSize: 16,
-    remark: 'this is a demo.',
 
     onReady: function () {
       console.log('ready');

@@ -237,6 +237,11 @@ MixPay.prototype = {
               isChain,
               traceId,
             });
+            for (let k in data) {
+              if (data[k] === '' || data[k] === null) {
+                delete(data[k]);
+              }
+            }
             return that.$apis.createPayment(data).then((_data) => {
               const d = _data.data;
               that.payments = {
@@ -398,6 +403,11 @@ MixPay.prototype = {
         isChain: paymentMethod === 'chain',
       });
       data.traceId = data.traceId || genUuid();
+      for (let k in data) {
+        if (data[k] === '' || data[k] === null) {
+          delete(data[k]);
+        }
+      }
       that.$apis
         .createPayment(data)
         .then((_data) => {
@@ -485,6 +495,11 @@ MixPay.prototype = {
         isChain,
         traceId,
       });
+      for (let k in data) {
+        if (data[k] === '' || data[k] === null) {
+          delete(data[k]);
+        }
+      }
       that.$apis
         .createPayment(data)
         .then((_data) => {
