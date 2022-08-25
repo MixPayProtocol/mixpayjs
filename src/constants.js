@@ -41,7 +41,8 @@ export const PAYMENT_DEFAULT = {
   settlementAssetId: '',
   settlementMemo: '',
   settlementMethod: 'mixin', // 'mixin', 'mixpay'
-  traceId: ''
+  traceId: '',
+  callbackUrl: '',
 };
 
 export const LANG = {

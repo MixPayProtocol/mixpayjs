@@ -1,11 +1,11 @@
 /*!
- * mixpayjs v2.1.1
+ * mixpayjs v2.1.2
  * https://mixpay.me
  *
  * Copyright 2022 gypsophila@mathunion.xyz
  * Released under the MIT license
  *
- * Date: 2022-07-19T07:58:36.626Z
+ * Date: 2022-08-25T03:05:40.556Z
  */
 
 'use strict';
@@ -2220,7 +2220,8 @@ var PAYMENT_DEFAULT = {
   settlementMemo: '',
   settlementMethod: 'mixin',
   // 'mixin', 'mixpay'
-  traceId: ''
+  traceId: '',
+  callbackUrl: ''
 };
 var LANG = {
   quote: {
@@ -2881,15 +2882,20 @@ MixPay.prototype = {
     this.$apis.addReadyCallback(function () {
       var _this$options = _this.options,
           quoteAssetId = _this$options.quoteAssetId,
-          quoteAmount = _this$options.quoteAmount;
+          quoteAmount = _this$options.quoteAmount,
+          paymentAssetId = _this$options.paymentAssetId;
 
       var asset = _this.$apis.quoteAssets.find(function (item) {
         return item.assetId === quoteAssetId;
       });
 
+      var paymentAsset = _this.$apis.paymentAssets.find(function (item) {
+        return item.assetId === paymentAssetId;
+      });
+
       _this.params.quoteAsset = asset || _this.$apis.quoteAssets[0];
       _this.params.quoteAmount = quoteAmount > 0 ? quoteAmount : '';
-      _this.params.paymentAsset = _this.$apis.paymentAssets[0];
+      _this.params.paymentAsset = paymentAsset || _this.$apis.paymentAssets[0];
       _this.params.paymentMethod = 'mixin';
 
       if (quoteAssetId && quoteAmount > 0) {
@@ -3173,6 +3179,7 @@ MixPay.prototype = {
     };
 
     $paymentDropdown.onclick = function () {
+      if (hasClass(this, 'disabled')) return;
       toggleClass($paymentList, 'show');
     };
 
@@ -3419,8 +3426,9 @@ MixPay.prototype = {
         network = _this$params$paymentA.network,
         paymentMethod = _this$params.paymentMethod,
         _this$options3 = this.options,
-        payAssetId = _this$options3.quoteAssetId,
+        quoteUuid = _this$options3.quoteAssetId,
         payAmount = _this$options3.quoteAmount,
+        paymentUuid = _this$options3.paymentAssetId,
         result = this.result;
     var activeIndex;
     var activeField;
@@ -3439,7 +3447,7 @@ MixPay.prototype = {
         activeIndex = 1;
         activeField = fields[activeIndex];
 
-        if (payAssetId) {
+        if (quoteUuid) {
           q('dropdown__toggle').classList.add('disabled');
         } else {
           q('dropdown__toggle').classList.remove('disabled');
@@ -3459,6 +3467,14 @@ MixPay.prototype = {
       case 'payment':
         activeIndex = 2;
         activeField = fields[activeIndex];
+        console.log(paymentUuid);
+
+        if (paymentUuid) {
+          q('dropdown__toggle').classList.add('disabled');
+        } else {
+          q('dropdown__toggle').classList.remove('disabled');
+        }
+
         setHTML(q('field__header-main'), "<img src=\"".concat(qIcon, "\" /><span>").concat(quoteAmount, " ").concat(qSymbol, "</span>"));
         setHTML(q('dropdown__selected'), "<img src=\"".concat(pIcon, "\" /><span>").concat(pSymbol, "</span><em>").concat(network, "</em>"));
         setHTML(q('dropdown__menu'), paymentAssets.map(function (item) {
@@ -3466,7 +3482,7 @@ MixPay.prototype = {
         }).join(''));
         var pInput = queryAll(activeField, 'input')[paymentMethod === 'chain' ? 1 : 0];
         pInput.checked = true;
-        setStyle(q('btn-inline'), 'display', payAssetId && payAmount > 0 ? 'none' : 'inline-flex');
+        setStyle(q('btn-inline'), 'display', quoteUuid && payAmount > 0 ? 'none' : 'inline-flex');
         break;
 
       case 'checkoutMixin':

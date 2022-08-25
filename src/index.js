@@ -103,11 +103,12 @@ MixPay.prototype = {
     this.bind();
     this.renderPage('loading');
     this.$apis.addReadyCallback(() => {
-      const { quoteAssetId, quoteAmount } = this.options;
+      const { quoteAssetId, quoteAmount, paymentAssetId } = this.options;
       const asset = this.$apis.quoteAssets.find((item) => item.assetId === quoteAssetId);
+      const paymentAsset = this.$apis.paymentAssets.find((item) => item.assetId === paymentAssetId);
       this.params.quoteAsset = asset || this.$apis.quoteAssets[0];
       this.params.quoteAmount = quoteAmount > 0 ? quoteAmount : '';
-      this.params.paymentAsset = this.$apis.paymentAssets[0];
+      this.params.paymentAsset = paymentAsset || this.$apis.paymentAssets[0];
       this.params.paymentMethod = 'mixin';
       if (quoteAssetId && quoteAmount > 0) {
         this.renderPage('payment');
@@ -239,7 +240,7 @@ MixPay.prototype = {
             });
             for (let k in data) {
               if (data[k] === '' || data[k] === null) {
-                delete(data[k]);
+                delete data[k];
               }
             }
             return that.$apis.createPayment(data).then((_data) => {
@@ -350,6 +351,7 @@ MixPay.prototype = {
       this.isSubmitting = false;
     };
     $paymentDropdown.onclick = function () {
+      if (hasClass(this, 'disabled')) return;
       toggleClass($paymentList, 'show');
     };
     $paymentList.onclick = function (e) {
@@ -405,7 +407,7 @@ MixPay.prototype = {
       data.traceId = data.traceId || genUuid();
       for (let k in data) {
         if (data[k] === '' || data[k] === null) {
-          delete(data[k]);
+          delete data[k];
         }
       }
       that.$apis
@@ -497,7 +499,7 @@ MixPay.prototype = {
       });
       for (let k in data) {
         if (data[k] === '' || data[k] === null) {
-          delete(data[k]);
+          delete data[k];
         }
       }
       that.$apis
@@ -543,7 +545,7 @@ MixPay.prototype = {
         paymentAsset: { iconUrl: pIcon, symbol: pSymbol, network },
         paymentMethod,
       },
-      options: { quoteAssetId: payAssetId, quoteAmount: payAmount },
+      options: { quoteAssetId: quoteUuid, quoteAmount: payAmount, paymentAssetId: paymentUuid },
       result,
     } = this;
     let activeIndex;
@@ -557,7 +559,7 @@ MixPay.prototype = {
       case 'quote':
         activeIndex = 1;
         activeField = fields[activeIndex];
-        if (payAssetId) {
+        if (quoteUuid) {
           q('dropdown__toggle').classList.add('disabled');
         } else {
           q('dropdown__toggle').classList.remove('disabled');
@@ -576,6 +578,12 @@ MixPay.prototype = {
       case 'payment':
         activeIndex = 2;
         activeField = fields[activeIndex];
+        console.log(paymentUuid);
+        if (paymentUuid) {
+          q('dropdown__toggle').classList.add('disabled');
+        } else {
+          q('dropdown__toggle').classList.remove('disabled');
+        }
         setHTML(q('field__header-main'), `<img src="${qIcon}" /><span>${quoteAmount} ${qSymbol}</span>`);
         setHTML(q('dropdown__selected'), `<img src="${pIcon}" /><span>${pSymbol}</span><em>${network}</em>`);
         setHTML(
@@ -586,7 +594,7 @@ MixPay.prototype = {
         );
         const pInput = queryAll(activeField, 'input')[paymentMethod === 'chain' ? 1 : 0];
         pInput.checked = true;
-        setStyle(q('btn-inline'), 'display', payAssetId && payAmount > 0 ? 'none' : 'inline-flex');
+        setStyle(q('btn-inline'), 'display', quoteUuid && payAmount > 0 ? 'none' : 'inline-flex');
         break;
       case 'checkoutMixin':
         activeIndex = 3;

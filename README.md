@@ -67,6 +67,8 @@ const mixpayModal = new MixPay(element, {
   note: '',
   quoteAssetId: '',
   quoteAmount: '',
+  paymentAssetId: '',
+  callbackUrl: '',
 
   onReady() {},
   onShow() {},
@@ -94,6 +96,8 @@ const mixpay = new MixPay(element, {
   note: '',
   quoteAssetId: 'usd',
   quoteAmount: '100',
+  paymentAssetId: '',
+  callbackUrl: '',
 
   onReady() {},
   onShow() {},
@@ -123,6 +127,8 @@ const mixpay = new MixPay(element, {
 | note   | string | '' | Payers leave a message to payees |
 | quoteAssetId | string | '' | assetId of quote cryptocurrencies |
 | quoteAmount | number | '' | Amount of quote cryptocurrency |
+| paymentAssetId | string | '' | assetId of payment cryptocurrencies |
+| callbackUrl | string | null | callback of payment |
 | onReady | function | null | This event fires when quote assets and payment assets are loaded |
 | onShow  | function | null | This event fires when the modal is show |
 | onClose | function | null | This event fires when the modal is closed |

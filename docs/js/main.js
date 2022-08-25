@@ -23,6 +23,9 @@ window.onload = function () {
     settlementMethod: 'mixin',
     clientId: clientId,
     fontSize: 16,
+    quoteAssetId: 'usd',
+    quoteAmount: 1000,
+    paymentAssetId: 'c94ac88f-4671-3976-b60a-09064f1811e8',
 
     onReady: function () {
       console.log('ready');
