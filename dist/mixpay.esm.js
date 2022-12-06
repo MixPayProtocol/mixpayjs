@@ -1,11 +1,11 @@
 /*!
- * mixpayjs v2.1.2
+ * mixpayjs v2.1.3
  * https://mixpay.me
  *
  * Copyright 2022 gypsophila@mathunion.xyz
  * Released under the MIT license
  *
- * Date: 2022-08-25T03:05:40.556Z
+ * Date: 2022-12-06T02:12:08.324Z
  */
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -2195,7 +2195,7 @@ var CONFIG = {
   API_URL: 'https://api.mixpay.me/v1'
 };
 var OPTIONS_DEFAULT = {
-  isModal: true,
+  isModal: false,
   hasMask: true,
   fontSize: 14,
   onReady: null,
@@ -2821,7 +2821,14 @@ function MixPay(wrapper, options) {
     throw new Error('A browser is needed!');
   }
 
-  this.$wrapper = wrapper || document.body;
+  if (typeof wrapper === 'string') {
+    this.$wrapper = document.querySelector(wrapper);
+  } else if (wrapper instanceof HTMLElement) {
+    this.$wrapper = wrapper;
+  } else {
+    this.$wrapper = document.body;
+  }
+
   this.$element = null;
   this.options = assign({}, OPTIONS_DEFAULT, isPlainObject(options) && options);
   this.options.clientId = this.options.clientId || MixPay.newUUID();

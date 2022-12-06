@@ -17,14 +17,14 @@ export const CONFIG = {
 };
 
 export const OPTIONS_DEFAULT = {
-  isModal: true,
+  isModal: false,
   hasMask: true,
   fontSize: 14,
 
   onReady: null,
   onPaymentCreate: null,
   onPaymentSuccess: null,
-  onPaymentFail: null
+  onPaymentFail: null,
 };
 
 export const PAYMENT_DEFAULT = {
@@ -48,20 +48,20 @@ export const PAYMENT_DEFAULT = {
 export const LANG = {
   quote: {
     asset: 'Quote Asset',
-    amount: 'Quote Amount'
+    amount: 'Quote Amount',
   },
   payment: {
     asset: 'Payment Asset',
     wallet: 'Payment Wallet',
     mixin: 'Mixin Wallet',
-    chain: 'On-chain Wallet'
+    chain: 'On-chain Wallet',
   },
   checkout: {
     scanWithMixin: 'Scan with Mixin Messenger',
     countdown: 'Payment amount will be refreshed after <strong>$1</strong>',
     network: 'Network:',
     address: 'Address:',
-    memo: 'Memo:'
+    memo: 'Memo:',
   },
   result: {
     checking: 'Checking',
@@ -72,7 +72,7 @@ export const LANG = {
     failed: 'Failed',
     overtime: 'Overtime',
     overtimeDesc: 'Payment overtime, please refresh and pay again.',
-    refundDesc: 'The payable amount is $1, but you paid $2, Please tap "Help" to contact customer service for a refund.'
+    refundDesc: 'The payable amount is $1, but you paid $2, Please tap "Help" to contact customer service for a refund.',
   },
   error: {
     notSupportChain: '<span>This crypto is not supported On-chain transaction.</span>',
@@ -82,7 +82,7 @@ export const LANG = {
       40020: 'Wrong asset paid.',
       40021: 'Double payment.',
       40022: 'Trace ID does not exist',
-      40024: 'The payable amount is $1, but you paid $2, Please tap "Help" to contact customer service for a refund.'
+      40024: 'The payable amount is $1, but you paid $2, Please tap "Help" to contact customer service for a refund.',
     },
   },
   common: {
@@ -94,6 +94,6 @@ export const LANG = {
     help: 'Help',
     termsOfUse: 'Terms Of Use',
     openMixinMessenger: 'Mixin Pay',
-    payAgain: 'Pay again'
+    payAgain: 'Pay again',
   },
 };

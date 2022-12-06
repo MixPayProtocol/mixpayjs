@@ -43,7 +43,14 @@ function MixPay(wrapper, options) {
     throw new Error('A browser is needed!');
   }
 
-  this.$wrapper = wrapper || document.body;
+  if (typeof wrapper === 'string') {
+    this.$wrapper = document.querySelector(wrapper);
+  } else if (wrapper instanceof HTMLElement) {
+    this.$wrapper = wrapper;
+  } else {
+    this.$wrapper = document.body;
+  }
+
   this.$element = null;
 
   this.options = assign({}, OPTIONS_DEFAULT, isPlainObject(options) && options);
