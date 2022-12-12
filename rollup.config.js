@@ -1,6 +1,9 @@
 const createBanner = require('create-banner');
-const resolve = require('rollup-plugin-node-resolve');
-const commonjs = require('rollup-plugin-commonjs');
+const resolve = require('@rollup/plugin-node-resolve');
+const commonjs = require('@rollup/plugin-commonjs');
+const nodePolyfills = require('rollup-plugin-node-polyfills');
+const rollupTypescript = require('rollup-plugin-typescript2');
+const { terser } = require('rollup-plugin-terser');
 const { babel } = require('@rollup/plugin-babel');
 const pkg = require('./package.json');
 
@@ -10,39 +13,45 @@ const banner = createBanner();
 const name = 'MixPay';
 
 module.exports = {
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: [
     {
       banner,
-      name,
-      file: `dist/${pkg.name}.js`,
-      format: 'umd',
-    },
-    {
-      banner,
-      file: `dist/${pkg.name}.common.js`,
+      file: pkg.main,
       format: 'cjs',
       exports: 'auto',
     },
     {
       banner,
       name,
-      file: `dist/${pkg.name}.esm.js`,
-      format: 'esm',
+      file: pkg.umd,
+      format: 'umd',
+      globals: {
+        axios: 'axios',
+      },
     },
     {
       banner,
       name,
-      file: `docs/js/${pkg.name}.js`,
-      format: 'umd',
+      file: pkg.module,
+      format: 'esm',
     },
   ],
   // sourceMap: false,
   plugins: [
-    resolve({
-      browser: true,
-    }),
+    resolve(),
+    nodePolyfills(),
+    rollupTypescript(),
     commonjs(),
     babel({ babelHelpers: 'bundled' }),
+    terser({
+      compress: {
+        pure_getters: true,
+        unsafe: true,
+        unsafe_comps: true,
+        warnings: false,
+      },
+    }),
   ],
+  external: ['axios'],
 };
